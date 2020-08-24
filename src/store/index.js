@@ -3,7 +3,7 @@ import Vuex from "vuex";
 
 import app from "./modules/app";
 
-import * as getters from ".getters";
+import * as getters from "./getters";
 
 Vue.use(Vuex);
 
