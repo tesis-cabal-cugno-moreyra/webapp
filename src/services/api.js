@@ -1,6 +1,6 @@
 class Api {
   constructor() {
-    this.apiUrl = "http://localhost:8000/api/v1";
+    this.apiUrl = process.env.VUE_APP_ROOT_API;
   }
 
   get(endpoint) {
