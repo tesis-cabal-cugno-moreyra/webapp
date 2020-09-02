@@ -4,6 +4,12 @@
       <NavBar></NavBar>
     </v-container>
 
+    <div v-if="$store.getters.isLoading">
+      <v-overlay>
+        <v-progress-circular indeterminate size="64"></v-progress-circular>
+      </v-overlay>
+    </div>
+
     <v-main>
       <router-view />
     </v-main>
