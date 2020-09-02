@@ -4,11 +4,9 @@
       <NavBar></NavBar>
     </v-container>
 
-    <div v-if="$store.getters.isLoading">
-      <v-overlay>
-        <v-progress-circular indeterminate size="64"></v-progress-circular>
-      </v-overlay>
-    </div>
+    <v-overlay v-if="isLoading">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
 
     <v-main>
       <router-view />
@@ -17,6 +15,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import NavBar from "../src/components/NavBar.vue";
 
 export default {
@@ -31,6 +30,11 @@ export default {
   }),
   created() {
     this.$vuetify.theme.dark = true;
+  },
+  computed: {
+    ...mapGetters({
+      isLoading: "uiParams/isLoading"
+    })
   }
 };
 </script>

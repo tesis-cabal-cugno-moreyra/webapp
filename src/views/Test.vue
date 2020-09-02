@@ -11,10 +11,10 @@ export default {
   name: "Test",
   methods: {
     trySpinner: function() {
-      this.$store.dispatch("changeSpinnerOverlayStateAction");
+      this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
       let context = this;
       setTimeout(function() {
-        context.$store.dispatch("changeSpinnerOverlayStateAction");
+        context.$store.dispatch("uiParams/turnOffSpinnerOverlay");
       }, 3000);
     }
   }
