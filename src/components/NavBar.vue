@@ -4,9 +4,7 @@
       <v-layout mt-4 column align-center>
         <v-flex>
           <v-avatar>
-            <v-img
-              src="https://randomuser.me/api/portraits/women/85.jpg"
-            ></v-img>
+            <v-img src="https://randomuser.me/api/portraits/lego/6.jpg"></v-img>
           </v-avatar>
         </v-flex>
         <v-flex>
