@@ -8,5 +8,23 @@ export default new Vuetify({
   lang: {
     locales: { es },
     current: "es"
+  },
+  theme: {
+    themes: {
+      light: {
+        primary: "#64B5F6",
+        red_selected: "#cc4125",
+        grey_selected: "#999999",
+        white_selected: "#FAFAFA",
+        black_selected: "#222222"
+      },
+      dark: {
+        primary: "#64B5F6",
+        red_selected: "#cc4125",
+        grey_selected: "#999999",
+        white_selected: "#FAFAFA",
+        black_selected: "#222222"
+      }
+    }
   }
 });
