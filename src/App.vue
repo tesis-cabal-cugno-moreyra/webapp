@@ -1,6 +1,6 @@
 <template>
   <v-app id="App">
-    <v-container>
+    <v-container v-if="isLogged">
       <NavBar></NavBar>
     </v-container>
 
@@ -33,7 +33,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      isLoading: "uiParams/isLoading"
+      isLoading: "uiParams/isLoading",
+      isLogged: "restAuth/isLogged"
     })
   }
 };
