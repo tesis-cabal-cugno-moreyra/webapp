@@ -4,10 +4,10 @@ export default {
   },
   isLogged(state) {
     // TODO: check, if JWT is valid return true, else return false.
-    if (state.jwt !== false && state.jwt !== "") {
-      return true;
-    } else {
+    if (state.jwt !== null || state.jwt !== "") {
       return false;
+    } else {
+      return true;
     }
   }
 };
