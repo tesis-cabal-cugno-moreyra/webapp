@@ -13,7 +13,7 @@
                 <v-form>
                   <v-text-field
                     id="user"
-                    v-model="user"
+                    v-model="username"
                     label="Usuario"
                     name="user"
                     prepend-icon="mdi-account"
@@ -45,17 +45,49 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+import api from "../services/api";
+
 export default {
   name: "Login",
   data: function() {
     return {
-      user: "",
+      username: "",
       password: "",
       tryToLogin: false
     };
   },
   methods: {
-    login: function() {}
+    login: async function() {
+      this.tryToLogin = true;
+      if (this.user !== "" && this.password !== "") {
+        console.log("Start login!");
+        // await this.$store.dispatch("restAuth/obtainToken", {
+        //   username: this.username,
+        //   password: this.password
+        // });
+
+        let payload = { username: this.username, password: this.password };
+        await api
+          .post(
+            "https://tesis-cabal-cugno-moreyra-back.herokuapp.com/rest-auth/login/",
+            payload
+          )
+          .then(response => {
+            console.log(response);
+          })
+          .catch(e => {
+            console.log(e);
+          });
+        console.log("End login!");
+      }
+      this.tryToLogin = false;
+    }
+  },
+  computed: {
+    ...mapGetters({
+      token: "restAuth/token"
+    })
   }
 };
 </script>
