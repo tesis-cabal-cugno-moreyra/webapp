@@ -1,4 +1,5 @@
 import Vue from "vue";
+import { STATUS } from "@/constants/response-status";
 
 class Api {
   constructor() {
@@ -73,48 +74,57 @@ class Api {
   }
 
   makeRequest(requestData) {
-    // eslint-disable-next-line no-async-promise-executor,no-unused-vars
+    // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
-      // TODO: Handle login headers
+      // TODO: Fill headers when needed from localStorage
       let headers;
-
-      const unprotectedEndpoints = [
-        "/api-token-auth/",
-        "/api-token-refresh/",
-        /api-token-verify/
-      ];
-
-      if (!unprotectedEndpoints.includes(requestData.endpoint)) {
-        try {
-          headers = this.getHeaders();
-        } catch (e) {
-          if (e.message === "no-auth-data") {
-            window.location.replace("/");
-            return null;
-          }
-        }
-      }
 
       let response;
 
       try {
         response = await Vue.axios({
           method: requestData.method,
-          url: `${requestData.endpoint}`,
+          url: `${this.apiUrl}${requestData.endpoint}`,
           data: requestData.body ? requestData.body : null,
           headers
         });
       } catch (e) {
-        console.log(e);
-        // const error = e.response ? e.response : e;
-        // try {
-        //   await this.handleTokenExpiredError(error, requestData);
-        // } catch (err) {
-        //   return reject(err);
-        // }
+        const error = e.response ? e.response : e;
+
+        try {
+          await this.handleTokenExpiredError(error);
+        } catch (error) {
+          return reject(error);
+        }
       }
 
-      return resolve(response);
+      resolve(response);
+    });
+  }
+
+  handleTokenExpiredError(error) {
+    return new Promise((resolve, reject) => {
+      // TODO:  We should add a condition in order to know if the unauthorized error its because
+      // the token was expired. For example: the api should return an error detail.. something like 'invalid-token'
+      // and add it to the next condition.
+      if (
+        STATUS.UNAUTHORIZED === error.status ||
+        STATUS.FORBIDDEN === error.status
+      ) {
+        localStorage.removeItem("auth-data");
+        window.location.replace("/auth/login");
+
+        return;
+      }
+
+      if (
+        STATUS.SERVER_ERROR === error.status ||
+        STATUS.NOT_FOUND === error.status
+      ) {
+        return window.location.replace("/error/not-found");
+      }
+
+      reject(error);
     });
   }
 }
