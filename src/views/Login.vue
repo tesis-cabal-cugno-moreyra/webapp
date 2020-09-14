@@ -42,6 +42,7 @@
                   v-google-signin-button="clientId"
                   class="google-signin-button"
                   color="error"
+                  :loading="tryToLoginWithGoogle"
                   >Google</v-btn
                 >
               </v-card-actions>
@@ -55,6 +56,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import router from "@/router";
 
 export default {
   name: "Login",
@@ -65,7 +67,7 @@ export default {
       tryToLogin: false,
       tryToLoginWithGoogle: false,
       source: "",
-      clientId: process.env.GOOGLE_CLIENT_ID
+      clientId: ""
     };
   },
   methods: {
@@ -78,9 +80,19 @@ export default {
           .then(response => {
             let accessToken = response.data.access_token;
             let refreshToken = response.data.refresh_token;
-            this.$store.commit("restAuth/updateAccessToken", accessToken);
-            this.$store.commit("restAuth/updateRefreshToken", refreshToken);
-            console.log("¡Logeado como un campeón!");
+            let user = {
+              username: response.data.user.username,
+              email: response.data.user.email,
+              firstName: response.data.user.first_name,
+              lastName: response.data.user.last_name,
+              role: "admin"
+            };
+
+            this.$store.dispatch("restAuth/updateAccessToken", accessToken);
+            this.$store.dispatch("restAuth/updateRefreshToken", refreshToken);
+            this.$store.dispatch("restAuth/updateUser", user);
+
+            router.push({ name: "Home" });
           })
           .catch(e => {
             if (e.status === 400 && e.statusText === "Bad Request") {
@@ -95,7 +107,9 @@ export default {
       this.tryToLogin = false;
     },
     loginWithGoogle: function() {
+      this.tryToLoginWithGoogle = true;
       this.$store.dispatch("googleLogin/apiTrial");
+      this.tryToLoginWithGoogle = false;
     },
     OnGoogleAuthSuccess: function(idToken) {
       console.log(idToken);
