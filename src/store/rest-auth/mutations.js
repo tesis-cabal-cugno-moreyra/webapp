@@ -1,10 +1,14 @@
 export default {
-  updateToken(state, newToken) {
-    localStorage.setItem("t", newToken);
-    state.jwt = newToken;
+  updateAccessToken(state, newToken) {
+    localStorage.setItem("access-token", newToken);
+    state.accessToken = newToken;
+  },
+  updateRefreshToken(state, newToken) {
+    localStorage.setItem("refresh-token", newToken);
+    state.refreshToken = newToken;
   },
   removeToken(state) {
-    localStorage.removeItem("t");
-    state.jwt = null;
+    localStorage.removeItem("access-token");
+    state.accessToken = null;
   }
 };

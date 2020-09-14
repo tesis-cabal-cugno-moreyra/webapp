@@ -55,7 +55,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-import api from "../services/api";
 
 export default {
   name: "Login",
@@ -66,34 +65,32 @@ export default {
       tryToLogin: false,
       tryToLoginWithGoogle: false,
       source: "",
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      user: {
-        // email: 'admin@example.com',
-        // password: 'admin',
-        // name: 'John Doe',
-      }
+      clientId: process.env.GOOGLE_CLIENT_ID
     };
   },
   methods: {
     loginWithJWT: async function() {
       this.tryToLogin = true;
       if (this.user !== "" && this.password !== "") {
-        console.log("Start login!");
-        // await this.$store.dispatch("restAuth/obtainToken", {
-        //   username: this.username,
-        //   password: this.password
-        // });
-
         let payload = { username: this.username, password: this.password };
-        await api
-          .post("/rest-auth/login/", payload)
+        await this.$store
+          .dispatch("restAuth/login", payload)
           .then(response => {
-            console.log(response);
+            let accessToken = response.data.access_token;
+            let refreshToken = response.data.refresh_token;
+            this.$store.commit("restAuth/updateAccessToken", accessToken);
+            this.$store.commit("restAuth/updateRefreshToken", refreshToken);
+            console.log("¡Logeado como un campeón!");
           })
           .catch(e => {
-            console.log(e);
+            if (e.status === 400 && e.statusText === "Bad Request") {
+              console.log(
+                "Upa, credenciales rancias mi rey. La pifiaste en el usuario o en la contraseña, ¡probá de nuevo master!"
+              );
+            } else {
+              console.log(e);
+            }
           });
-        console.log("End login!");
       }
       this.tryToLogin = false;
     },
@@ -115,6 +112,9 @@ export default {
     ...mapGetters({
       token: "restAuth/token"
     })
+  },
+  created() {
+    this.clientId = process.env.GOOGLE_CLIENT_ID;
   }
 };
 </script>

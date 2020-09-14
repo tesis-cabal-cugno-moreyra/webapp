@@ -1,3 +1,4 @@
 export default {
-  jwt: localStorage.getItem("t")
+  accessToken: localStorage.getItem("access-token"),
+  refreshToken: localStorage.getItem("refresh-token")
 };
