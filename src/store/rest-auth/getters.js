@@ -9,5 +9,8 @@ export default {
     } else {
       return true;
     }
+  },
+  user(state) {
+    return state.user;
   }
 };

@@ -4,11 +4,13 @@
       <v-layout mt-4 column align-center>
         <v-flex>
           <v-avatar>
-            <v-img src="https://randomuser.me/api/portraits/lego/6.jpg"></v-img>
+            <v-img
+              src="https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default-avatar.png"
+            ></v-img>
           </v-avatar>
         </v-flex>
         <v-flex>
-          <p class="gray--text mt-3 headline">Facundito</p>
+          <p class="gray--text mt-3 headline">{{ this.user.username }}</p>
         </v-flex>
       </v-layout>
       <v-divider></v-divider>
@@ -48,10 +50,19 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "NavBar",
-  data: () => ({
-    drawer: false
-  })
+  data: function() {
+    return {
+      drawer: false
+    };
+  },
+  computed: {
+    ...mapGetters({
+      user: "restAuth/user"
+    })
+  }
 };
 </script>
