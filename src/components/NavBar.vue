@@ -36,6 +36,15 @@
           }  `
         "
       ></v-switch>
+      <v-divider></v-divider>
+      <v-list-item link v-on:click="logout">
+        <v-list-item-icon>
+          <v-icon color="grey darken-1">mdi-logout</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title class="grey--text text--darken-1"
+          >Cerrar sesión</v-list-item-title
+        >
+      </v-list-item>
     </v-navigation-drawer>
 
     <v-app-bar app clipped-left>
@@ -63,6 +72,11 @@ export default {
     ...mapGetters({
       user: "restAuth/user"
     })
+  },
+  methods: {
+    logout: function() {
+      console.log("logout");
+    }
   }
 };
 </script>
