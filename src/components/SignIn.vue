@@ -1,8 +1,6 @@
 <template>
   <v-container>
-    <v-btn class="red_selected" @click="registerDialog = 'true'"
-      >Registro</v-btn
-    >
+    <v-btn class="primary" @click="registerDialog = 'true'">Registro</v-btn>
 
     <!--  dialog registro-->
     <v-row justify="center">
