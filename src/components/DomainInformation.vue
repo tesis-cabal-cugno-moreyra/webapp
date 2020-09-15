@@ -201,7 +201,6 @@
         </tbody>
         <v-col cols="12">
           <v-autocomplete
-            v-model="values"
             :items="itemsIncidentTypeList"
             dense
             chips
@@ -635,14 +634,18 @@ export default {
       this.formDescriptionMapPoint = true;
     },
     editSupervisor() {
-      this.itemsSupervisorList[this.idex].name = this.textFieldSupervisor;
+      this.itemsSupervisorList[
+        this.supervisorAliasIndex
+      ].name = this.textFieldSupervisor;
       this.textFieldSupervisor = "";
       this.formAddSupervisor = true;
     },
-    changeFormSupervisor(index) {
+    changeFormSupervisor(supervisorAliasIndex) {
       this.formAddSupervisor = false;
-      this.textFieldSupervisor = this.itemsSupervisorList[index].name;
-      this.index = index;
+      this.textFieldSupervisor = this.itemsSupervisorList[
+        supervisorAliasIndex
+      ].name;
+      this.supervisorAliasIndex = supervisorAliasIndex;
     }
   }
 };
