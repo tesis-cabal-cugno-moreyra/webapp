@@ -12,8 +12,11 @@ export default {
   removeToken(state) {
     localStorage.removeItem("access-token");
     state.accessToken = null;
+    localStorage.removeItem("refresh-token");
+    state.refreshToken = null;
   },
   updateUser(state, user) {
+    // TODO: creo que todo esto es lo mismo que poner "state.user = user", pero no se podría validar el rol.
     state.user.username = user.username;
     state.user.email = user.email;
     state.user.firstName = user.firstName;
@@ -29,8 +32,11 @@ export default {
         state.user.role = ROLES.RESOURCE;
         break;
     }
+    localStorage.setItem("user", JSON.stringify(state.user));
+    console.log(user.username);
   },
   removeUser(state) {
+    localStorage.removeItem("user");
     state.user.username = null;
     state.user.email = null;
     state.user.firstName = null;

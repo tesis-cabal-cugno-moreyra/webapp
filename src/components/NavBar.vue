@@ -20,7 +20,7 @@
           <v-icon color="grey darken-1">mdi-settings</v-icon>
         </v-list-item-icon>
         <v-list-item-title class="grey--text text--darken-1"
-          >Configuracion</v-list-item-title
+          >Configuración</v-list-item-title
         >
       </v-list-item>
 
@@ -33,7 +33,7 @@
             $vuetify.theme.dark
               ? 'Cambiar a tema claro'
               : 'Cambiar a tema oscuro'
-          }  `
+          }`
         "
       ></v-switch>
       <v-divider></v-divider>
@@ -60,6 +60,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import router from "@/router";
 
 export default {
   name: "NavBar",
@@ -75,7 +76,8 @@ export default {
   },
   methods: {
     logout: function() {
-      console.log("logout");
+      this.$store.dispatch("restAuth/logout");
+      router.push({ name: "Login" });
     }
   }
 };

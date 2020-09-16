@@ -3,12 +3,7 @@ export default {
     return state.accessToken;
   },
   isLogged(state) {
-    // TODO: check, if JWT is valid return true, else return false.
-    if (state.user.username === null) {
-      return false;
-    } else {
-      return true;
-    }
+    return state.user.username !== null;
   },
   user(state) {
     return state.user;

@@ -1,6 +1,6 @@
 <template>
   <v-app id="App">
-    <v-container v-if="isLogged">
+    <v-container v-if="isTrulyLogged">
       <NavBar></NavBar>
     </v-container>
 
@@ -17,6 +17,7 @@
 <script>
 import { mapGetters } from "vuex";
 import NavBar from "@/components/NavBar.vue";
+import authServices from "@/services/authServices.js";
 
 export default {
   name: "App",
@@ -35,7 +36,20 @@ export default {
     ...mapGetters({
       isLoading: "uiParams/isLoading",
       isLogged: "restAuth/isLogged"
-    })
+    }),
+    isTrulyLogged() {
+      if (!this.isLogged) {
+        if (localStorage.getItem("user")) {
+          let user = authServices.getUser();
+          this.$store.dispatch("restAuth/updateUser", user);
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
+    }
   }
 };
 </script>

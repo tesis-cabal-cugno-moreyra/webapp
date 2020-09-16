@@ -76,5 +76,27 @@ export default {
       username = JSON.parse(authData).data.person.user.username;
     }
     return username;
+  },
+  getUser() {
+    let user = {
+      username: null,
+      email: null,
+      firstName: null,
+      lastName: null,
+      role: null
+    };
+    const userData = localStorage.getItem("user");
+    console.log(userData.user);
+
+    if (userData !== null) {
+      user = JSON.parse(userData);
+      console.log(user);
+    }
+    return user;
+
+    // user.username = JSON.parse(userData).username;
+    // user.email = JSON.parse(userData).data.email;
+    // user.firstName = JSON.parse(userData).data.firstName;
+    // user.lastName = JSON.parse(userData).data.lastName;
   }
 };

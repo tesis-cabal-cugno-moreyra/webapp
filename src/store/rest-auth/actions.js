@@ -11,6 +11,10 @@ export default {
       }
     });
   },
+  logout() {
+    this.commit("restAuth/removeToken");
+    this.commit("restAuth/removeUser");
+  },
   updateAccessToken(context, token) {
     this.commit("restAuth/updateAccessToken", token);
   },
