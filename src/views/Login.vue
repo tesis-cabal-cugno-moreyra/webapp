@@ -124,7 +124,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      token: "restAuth/token"
+      token: "restAuth/accessToken"
     })
   },
   created() {
