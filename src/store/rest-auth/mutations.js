@@ -33,7 +33,6 @@ export default {
         break;
     }
     localStorage.setItem("user", JSON.stringify(state.user));
-    console.log(user.username);
   },
   removeUser(state) {
     localStorage.removeItem("user");
