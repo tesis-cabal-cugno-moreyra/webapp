@@ -1,3 +1,5 @@
+import { ROLES } from "@/constants/roles.js";
+
 export default {
   accessToken(state) {
     return state.accessToken;
@@ -5,12 +7,19 @@ export default {
   refreshToken(state) {
     return state.refreshToken;
   },
-  isLogged(state) {
-    console.log(state.user.username);
-    return true;
-    // return state.user.username !== null && state.user.username !== "";
+  isLoggedIn(state) {
+    return state.user.username !== null;
   },
   user(state) {
     return state.user;
+  },
+  isAdmin(state) {
+    return state.user.role === ROLES.ADMIN;
+  },
+  isSupervisor(state) {
+    return state.user.role === ROLES.SUPERVISOR;
+  },
+  isResource(state) {
+    return state.user.role === ROLES.RESOURCE;
   }
 };

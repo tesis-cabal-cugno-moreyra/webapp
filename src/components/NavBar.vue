@@ -59,20 +59,19 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 import router from "@/router";
+import authServices from "@/services/authServices";
 
 export default {
   name: "NavBar",
   data: function() {
     return {
-      drawer: false
+      drawer: false,
+      user: null
     };
   },
-  computed: {
-    ...mapGetters({
-      user: "restAuth/user"
-    })
+  created() {
+    this.user = authServices.getUser();
   },
   methods: {
     logout: function() {

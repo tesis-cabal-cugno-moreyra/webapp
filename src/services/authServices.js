@@ -1,3 +1,5 @@
+import { ROLES } from "@/constants/roles.js";
+
 export default {
   parseJwt() {
     const token = this.getToken();
@@ -22,32 +24,19 @@ export default {
   getToken() {
     return localStorage.getItem("access-token");
   },
-  // getFullUserData() {
-  //   let fullData = null;
-  //   const authData = localStorage.getItem("auth-data");
-  //
-  //   if (authData !== null) {
-  //     fullData = JSON.parse(authData).data;
-  //   }
-  //   return fullData;
-  // },
-  // getRoles() {
-  //   const roles = [];
-  //   const authData = localStorage.getItem("auth-data");
-  //
-  //   if (authData !== null) {
-  //     if ("admin" in JSON.parse(authData).data) {
-  //       roles.push("admin");
-  //     }
-  //     if ("teacher" in JSON.parse(authData).data) {
-  //       roles.push("teacher");
-  //     }
-  //     if ("student" in JSON.parse(authData).data) {
-  //       roles.push("student");
-  //     }
-  //   }
-  //   return roles;
-  // },
+  getRole() {
+    return localStorage.getItem("user.role");
+  },
+  isAdmin() {
+    // console.log(ROLES.ADMIN);
+    return this.getRole() === ROLES.ADMIN.toString();
+  },
+  isSupervisor() {
+    return this.getRole() === ROLES.SUPERVISOR.toString();
+  },
+  isResource() {
+    return this.getRole() === ROLES.RESOURCE.toString();
+  },
   getUser() {
     let user = {
       username: null,

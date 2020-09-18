@@ -1,8 +1,6 @@
 <template>
   <v-app id="App">
-    <v-container v-if="isLogged">
-      <NavBar></NavBar>
-    </v-container>
+    <NavBar v-if="isLoggedIn"></NavBar>
 
     <v-overlay v-if="isLoading">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
@@ -17,6 +15,7 @@
 <script>
 import { mapGetters } from "vuex";
 import NavBar from "@/components/NavBar.vue";
+import authServices from "@/services/authServices";
 
 export default {
   name: "App",
@@ -26,43 +25,27 @@ export default {
   },
 
   data: () => ({
-    //
+    // isLogged: false
   }),
+  beforeCreate() {
+    this.$store.dispatch("restAuth/updateUser", authServices.getUser());
+    this.$store.dispatch("restAuth/updateAccessToken", authServices.getToken());
+  },
   created() {
     this.$vuetify.theme.dark = true;
   },
   computed: {
     ...mapGetters({
       isLoading: "uiParams/isLoading",
-      isLogged: "restAuth/isLogged"
-    })
-    // isTrulyLogged() {
-    //   if (!this.isLogged) {
-    //     if (localStorage.getItem("user")) {
-    //       let user = authServices.getUser();
-    //       let isExpired = authServices.tokenIsExpired();
-    //
-    //       console.log(isExpired);
-    //       this.$store.dispatch("restAuth/updateUser", user);
-    //       return true;
-    //     } else {
-    //       return false;
-    //     }
-    //   } else {
-    //     return true;
-    //   }
-    //
-    //   if (authServices.tokenIsExpired()) {
-    //     //TODO: Try to refresh token
-    //
-    //     return false;
-    //   } else {
-    //     // Token isn't expired, so we should check if auth store is updated.
-    //     if (!this.isLogged && authServices.userStored()) {
-    //       this.$store.dispatch("restAuth/updateUser", authServices.getUser());
-    //     }
-    //   }
-    // }
+      isLoggedIn: "restAuth/isLoggedIn"
+    }),
+    isLogged: function() {
+      if (authServices.userStored()) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 };
 </script>
