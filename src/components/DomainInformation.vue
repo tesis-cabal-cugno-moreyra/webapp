@@ -247,69 +247,80 @@
             </v-select>
           </v-col>
         </v-row>
-        <v-row>
-          <v-col cols="12" sm="6" md="4">
-            <v-form
-              @submit.prevent="addTypeIncident"
-              v-if="formAddTypeIncident"
-            >
-              <v-text-field
-                v-model="textFieldIncident"
-                label="Agregar un nombre al tipo de incidente"
-                autocomplete="off"
-              ></v-text-field>
-              <v-btn color="success" outlined small type="submit"
-                >Agregar</v-btn
-              >
-            </v-form>
-            <v-form
-              @submit.prevent="editTypeIncident"
-              v-if="!formAddTypeIncident"
-            >
-              <v-text-field
-                v-model="textFieldIncident"
-                label="Edotar el nombre del tipo incidente"
-                autocomplete="off"
-              ></v-text-field>
-              <v-btn color="warning" outlined small type="submit">editar</v-btn>
-            </v-form>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <v-form v-if="TypeListSelected.length != 0 ? true : false">
+        <v-form v-if="comboIncident != '' ? true : false">
+          <v-row>
+            <v-col>
               <v-card sm="6" md="4" width="400" left>
-                <v-card-subtitle>Tipos de incidente actuales</v-card-subtitle>
-                <v-card-text
-                  :class="['pa-2', 'black_selected']"
-                  sm="6"
-                  md="4"
-                  v-for="(item, index) in TypeListSelected"
-                  :key="index"
+                <v-card-subtitle
+                  v-if="TypeListSelected.length == 0 ? true : false"
+                  >No hay incidentes cargados actualmente</v-card-subtitle
                 >
-                  {{ item.nameIncident }}
-                  <v-btn
-                    icon
-                    color="success"
-                    class="['mr-2','float-right']"
-                    small
-                    @click="changeFormSupervisor(index)"
-                  >
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
-                  <v-btn
-                    icon
-                    color="primary"
-                    small
-                    @click="deleteSupervisor(item.id)"
-                  >
-                    <v-icon>mdi-delete</v-icon>
-                  </v-btn>
-                </v-card-text>
               </v-card>
-            </v-form>
-          </v-col>
-        </v-row>
+
+              <v-form v-if="TypeListSelected.length != 0 ? true : false">
+                <v-card sm="6" md="4" width="400" left>
+                  <v-card-subtitle>Tipos de incidente actuales</v-card-subtitle>
+                  <v-card-text
+                    :class="['pa-2', 'black_selected']"
+                    sm="6"
+                    md="4"
+                    v-for="(item, index) in TypeListSelected"
+                    :key="index"
+                  >
+                    {{ item.nameIncident }}
+                    <v-btn
+                      icon
+                      color="success"
+                      class="['mr-2','float-right']"
+                      small
+                      @click="changeFormTypeIncident(index)"
+                    >
+                      <v-icon>mdi-pencil</v-icon>
+                    </v-btn>
+                    <v-btn
+                      icon
+                      color="primary"
+                      small
+                      @click="deleteTypeIncident(index)"
+                    >
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </v-card-text>
+                </v-card>
+              </v-form>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12" sm="6" md="4">
+              <v-form
+                @submit.prevent="addTypeIncident"
+                v-if="formAddTypeIncident"
+              >
+                <v-text-field
+                  v-model="textFieldTypeIncident"
+                  label="Agregar un nombre al tipo de incidente"
+                  autocomplete="off"
+                ></v-text-field>
+                <v-btn color="success" outlined small type="submit"
+                  >Agregar</v-btn
+                >
+              </v-form>
+              <v-form
+                @submit.prevent="editTypeIncident"
+                v-if="!formAddTypeIncident"
+              >
+                <v-text-field
+                  v-model="textFieldTypeIncident"
+                  label="Edotar el nombre del tipo incidente"
+                  autocomplete="off"
+                ></v-text-field>
+                <v-btn color="warning" outlined small type="submit"
+                  >editar</v-btn
+                >
+              </v-form>
+            </v-col>
+          </v-row>
+        </v-form>
         <v-btn color="primary" @click="increaseStep()">Continue</v-btn>
         <v-btn
           text
@@ -328,17 +339,17 @@
         <v-row>
           <v-col cols="12" sm="6" md="4">
             <v-select
-              v-model="comboIncident"
+              v-model="selectIncident"
               :items="itemsIncidenteList"
               item-value="id"
               item-text="name"
               :return-object="true"
               :search-input.sync="search"
               hide-selected
-              label="Agregar un tipo de incidente"
+              label="Seleccionar un tipo de incidente"
               persistent-hint
               chips
-              @change="IncidentSelected(comboIncident)"
+              @change="incidentMapPointSelected(selectIncident)"
               @input.native="course = $event.srcElement.value"
             >
               <template v-slot:no-data>
@@ -354,25 +365,34 @@
               </template>
             </v-select>
           </v-col>
-          <v-col cols="12" sm="6" md="4">
+          <v-col v-if="!typeIncidentSelectAvalible" cols="12" sm="6" md="4">
+            <v-card :class="['pa-2', 'black_selected']">
+              <v-card-subtitle>
+                No hay Tipo de incidentes cargados para este
+                incidente</v-card-subtitle
+              ></v-card
+            >
+          </v-col>
+          <v-col v-if="typeIncidentSelectAvalible" cols="12" sm="6" md="4">
             <v-select
-              v-model="comboIncidentType"
+              v-model="selectedIncidentType"
               :items="TypeListSelected"
               item-value="id"
               item-text="nameIncident"
               :return-object="true"
               :search-input.sync="search"
               hide-selected
-              label="Agregar un nombre de incidente"
+              label="Seleccionar un nombre de incidente"
               persistent-hint
               chips
+              @change="incidentTypeMapPointSelected(selectedIncidentType)"
               @input.native="course = $event.srcElement.value"
             ></v-select>
           </v-col>
         </v-row>
 
         <!--tarjetas donde te perimite crear, editar o eliminar map points de un cierto incidente-->
-        <v-layout>
+        <v-layout v-if="isMapPointAvaliable">
           <v-flex md4 v-if="formDescriptionMapPoint">
             <v-card
               :class="['mb-2', 'pa-2', 'mr-3', 'black_selected']"
@@ -418,7 +438,7 @@
               :class="['mb-2', 'pa-2', 'black_selected']"
               sm="6"
               md="4"
-              v-for="(item, index) in MapPointSelectedList"
+              v-for="(item, index) in MapPointViewSelectedList"
               :key="index"
             >
               <v-card-text>
@@ -430,7 +450,11 @@
                   text-color="white"
                 >
                   <v-icon left>label</v-icon>
-                  {{ item.IncidentType + " - " + item.Incident }}
+                  {{
+                    (item.TypeIncident != null
+                      ? item.TypeIncident + " - "
+                      : "") + item.Incident
+                  }}
                 </v-chip>
                 <p class="mt-2">{{ item.descriptionPoint }}</p>
                 <v-btn
@@ -469,7 +493,7 @@
         <v-row>
           <v-col cols="12" sm="6" md="4">
             <v-combobox
-              v-model="comboResource"
+              v-model="selectIncident"
               :items="itemsResource"
               item-value="id"
               item-text="name"
@@ -529,20 +553,22 @@
 </template>
 
 <script>
-//props: { e1: Number};
 export default {
   name: "DomainInformation",
 
   data() {
     return {
       snackbar: false,
+      isMapPointAvaliable: false,
       formDescriptionMapPoint: true,
       formAddSupervisor: true,
       formAddIncident: true,
       formAddTypeIncident: true,
+      typeIncidentSelectAvalible: false,
       domainField: "",
       newMapDescription: "",
       textFieldSupervisor: "",
+      textFieldTypeIncident: "",
       textFieldIncident: "",
       TypeListSelected: [],
       AdminField: "",
@@ -555,7 +581,7 @@ export default {
         { id: 2, name: "Encargado" },
         { id: 3, name: "Tester" }
       ],
-      comboIncidentType: "",
+      selectedIncidentType: "",
       comoboIncident: "",
       itemsIncidenteList: [
         {
@@ -575,32 +601,15 @@ export default {
         },
         { id: 4, name: "Auxilio", nameType: [] }
       ],
-      MapPointSelectedList: [
-        {
-          id: 1,
-          IncidentType: "Incendio",
-          Incident: "Casa",
-          descriptionPoint: "Cuerpo humano"
-        },
-        {
-          id: 4,
-          IncidentType: "Incendio",
-          Incident: "Casa",
-          descriptionPoint: "Foco de incendio"
-        },
-        {
-          id: 3,
-          IncidentType: "Incendio",
-          Incident: "Casa",
-          descriptionPoint: "Garrafa"
-        }
-      ],
+      MapPointSelectedList: [],
+      MapPointViewSelectedList: [],
+      MapPointDescriptionList: [],
       itemsResource: [],
       name: "",
       messagge: "",
       timeout: 1500,
       comboIncident: "",
-      comboResource: "",
+      selectIncident: "",
       indexMapPoint: ""
     };
   },
@@ -628,10 +637,7 @@ export default {
           break;
 
         case "3":
-          if (
-            this.comboSupervisor.length === 0 ||
-            this.comboSupervisor === ""
-          ) {
+          if (this.itemsSupervisorList.length === 0) {
             this.messagge = "Debe ingresar alias para supervisor/es";
             this.snackbar = true;
           } else {
@@ -640,7 +646,7 @@ export default {
           break;
 
         case "4":
-          if (this.comboIncident.length === 0 || this.comboIncident === "") {
+          if (this.itemsIncidenteList.length === 0) {
             this.messagge = "Debe ingresar al menos un tipo de incidentes";
             this.snackbar = true;
           } else {
@@ -649,13 +655,20 @@ export default {
           break;
 
         case "5":
-          if (this.comboResource.length === 0 || this.comboResource === "") {
-            this.messagge = "Debe ingresar al menos un tipo de recursos";
-            this.snackbar = true;
-          } else {
-            this.stepNumber = "6";
-          }
+          this.comboIncident = null;
+          this.stepNumber = "6";
           break;
+
+        case "6":
+          this.selectIncident = null;
+          this.selectedIncidentType = null;
+          this.stepNumber = "7";
+          break;
+
+        case "7":
+          this.stepNumber = "8";
+          break;
+
         default:
           console.log("fuera");
           console.log(this.stepNumber);
@@ -678,7 +691,11 @@ export default {
           this.comboIncident = "";
           break;
         case "5":
-          this.comboResource = "";
+          this.comboIncident = "";
+          break;
+        case "6":
+          this.selectIncident = null;
+          this.selectedIncidentType = null;
           break;
       }
     },
@@ -690,7 +707,7 @@ export default {
         return;
       }
 
-      var descriptionIsRepeated = this.MapPointSelectedList.some(
+      var descriptionIsRepeated = this.MapPointViewSelectedList.some(
         e =>
           e.descriptionPoint.toLowerCase() ==
           this.newMapDescription.toLowerCase()
@@ -704,8 +721,14 @@ export default {
 
       this.MapPointSelectedList.push({
         id: Date.now(),
-        IncidentType: "Incendio",
-        Incident: "Casa",
+        Incident: this.selectIncident.name,
+        TypeIncident: this.selectedIncidentType.nameIncident,
+        descriptionPoint: this.newMapDescription
+      });
+      this.MapPointViewSelectedList.push({
+        id: Date.now(),
+        Incident: this.selectIncident.name,
+        TypeIncident: this.selectedIncidentType.nameIncident,
         descriptionPoint: this.newMapDescription
       });
 
@@ -715,6 +738,9 @@ export default {
     deleteMapPoint(id) {
       if (confirm("Desea elimninar esta tarea?")) {
         this.MapPointSelectedList = this.MapPointSelectedList.filter(
+          e => e.id != id
+        );
+        this.MapPointViewSelectedList = this.MapPointViewSelectedList.filter(
           e => e.id != id
         );
       }
@@ -760,6 +786,28 @@ export default {
       this.IncidetnIndex = IncidetnIndex;
     },
 
+    addTypeIncident() {
+      if (this.textFieldTypeIncident.trim().length === 0) {
+        this.messagge = "Debe ingresar un tipo de incidente para agregarlo";
+        this.snackbar = true;
+        return;
+      }
+      var typeIncidentIsRepeated = this.TypeListSelected.some(
+        e =>
+          e.nameIncident.toLowerCase() ==
+          this.textFieldTypeIncident.toLowerCase()
+      );
+      if (typeIncidentIsRepeated) {
+        this.messagge = "El supervisor ingresado ya existe";
+        this.snackbar = true;
+        return;
+      }
+      console.log(this.TypeListSelected);
+      this.TypeListSelected.push({
+        nameIncident: this.textFieldTypeIncident
+      });
+      this.textFieldTypeIncident = "";
+    },
     addSupervisor() {
       if (this.textFieldSupervisor.trim().length === 0) {
         this.messagge = "Debe ingresar un supervisor para agregarlo";
@@ -788,6 +836,27 @@ export default {
         );
       }
     },
+    deleteTypeIncident(index) {
+      if (confirm("Desea elimninar este tipo de incidente?")) {
+        console.log(index);
+        this.TypeListSelected.splice(index, 1);
+      }
+    },
+    changeFormTypeIncident(indexTypeIncident) {
+      this.formAddTypeIncident = false;
+      this.textFieldTypeIncident = this.TypeListSelected[
+        indexTypeIncident
+      ].nameIncident;
+      this.indexTypeIncident = indexTypeIncident;
+    },
+
+    editTypeIncident() {
+      this.TypeListSelected[
+        this.indexTypeIncident
+      ].nameIncident = this.textFieldTypeIncident;
+      this.textFieldTypeIncident = "";
+      this.formAddTypeIncident = true;
+    },
 
     changeFormMapPoint(index) {
       this.formDescriptionMapPoint = false;
@@ -796,12 +865,21 @@ export default {
       ].descriptionPoint;
       this.indexMapPoint = index;
     },
+
     editMapPoint() {
       this.MapPointSelectedList[
         this.indexMapPoint
       ].descriptionPoint = this.newMapDescription;
-      this.newMapDescription = "";
+
+      this.MapPointViewSelectedList[
+        this.indexMapPoint
+      ].descriptionPoint = this.newMapDescription;
+
       this.formDescriptionMapPoint = true;
+      this.newMapDescription = "";
+
+      console.log(this.MapPointSelectedList);
+      console.log(this.MapPointViewSelectedList);
     },
     editSupervisor() {
       this.itemsSupervisorList[
@@ -820,6 +898,30 @@ export default {
     IncidentSelected(valueSelected) {
       this.TypeListSelected = "";
       this.TypeListSelected = valueSelected.nameType;
+    },
+    incidentMapPointSelected(valueSelected) {
+      if (valueSelected.nameType.length > 0) {
+        this.TypeListSelected = valueSelected.nameType;
+        this.typeIncidentSelectAvalible = true;
+        this.isMapPointAvaliable = false;
+        return;
+      }
+      if (valueSelected.nameType.length == 0) {
+        this.selectedIncidentType = "";
+        this.TypeListSelected = valueSelected.nameType;
+        this.typeIncidentSelectAvalible = false;
+        this.isMapPointAvaliable = true;
+        this.MapPointViewSelectedList = this.MapPointSelectedList.filter(
+          e => e.Incident == valueSelected.name
+        );
+        return;
+      }
+    },
+    incidentTypeMapPointSelected(valueSelected) {
+      this.MapPointViewSelectedList = this.MapPointSelectedList.filter(
+        e => e.TypeIncident == valueSelected.nameIncident
+      );
+      this.isMapPointAvaliable = true;
     }
   }
 };
