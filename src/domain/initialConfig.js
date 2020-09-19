@@ -37,3 +37,9 @@ export class Domain {
   }
 }
 // NOTE: Variables in plural are lists of instances (we cannot type a variable in JS)
+//const resourceType1 = new ResourceType("tipoRecurso");
+//const mapPointDescription1 = new MapPointDescription("descripcion util para un map point en particular");
+//const incidentType1 = new IncidentType("Tipo de incidente", [mapPointDescription1]);
+//const incidentAbstraction1 = new IncidentAbstraction("Incidente1", [incidentType1], [resourceType1]);
+//const myDomain = new Domain("DominioPersonalizado", ["Bombero", "Oficial", "Suboficial"], "Administrador", [incidentAbstraction1], [resourceType1]);
+//console.log(myDomain);
