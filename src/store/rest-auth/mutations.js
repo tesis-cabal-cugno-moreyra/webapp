@@ -16,7 +16,6 @@ export default {
     state.refreshToken = null;
   },
   updateUser(state, user) {
-    // TODO: creo que todo esto es lo mismo que poner "state.user = user", pero no se podría validar el rol.
     state.user.username = user.username;
     state.user.email = user.email;
     state.user.firstName = user.firstName;

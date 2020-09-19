@@ -23,10 +23,6 @@ export default {
   components: {
     NavBar
   },
-
-  data: () => ({
-    // isLogged: false
-  }),
   beforeCreate() {
     if (authServices.getUser()) {
       this.$store.dispatch("restAuth/updateUser", authServices.getUser());

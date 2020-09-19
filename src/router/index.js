@@ -17,15 +17,6 @@ const routes = [
       is_supervisor: true
     }
   },
-  // {
-  //   path: "/about",
-  //   name: "About",
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () =>
-  //     import(/* webpackChunkName: "about" */ "../views/About.vue")
-  // },
   {
     path: "/login",
     name: "Login",
@@ -44,7 +35,6 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   let accessToken = null;
-  // let roles = null;
   let isAdmin = false;
   let isSupervisor = false;
   let isResource = false;
@@ -55,7 +45,7 @@ router.beforeEach((to, from, next) => {
     isResource = authServices.isResource();
   } catch (e) {
     console.log(e);
-    //this.$store.dispatch("restAuth/logout");
+    //TODO: Add error view.
   }
   if (to.matched.some(record => record.meta.requires_auth)) {
     if (accessToken == null) {
@@ -77,18 +67,18 @@ router.beforeEach((to, from, next) => {
       ) {
         next();
       } else {
-        router.push({
-          name: "error-page",
-          params: {
-            errorCode: 403,
-            errorMessage:
-              "Sorry, you don't have the right permissions to enter this page"
-          }
-        });
+        //TODO: Add error view. Example:
+        // router.push({
+        //   name: "error-page",
+        //   params: {
+        //     errorCode: 403,
+        //     errorMessage:
+        //       "Sorry, you don't have the right permissions to enter this page"
+        //   }
+        // });
       }
       // TODO: prepare logic for all possible roles
     } else {
-      //this.$store.dispatch("restAuth/logout");
       next({
         name: "Login"
       });
