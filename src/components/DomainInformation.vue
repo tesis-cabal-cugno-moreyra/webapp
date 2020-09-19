@@ -220,7 +220,7 @@
         <v-row>
           <v-col cols="12" sm="6" md="4">
             <v-select
-              v-model="comboIncident"
+              v-model="selectIncident"
               :items="itemsIncidenteList"
               item-value="id"
               item-text="name"
@@ -230,7 +230,7 @@
               label="Agregar un tipo de incidente"
               persistent-hint
               chips
-              @change="IncidentSelected(comboIncident)"
+              @change="IncidentSelected(selectIncident)"
               @input.native="course = $event.srcElement.value"
             >
               <template v-slot:no-data>
@@ -247,7 +247,7 @@
             </v-select>
           </v-col>
         </v-row>
-        <v-form v-if="comboIncident != '' ? true : false">
+        <v-form v-if="selectIncident != '' ? true : false">
           <v-row>
             <v-col>
               <v-card sm="6" md="4" width="400" left>
@@ -368,10 +368,9 @@
           <v-col v-if="!typeIncidentSelectAvalible" cols="12" sm="6" md="4">
             <v-card :class="['pa-2', 'black_selected']">
               <v-card-subtitle>
-                No hay Tipo de incidentes cargados para este
-                incidente</v-card-subtitle
-              ></v-card
-            >
+                No hay Tipo de incidentes cargados para este incidente
+              </v-card-subtitle>
+            </v-card>
           </v-col>
           <v-col v-if="typeIncidentSelectAvalible" cols="12" sm="6" md="4">
             <v-select
@@ -492,42 +491,144 @@
       <v-stepper-content step="7">
         <v-row>
           <v-col cols="12" sm="6" md="4">
-            <v-combobox
-              v-model="selectIncident"
-              :items="itemsResource"
+            <v-select
+              v-model="selectResourceIncident"
+              :items="itemsIncidenteList"
               item-value="id"
               item-text="name"
               :return-object="true"
               :search-input.sync="search"
               hide-selected
-              label="Agregar el nombre de un recurso"
-              multiple
+              label="Seleccionar un tipo de incidente"
               persistent-hint
               chips
+              @change="resourceIncidentSelected(selectResourceIncident)"
               @input.native="course = $event.srcElement.value"
-            >
-              <template v-slot:no-data>
-                <v-list-item>
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      No se encuentra el recurso "
-                      <strong>{{ search }}</strong
-                      >". Presione <kbd>enter</kbd> para ingresarlo
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </template>
-            </v-combobox>
+            ></v-select>
           </v-col>
-          <v-col cols="12" sm="6" md="4">
-            <v-autocomplete
-              v-model="AutoCompleteIncident"
-              item-text="name"
+          <v-col
+            v-if="!resourceTypeIncidentSelectAvalible"
+            cols="12"
+            sm="6"
+            md="4"
+          >
+            <v-card :class="['pa-2', 'black_selected']">
+              <v-card-subtitle>
+                No hay Tipo de incidentes cargados para este incidente
+              </v-card-subtitle>
+            </v-card>
+          </v-col>
+          <v-col
+            v-if="resourceTypeIncidentSelectAvalible"
+            cols="12"
+            sm="6"
+            md="4"
+          >
+            <v-select
+              v-model="selectedResourceIncidentType"
+              :items="TypeListSelected"
+              item-value="id"
+              item-text="nameIncident"
+              :return-object="true"
+              :search-input.sync="search"
               hide-selected
-              label="seleccionar un incidente"
-            ></v-autocomplete>
+              label="Seleccionar un nombre de incidente"
+              persistent-hint
+              chips
+              @change="
+                resourceIncidentTypeMapPointSelected(
+                  selectedResourceIncidentType
+                )
+              "
+              @input.native="course = $event.srcElement.value"
+            ></v-select>
           </v-col>
         </v-row>
+        <!--tarjetas donde te perimite crear, editar o eliminar recursos de un cierto incidente-->
+        <v-layout v-if="isListResourceAvaliable">
+          <v-flex md4 v-if="formDescriptionResource">
+            <v-card
+              :class="['mb-2', 'pa-2', 'mr-3', 'black_selected']"
+              sm="6"
+              md="4"
+            >
+              <v-card-text>
+                <v-form @submit.prevent="addResource">
+                  <v-text-field
+                    v-model="newResourceDescription"
+                    label="Descripcion del recurso"
+                  ></v-text-field>
+                  <v-btn color="success" outlined small type="submit"
+                    >Agregar descripción</v-btn
+                  >
+                </v-form>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+
+          <v-flex md4 v-if="!formDescriptionResource">
+            <v-card
+              :class="['mb-2', 'pa-2', 'mr-3', 'black_selected']"
+              sm="6"
+              md="4"
+            >
+              <v-card-text>
+                <v-form @submit.prevent="editResource">
+                  <v-text-field
+                    v-model="newResourceDescription"
+                    label="Descripcion de la tarea"
+                  ></v-text-field>
+                  <v-btn color="warning" small outlined type="submit"
+                    >Editar descripción</v-btn
+                  >
+                </v-form>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+
+          <v-flex md4>
+            <v-card
+              :class="['mb-2', 'pa-2', 'black_selected']"
+              sm="6"
+              md="4"
+              v-for="(item, index) in resourceViewSelectedList"
+              :key="index"
+            >
+              <v-card-text>
+                <v-chip
+                  small
+                  label
+                  class="mb-1"
+                  color="grey_selected"
+                  text-color="white"
+                >
+                  <v-icon left>label</v-icon>
+                  {{
+                    (item.TypeIncident != null
+                      ? item.TypeIncident + " - "
+                      : "") + item.Incident
+                  }}
+                </v-chip>
+                <p class="mt-2">{{ item.descriptionResource }}</p>
+                <v-btn
+                  color="success"
+                  class="mr-2"
+                  outlined
+                  small
+                  @click="changeFormResource(index)"
+                  >Editar</v-btn
+                >
+                <v-btn
+                  color="primary"
+                  outlined
+                  small
+                  @click="deleteResource(item.id)"
+                  >Eliminar</v-btn
+                >
+              </v-card-text>
+            </v-card>
+          </v-flex>
+        </v-layout>
         <v-btn color="primary" @click="increaseStep()">Continue</v-btn>
         <v-btn
           text
@@ -560,29 +661,33 @@ export default {
     return {
       snackbar: false,
       isMapPointAvaliable: false,
+      isListResourceAvaliable: false,
       formDescriptionMapPoint: true,
+      formDescriptionResource: true,
       formAddSupervisor: true,
       formAddIncident: true,
       formAddTypeIncident: true,
       typeIncidentSelectAvalible: false,
+      resourceTypeIncidentSelectAvalible: false,
       domainField: "",
       newMapDescription: "",
+      newResourceDescription: "",
       textFieldSupervisor: "",
       textFieldTypeIncident: "",
       textFieldIncident: "",
-      TypeListSelected: [],
       AdminField: "",
       stepNumber: "1",
       comboSupervisor: "",
       AutoCompleteIncident: "",
+      selectedIncidentType: "",
+      comoboIncident: "",
       search: null,
       itemsSupervisorList: [
         { id: 1, name: "Supervisor" },
         { id: 2, name: "Encargado" },
         { id: 3, name: "Tester" }
       ],
-      selectedIncidentType: "",
-      comoboIncident: "",
+      TypeListSelected: [],
       itemsIncidenteList: [
         {
           id: 1,
@@ -604,13 +709,17 @@ export default {
       MapPointSelectedList: [],
       MapPointViewSelectedList: [],
       MapPointDescriptionList: [],
+      resourceViewSelectedList: [],
+      resourceSelectedList: [],
       itemsResource: [],
       name: "",
       messagge: "",
       timeout: 1500,
-      comboIncident: "",
       selectIncident: "",
-      indexMapPoint: ""
+      selectedResourceIncidentType: "",
+      selectResourceIncident: "",
+      indexMapPoint: "",
+      indexResource: ""
     };
   },
   methods: {
@@ -655,7 +764,7 @@ export default {
           break;
 
         case "5":
-          this.comboIncident = null;
+          this.selectIncident = null;
           this.stepNumber = "6";
           break;
 
@@ -688,10 +797,10 @@ export default {
           this.comboSupervisor = "";
           break;
         case "4":
-          this.comboIncident = "";
+          this.selectIncident = "";
           break;
         case "5":
-          this.comboIncident = "";
+          this.selectIncident = "";
           break;
         case "6":
           this.selectIncident = null;
@@ -700,51 +809,40 @@ export default {
       }
     },
 
-    addMapPoint() {
-      if (this.newMapDescription.trim().length === 0) {
+    addResource() {
+      if (this.newResourceDescription.trim().length === 0) {
         this.messagge = "Debe ingresar la tarea";
         this.snackbar = true;
         return;
       }
-
-      var descriptionIsRepeated = this.MapPointViewSelectedList.some(
+      var descriptionIsRepeated = this.resourceViewSelectedList.some(
         e =>
-          e.descriptionPoint.toLowerCase() ==
-          this.newMapDescription.toLowerCase()
+          e.descriptionResource.toLowerCase() ==
+          this.newResourceDescription.toLowerCase()
       );
 
       if (descriptionIsRepeated) {
-        this.messagge = "La tarea ingresada ya existe ";
+        this.messagge = "El recurso ingresado ya existe ";
         this.snackbar = true;
         return;
       }
 
-      this.MapPointSelectedList.push({
+      this.resourceSelectedList.push({
         id: Date.now(),
-        Incident: this.selectIncident.name,
-        TypeIncident: this.selectedIncidentType.nameIncident,
-        descriptionPoint: this.newMapDescription
+        Incident: this.selectResourceIncident.name,
+        TypeIncident: this.selectedResourceIncidentType.nameIncident,
+        descriptionResource: this.newResourceDescription
       });
-      this.MapPointViewSelectedList.push({
+      this.resourceViewSelectedList.push({
         id: Date.now(),
-        Incident: this.selectIncident.name,
-        TypeIncident: this.selectedIncidentType.nameIncident,
-        descriptionPoint: this.newMapDescription
+        Incident: this.selectResourceIncident.name,
+        TypeIncident: this.selectedResourceIncidentType.nameIncident,
+        descriptionResource: this.newResourceDescription
       });
 
-      this.newMapDescription = "";
+      this.newResourceDescription = "";
     },
 
-    deleteMapPoint(id) {
-      if (confirm("Desea elimninar esta tarea?")) {
-        this.MapPointSelectedList = this.MapPointSelectedList.filter(
-          e => e.id != id
-        );
-        this.MapPointViewSelectedList = this.MapPointViewSelectedList.filter(
-          e => e.id != id
-        );
-      }
-    },
     addIncident() {
       if (this.textFieldIncident.trim().length === 0) {
         this.messagge = "El campo de incidente esta vacío";
@@ -858,6 +956,86 @@ export default {
       this.formAddTypeIncident = true;
     },
 
+    editSupervisor() {
+      this.itemsSupervisorList[
+        this.supervisorAliasIndex
+      ].name = this.textFieldSupervisor;
+      this.textFieldSupervisor = "";
+      this.formAddSupervisor = true;
+    },
+    changeFormSupervisor(supervisorAliasIndex) {
+      this.formAddSupervisor = false;
+      this.textFieldSupervisor = this.itemsSupervisorList[
+        supervisorAliasIndex
+      ].name;
+      this.supervisorAliasIndex = supervisorAliasIndex;
+    },
+    IncidentSelected(valueSelected) {
+      this.TypeListSelected = "";
+      this.TypeListSelected = valueSelected.nameType;
+    },
+    addMapPoint() {
+      if (this.newMapDescription.trim().length === 0) {
+        this.messagge = "Debe ingresar la tarea";
+        this.snackbar = true;
+        return;
+      }
+
+      var descriptionIsRepeated = this.MapPointViewSelectedList.some(
+        e =>
+          e.descriptionPoint.toLowerCase() ==
+          this.newMapDescription.toLowerCase()
+      );
+
+      if (descriptionIsRepeated) {
+        this.messagge = "La tarea ingresada ya existe ";
+        this.snackbar = true;
+        return;
+      }
+
+      this.MapPointSelectedList.push({
+        id: Date.now(),
+        Incident: this.selectIncident.name,
+        TypeIncident: this.selectedIncidentType.nameIncident,
+        descriptionPoint: this.newMapDescription
+      });
+      this.MapPointViewSelectedList.push({
+        id: Date.now(),
+        Incident: this.selectIncident.name,
+        TypeIncident: this.selectedIncidentType.nameIncident,
+        descriptionPoint: this.newMapDescription
+      });
+
+      this.newMapDescription = "";
+    },
+    deleteMapPoint(id) {
+      if (confirm("Desea elimninar esta tarea?")) {
+        this.MapPointSelectedList = this.MapPointSelectedList.filter(
+          e => e.id != id
+        );
+        this.MapPointViewSelectedList = this.MapPointViewSelectedList.filter(
+          e => e.id != id
+        );
+      }
+    },
+    incidentMapPointSelected(valueSelected) {
+      if (valueSelected.nameType.length > 0) {
+        this.TypeListSelected = valueSelected.nameType;
+        this.typeIncidentSelectAvalible = true;
+        this.isMapPointAvaliable = false;
+        return;
+      }
+      if (valueSelected.nameType.length == 0) {
+        this.selectedIncidentType = "";
+        this.TypeListSelected = valueSelected.nameType;
+        this.typeIncidentSelectAvalible = false;
+        this.isMapPointAvaliable = true;
+        this.MapPointViewSelectedList = this.MapPointSelectedList.filter(
+          e => e.Incident == valueSelected.name
+        );
+        return;
+      }
+    },
     changeFormMapPoint(index) {
       this.formDescriptionMapPoint = false;
       this.newMapDescription = this.MapPointSelectedList[
@@ -881,47 +1059,69 @@ export default {
       console.log(this.MapPointSelectedList);
       console.log(this.MapPointViewSelectedList);
     },
-    editSupervisor() {
-      this.itemsSupervisorList[
-        this.supervisorAliasIndex
-      ].name = this.textFieldSupervisor;
-      this.textFieldSupervisor = "";
-      this.formAddSupervisor = true;
-    },
-    changeFormSupervisor(supervisorAliasIndex) {
-      this.formAddSupervisor = false;
-      this.textFieldSupervisor = this.itemsSupervisorList[
-        supervisorAliasIndex
-      ].name;
-      this.supervisorAliasIndex = supervisorAliasIndex;
-    },
-    IncidentSelected(valueSelected) {
-      this.TypeListSelected = "";
-      this.TypeListSelected = valueSelected.nameType;
-    },
-    incidentMapPointSelected(valueSelected) {
-      if (valueSelected.nameType.length > 0) {
-        this.TypeListSelected = valueSelected.nameType;
-        this.typeIncidentSelectAvalible = true;
-        this.isMapPointAvaliable = false;
-        return;
-      }
-      if (valueSelected.nameType.length == 0) {
-        this.selectedIncidentType = "";
-        this.TypeListSelected = valueSelected.nameType;
-        this.typeIncidentSelectAvalible = false;
-        this.isMapPointAvaliable = true;
-        this.MapPointViewSelectedList = this.MapPointSelectedList.filter(
-          e => e.Incident == valueSelected.name
-        );
-        return;
-      }
-    },
     incidentTypeMapPointSelected(valueSelected) {
       this.MapPointViewSelectedList = this.MapPointSelectedList.filter(
         e => e.TypeIncident == valueSelected.nameIncident
       );
       this.isMapPointAvaliable = true;
+    },
+
+    resourceIncidentSelected(incidentSelected) {
+      console.log(this.resourceSelectedList);
+      console.log(this.resourceViewSelectedList);
+      if (incidentSelected.nameType.length > 0) {
+        this.TypeListSelected = incidentSelected.nameType;
+        this.resourceTypeIncidentSelectAvalible = true;
+        this.isListResourceAvaliable = false;
+        return;
+      }
+      if (incidentSelected.nameType.length == 0) {
+        this.selectedResourceIncidentType = "";
+        this.TypeListSelected = incidentSelected.nameType;
+        this.resourceTypeIncidentSelectAvalible = false;
+        this.isListResourceAvaliable = true;
+        this.resourceViewSelectedList = this.resourceSelectedList.filter(
+          e => e.Incident == incidentSelected.name
+        );
+        return;
+      }
+    },
+    resourceIncidentTypeMapPointSelected(typeIncidentSelected) {
+      this.resourceViewSelectedList = this.resourceSelectedList.filter(
+        e => e.TypeIncident == typeIncidentSelected.nameIncident
+      );
+      this.isListResourceAvaliable = true;
+    },
+    changeFormResource(index) {
+      this.formDescriptionResource = false;
+      this.newResourceDescription = this.resourceSelectedList[
+        index
+      ].descriptionResource;
+      this.indexResource = index;
+    },
+
+    editResource() {
+      this.resourceSelectedList[
+        this.indexResource
+      ].descriptionResource = this.newResourceDescription;
+
+      this.resourceViewSelectedList[
+        this.indexResource
+      ].descriptionResource = this.newResourceDescription;
+
+      this.formDescriptionResource = true;
+      this.newResourceDescription = "";
+    },
+
+    deleteResource(id) {
+      if (confirm("Desea elimninar este recurso?")) {
+        this.resourceSelectedList = this.resourceSelectedList.filter(
+          e => e.id != id
+        );
+        this.resourceViewSelectedList = this.resourceViewSelectedList.filter(
+          e => e.id != id
+        );
+      }
     }
   }
 };
