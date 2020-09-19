@@ -18,6 +18,8 @@
                     name="user"
                     prepend-icon="mdi-account"
                     type="text"
+                    :error="loginError"
+                    v-on:keyup="resetErrors"
                   ></v-text-field>
 
                   <v-text-field
@@ -27,7 +29,13 @@
                     name="password"
                     prepend-icon="mdi-lock"
                     type="password"
+                    :error="loginError"
+                    v-on:keyup="resetErrors"
                   ></v-text-field>
+
+                  <v-alert v-if="loginError" color="error" icon="mdi-alert"
+                    >¡Ups! Usuario o contraseña erróneo.</v-alert
+                  >
                 </v-form>
               </v-card-text>
               <v-card-actions>
@@ -67,13 +75,18 @@ export default {
       tryToLogin: false,
       tryToLoginWithGoogle: false,
       source: "",
-      clientId: ""
+      clientId: "",
+      loginError: false
     };
   },
   methods: {
     loginWithJWT: async function() {
       this.tryToLogin = true;
-      if (this.user !== "" && this.password !== "") {
+      if (
+        this.user !== "" &&
+        this.password !== "" &&
+        this.loginError === false
+      ) {
         let payload = { username: this.username, password: this.password };
         await this.$store
           .dispatch("restAuth/login", payload)
@@ -99,6 +112,7 @@ export default {
               console.log(
                 "Upa, credenciales rancias mi rey. La pifiaste en el usuario o en la contraseña, ¡probá de nuevo master!"
               );
+              this.loginError = true;
             } else {
               console.log(e);
             }
@@ -120,6 +134,10 @@ export default {
     },
     OnGoogleAuthFail: function(error) {
       console.log(error);
+    },
+    resetErrors: function() {
+      this.loginError = false;
+      console.log("login error false");
     }
   },
   computed: {

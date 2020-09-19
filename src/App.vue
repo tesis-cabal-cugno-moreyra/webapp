@@ -28,8 +28,13 @@ export default {
     // isLogged: false
   }),
   beforeCreate() {
-    this.$store.dispatch("restAuth/updateUser", authServices.getUser());
-    this.$store.dispatch("restAuth/updateAccessToken", authServices.getToken());
+    if (authServices.getUser()) {
+      this.$store.dispatch("restAuth/updateUser", authServices.getUser());
+      this.$store.dispatch(
+        "restAuth/updateAccessToken",
+        authServices.getToken()
+      );
+    }
   },
   created() {
     this.$vuetify.theme.dark = true;
