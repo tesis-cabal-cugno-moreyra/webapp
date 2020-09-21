@@ -33,8 +33,8 @@
                     v-on:keyup="resetErrors"
                   ></v-text-field>
 
-                  <v-alert v-if="loginError" color="error" icon="mdi-alert"
-                    >¡Ups! Usuario o contraseña erróneo.</v-alert
+                  <v-alert v-if="loginError" color="error" icon="mdi-alert">
+                    {{ this.errorMessage }}</v-alert
                   >
                 </v-form>
               </v-card-text>
@@ -76,14 +76,15 @@ export default {
       tryToLoginWithGoogle: false,
       source: "",
       clientId: "",
-      loginError: false
+      loginError: false,
+      errorMessage: ""
     };
   },
   methods: {
     loginWithJWT: async function() {
       this.tryToLogin = true;
       if (
-        this.user !== "" &&
+        this.username !== "" &&
         this.password !== "" &&
         this.loginError === false
       ) {
@@ -109,12 +110,12 @@ export default {
           })
           .catch(e => {
             if (e.status === 400 && e.statusText === "Bad Request") {
-              console.log(
-                "Upa, credenciales rancias mi rey. La pifiaste en el usuario o en la contraseña, ¡probá de nuevo master!"
-              );
               this.loginError = true;
+              this.errorMessage = "¡Ups! Usuario o contraseña erróneo.";
             } else {
               console.log(e);
+              this.loginError = true;
+              this.errorMessage = "Algo salió mal. Prueba de nuevo.";
             }
           });
       }
@@ -137,7 +138,6 @@ export default {
     },
     resetErrors: function() {
       this.loginError = false;
-      console.log("login error false");
     }
   },
   computed: {
