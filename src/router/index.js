@@ -48,7 +48,7 @@ router.beforeEach((to, from, next) => {
     //TODO: Add error view.
   }
   if (to.matched.some(record => record.meta.requires_auth)) {
-    if (accessToken == null) {
+    if (accessToken === null) {
       next({
         name: "Login",
         params: { nextUrl: to.fullPath }

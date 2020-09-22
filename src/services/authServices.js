@@ -25,7 +25,8 @@ export default {
     return localStorage.getItem("access-token");
   },
   getRole() {
-    return localStorage.getItem("user.role");
+    let user = JSON.parse(localStorage.getItem("user"));
+    return user.role;
   },
   isAdmin() {
     // console.log(ROLES.ADMIN);

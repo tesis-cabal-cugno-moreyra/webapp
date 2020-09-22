@@ -64,7 +64,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-import router from "@/router";
 
 export default {
   name: "Login",
@@ -106,7 +105,7 @@ export default {
             this.$store.dispatch("restAuth/updateRefreshToken", refreshToken);
             this.$store.dispatch("restAuth/updateUser", user);
 
-            router.push({ name: "Home" });
+            this.$router.push({ name: "Home" });
           })
           .catch(e => {
             if (e.status === 400 && e.statusText === "Bad Request") {
