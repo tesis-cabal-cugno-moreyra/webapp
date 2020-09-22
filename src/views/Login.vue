@@ -98,7 +98,7 @@ export default {
               email: response.data.user.email,
               firstName: response.data.user.first_name,
               lastName: response.data.user.last_name,
-              role: "admin"
+              role: "admin" //TODO: Stop hardcoding this key.
             };
 
             this.$store.dispatch("restAuth/updateAccessToken", accessToken);
