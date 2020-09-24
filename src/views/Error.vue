@@ -7,7 +7,7 @@
             <v-container text-center>
               <h1 style="font-size: 102px">{{ this.errorCode }}</h1>
               <h2>{{ this.errorMessage }}</h2>
-              <v-btn>Ir a la página principal</v-btn>
+              <v-btn v-on:click="goHome">Ir a la página principal</v-btn>
             </v-container>
           </v-row>
         </v-layout>
@@ -37,6 +37,11 @@ export default {
       code: this.errorCode,
       message: this.errorMessage
     };
+  },
+  methods: {
+    goHome() {
+      this.$router.push({ name: "Home" });
+    }
   }
 };
 </script>
