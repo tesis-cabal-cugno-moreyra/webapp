@@ -1,13 +1,16 @@
 <template>
   <v-app>
     <v-main>
-      <v-container>
-        <v-row align="center" justify="center">
-          <h1 style="font-size: 72px">{{ this.errorCode }}</h1>
-        </v-row>
-        <v-row align="center" justify="center">
-          <h2>{{ this.errorMessage }}</h2>
-        </v-row>
+      <v-container fill-height fluid>
+        <v-layout row>
+          <v-row align="center" justify="center">
+            <v-container text-center>
+              <h1 style="font-size: 102px">{{ this.errorCode }}</h1>
+              <h2>{{ this.errorMessage }}</h2>
+              <v-btn>Ir a la página principal</v-btn>
+            </v-container>
+          </v-row>
+        </v-layout>
       </v-container>
     </v-main>
   </v-app>
@@ -15,7 +18,9 @@
 
 <script>
 export default {
-  beforeCreate() {},
+  created() {
+    this.$store.dispatch("uiParams/hideNavBar");
+  },
   name: "Error",
   props: {
     errorCode: {

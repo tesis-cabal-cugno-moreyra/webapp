@@ -38,10 +38,11 @@ export default {
   computed: {
     ...mapGetters({
       isLoading: "uiParams/isLoading",
+      isNavBarEnable: "uiParams/showNavBar",
       isLoggedIn: "restAuth/isLoggedIn"
     }),
     showNavBar: function() {
-      if (this.isLoggedIn) {
+      if (this.isLoggedIn && this.isNavBarEnable) {
         return true;
       } else {
         return false;
