@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <v-stepper v-model="stepNumber" vertical>
-      <v-stepper-step :complete="stepNumber > 1" step="1" editable
+      <v-stepper-step :complete="stepNumber > 1" step="1"
         >Nombre del dominio</v-stepper-step
       >
       <v-stepper-content step="1">
@@ -9,7 +9,7 @@
           <v-col cols="12" sm="6" md="4">
             <v-form ref="form">
               <v-text-field
-                v-model="domainField"
+                v-model="domainName"
                 label="Agregar el nombre del dominio"
                 autocomplete="off"
               ></v-text-field>
@@ -17,10 +17,10 @@
           </v-col>
         </v-row>
 
-        <v-btn color="primary" @click="increaseStep()">Continue</v-btn>
+        <v-btn color="primary" @click="firstStep()">Continue</v-btn>
         <v-btn
           text
-          @click="clearComboBox"
+          @click="clearFields"
           outlined
           color="grey_selected"
           class="ml-2"
@@ -28,7 +28,7 @@
         >
       </v-stepper-content>
 
-      <v-stepper-step :complete="stepNumber > 2" step="2" editable
+      <v-stepper-step :complete="stepNumber > 2" step="2"
         >Alias del administrador</v-stepper-step
       >
       <v-stepper-content step="2">
@@ -36,7 +36,7 @@
           <v-col cols="12" sm="6" md="4">
             <v-form>
               <v-text-field
-                v-model="AdminField"
+                v-model="adminAlias"
                 label="Agregar alias"
                 autocomplete="off"
               ></v-text-field>
@@ -44,10 +44,10 @@
           </v-col>
         </v-row>
 
-        <v-btn color="primary" @click="increaseStep()">Continue</v-btn>
+        <v-btn color="primary" @click="secondStep()">Continue</v-btn>
         <v-btn
           text
-          @click="clearComboBox"
+          @click="clearFields"
           outlined
           color="grey_selected"
           class="ml-2"
@@ -74,10 +74,10 @@
             <v-form @submit.prevent="editSupervisor" v-if="!formAddSupervisor">
               <v-text-field
                 v-model="textFieldSupervisor"
-                label="Agregar un nombre de supervisor"
+                label="Editar el nombre del supervisor"
                 autocomplete="off"
               ></v-text-field>
-              <v-btn color="warning" outlined small type="submit">editar</v-btn>
+              <v-btn color="warning" outlined small type="submit">Editar</v-btn>
             </v-form>
           </v-col>
         </v-row>
@@ -85,18 +85,20 @@
           <v-col>
             <v-card sm="6" md="4" width="400" left>
               <v-card-subtitle
-                v-if="itemsSupervisorList.length == 0 ? true : false"
+                v-if="supervisorAliasesStringList.length == 0 ? true : false"
                 >No hay cargados supervisores actualmente</v-card-subtitle
               >
             </v-card>
-            <v-form v-if="itemsSupervisorList.length != 0 ? true : false">
+            <v-form
+              v-if="supervisorAliasesStringList.length != 0 ? true : false"
+            >
               <v-card sm="6" md="4" width="400" left>
                 <v-card-subtitle>Supervisores actuales</v-card-subtitle>
                 <v-card-text
                   :class="['pa-2', 'black_selected']"
                   sm="6"
                   md="4"
-                  v-for="(item, index) in itemsSupervisorList"
+                  v-for="(item, index) in supervisorAliasesStringList"
                   :key="index"
                 >
                   {{ item.name }}
@@ -123,10 +125,10 @@
           </v-col>
         </v-row>
 
-        <v-btn color="primary" @click="increaseStep()">Continue</v-btn>
+        <v-btn color="primary" @click="thirdStep()">Continue</v-btn>
         <v-btn
           text
-          @click="clearComboBox"
+          @click="clearFields"
           outlined
           color="grey_selected"
           class="ml-2"
@@ -135,7 +137,7 @@
       </v-stepper-content>
 
       <v-stepper-step :complete="stepNumber > 4" step="4" editable
-        >Nombres de incidentes</v-stepper-step
+        >Alias de incidentes</v-stepper-step
       >
       <v-stepper-content step="4">
         <v-row>
@@ -153,10 +155,10 @@
             <v-form @submit.prevent="editIncident" v-if="!formAddIncident">
               <v-text-field
                 v-model="textFieldIncident"
-                label="Agregar un nombre de incidente"
+                label="Editar un nombre de incidente"
                 autocomplete="off"
               ></v-text-field>
-              <v-btn color="warning" outlined small type="submit">editar</v-btn>
+              <v-btn color="warning" outlined small type="submit">Editar</v-btn>
             </v-form>
           </v-col>
         </v-row>
@@ -164,18 +166,18 @@
           <v-col>
             <v-card sm="6" md="4" width="400" left>
               <v-card-subtitle
-                v-if="itemsIncidenteList.length == 0 ? true : false"
-                >No hay incidentes cargados actualmente</v-card-subtitle
+                v-if="incidentAbstractionList.length == 0 ? true : false"
+                >No hay incidentes cargados</v-card-subtitle
               >
             </v-card>
-            <v-form v-if="itemsIncidenteList.length != 0 ? true : false">
+            <v-form v-if="incidentAbstractionList.length != 0 ? true : false">
               <v-card sm="6" md="4" width="400" left>
                 <v-card-subtitle>Incidentes actuales</v-card-subtitle>
                 <v-card-text
                   :class="['pa-2', 'black_selected']"
                   sm="6"
                   md="4"
-                  v-for="(item, index) in itemsIncidenteList"
+                  v-for="(item, index) in incidentAbstractionList"
                   :key="index"
                 >
                   {{ item.name }}
@@ -202,10 +204,10 @@
           </v-col>
         </v-row>
 
-        <v-btn color="primary" @click="increaseStep()">Continue</v-btn>
+        <v-btn color="primary" @click="fourthStep()">Continue</v-btn>
         <v-btn
           text
-          @click="clearComboBox"
+          @click="clearFields"
           outlined
           color="grey_selected"
           class="ml-2"
@@ -214,37 +216,23 @@
       </v-stepper-content>
 
       <v-stepper-step :complete="stepNumber > 5" step="5" editable
-        >Tipos de incidentes</v-stepper-step
+        >Alias de tipos de incidentes</v-stepper-step
       >
       <v-stepper-content step="5">
         <v-row>
           <v-col cols="12" sm="6" md="4">
             <v-select
               v-model="selectIncident"
-              :items="itemsIncidenteList"
+              :items="incidentAbstractionList"
               item-value="id"
               item-text="name"
               :return-object="true"
-              :search-input.sync="search"
               hide-selected
               label="Agregar un tipo de incidente"
               persistent-hint
               chips
               @change="IncidentSelected(selectIncident)"
-              @input.native="course = $event.srcElement.value"
-            >
-              <template v-slot:no-data>
-                <v-list-item>
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      No se encuentra el supervisor "
-                      <strong>{{ search }}</strong
-                      >". Presione <kbd>enter</kbd> para ingresarlo
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </template>
-            </v-select>
+            ></v-select>
           </v-col>
         </v-row>
         <v-form v-if="selectIncident != '' ? true : false">
@@ -321,10 +309,10 @@
             </v-col>
           </v-row>
         </v-form>
-        <v-btn color="primary" @click="increaseStep()">Continue</v-btn>
+        <v-btn color="primary" @click="fifthStep()">Continue</v-btn>
         <v-btn
           text
-          @click="clearComboBox"
+          @click="clearFields"
           outlined
           color="grey_selected"
           class="ml-2"
@@ -340,30 +328,16 @@
           <v-col cols="12" sm="6" md="4">
             <v-select
               v-model="selectIncident"
-              :items="itemsIncidenteList"
+              :items="incidentAbstractionList"
               item-value="id"
               item-text="name"
               :return-object="true"
-              :search-input.sync="search"
               hide-selected
               label="Seleccionar un tipo de incidente"
               persistent-hint
               chips
               @change="incidentMapPointSelected(selectIncident)"
-              @input.native="course = $event.srcElement.value"
-            >
-              <template v-slot:no-data>
-                <v-list-item>
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      No se encuentra el supervisor "
-                      <strong>{{ search }}</strong
-                      >". Presione <kbd>enter</kbd> para ingresarlo
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </template>
-            </v-select>
+            ></v-select>
           </v-col>
           <v-col v-if="!typeIncidentSelectAvalible" cols="12" sm="6" md="4">
             <v-card :class="['pa-2', 'black_selected']">
@@ -405,7 +379,7 @@
                     label="Descripcion de la tarea"
                   ></v-text-field>
                   <v-btn color="success" outlined small type="submit"
-                    >Agregar descripción</v-btn
+                    >Agregar</v-btn
                   >
                 </v-form>
               </v-card-text>
@@ -425,7 +399,7 @@
                     label="Descripcion de la tarea"
                   ></v-text-field>
                   <v-btn color="warning" small outlined type="submit"
-                    >Editar descripción</v-btn
+                    >Editar</v-btn
                   >
                 </v-form>
               </v-card-text>
@@ -475,10 +449,10 @@
             </v-card>
           </v-flex>
         </v-layout>
-        <v-btn color="primary" @click="increaseStep()">Continue</v-btn>
+        <v-btn color="primary" @click="sixthStep()">Continue</v-btn>
         <v-btn
           text
-          @click="clearComboBox"
+          @click="clearFields"
           outlined
           color="grey_selected"
           class="ml-2"
@@ -491,148 +465,160 @@
       <v-stepper-content step="7">
         <v-row>
           <v-col cols="12" sm="6" md="4">
-            <v-select
-              v-model="selectResourceIncident"
-              :items="itemsIncidenteList"
-              item-value="id"
-              item-text="name"
-              :return-object="true"
-              :search-input.sync="search"
-              hide-selected
-              label="Seleccionar un tipo de incidente"
-              persistent-hint
-              chips
-              @change="resourceIncidentSelected(selectResourceIncident)"
-              @input.native="course = $event.srcElement.value"
-            ></v-select>
-          </v-col>
-          <v-col
-            v-if="!resourceTypeIncidentSelectAvalible"
-            cols="12"
-            sm="6"
-            md="4"
-          >
-            <v-card :class="['pa-2', 'black_selected']">
-              <v-card-subtitle>
-                No hay Tipo de incidentes cargados para este incidente
-              </v-card-subtitle>
-            </v-card>
-          </v-col>
-          <v-col
-            v-if="resourceTypeIncidentSelectAvalible"
-            cols="12"
-            sm="6"
-            md="4"
-          >
-            <v-select
-              v-model="selectedResourceIncidentType"
-              :items="TypeListSelected"
-              item-value="id"
-              item-text="nameIncident"
-              :return-object="true"
-              :search-input.sync="search"
-              hide-selected
-              label="Seleccionar un nombre de incidente"
-              persistent-hint
-              chips
-              @change="
-                resourceIncidentTypeMapPointSelected(
-                  selectedResourceIncidentType
-                )
-              "
-              @input.native="course = $event.srcElement.value"
-            ></v-select>
+            <v-form @submit.prevent="addResource" v-if="formAddResource">
+              <v-text-field
+                v-model="textFieldResource"
+                label="Agregar un recurso"
+                autocomplete="off"
+              ></v-text-field>
+              <v-btn color="success" outlined small type="submit"
+                >Agregar</v-btn
+              >
+            </v-form>
+            <v-form @submit.prevent="editResource" v-if="!formAddResource">
+              <v-text-field
+                v-model="textFieldResource"
+                label="Modificar el nombre del recurso"
+                autocomplete="off"
+              ></v-text-field>
+              <v-btn color="warning" outlined small type="submit">editar</v-btn>
+            </v-form>
           </v-col>
         </v-row>
-        <!--tarjetas donde te perimite crear, editar o eliminar recursos de un cierto incidente-->
-        <v-layout v-if="isListResourceAvaliable">
-          <v-flex md4 v-if="formDescriptionResource">
-            <v-card
-              :class="['mb-2', 'pa-2', 'mr-3', 'black_selected']"
-              sm="6"
-              md="4"
-            >
-              <v-card-text>
-                <v-form @submit.prevent="addResource">
-                  <v-text-field
-                    v-model="newResourceDescription"
-                    label="Descripcion del recurso"
-                  ></v-text-field>
-                  <v-btn color="success" outlined small type="submit"
-                    >Agregar descripción</v-btn
+        <v-row>
+          <v-col>
+            <v-card sm="6" md="4" width="400" left>
+              <v-card-subtitle
+                v-if="incidentAbstractionList.length == 0 ? true : false"
+                >No hay incidentes cargados actualmente</v-card-subtitle
+              >
+            </v-card>
+            <v-form v-if="resourceSelectedList.length != 0 ? true : false">
+              <v-card sm="6" md="4" width="400" left>
+                <v-card-subtitle>Recursos actuales</v-card-subtitle>
+                <v-card-text
+                  :class="['pa-2', 'black_selected']"
+                  sm="6"
+                  md="4"
+                  v-for="(item, index) in resourceSelectedList"
+                  :key="index"
+                >
+                  {{ item.descriptionResource }}
+                  <v-btn
+                    icon
+                    color="success"
+                    class="['mr-2','float-right']"
+                    small
+                    @click="changeFormResource(index)"
                   >
-                </v-form>
-              </v-card-text>
-            </v-card>
-          </v-flex>
-
-          <v-flex md4 v-if="!formDescriptionResource">
-            <v-card
-              :class="['mb-2', 'pa-2', 'mr-3', 'black_selected']"
-              sm="6"
-              md="4"
-            >
-              <v-card-text>
-                <v-form @submit.prevent="editResource">
-                  <v-text-field
-                    v-model="newResourceDescription"
-                    label="Descripcion de la tarea"
-                  ></v-text-field>
-                  <v-btn color="warning" small outlined type="submit"
-                    >Editar descripción</v-btn
+                    <v-icon>mdi-pencil</v-icon>
+                  </v-btn>
+                  <v-btn
+                    icon
+                    color="primary"
+                    small
+                    @click="deleteResource(item.id)"
                   >
-                </v-form>
-              </v-card-text>
-            </v-card>
-          </v-flex>
+                    <v-icon>mdi-delete</v-icon>
+                  </v-btn>
+                </v-card-text>
+              </v-card>
+            </v-form>
+          </v-col>
+        </v-row>
 
-          <v-flex md4>
-            <v-card
-              :class="['mb-2', 'pa-2', 'black_selected']"
+        <v-btn color="primary" @click="seventhStep()">Continue</v-btn>
+        <v-btn
+          text
+          @click="clearFields"
+          outlined
+          color="grey_selected"
+          class="ml-2"
+          >Cancel</v-btn
+        >
+      </v-stepper-content>
+      <v-stepper-step :complete="stepNumber > 8" step="8" editable
+        >Tipos de recursos</v-stepper-step
+      >
+      <v-stepper-content step="8">
+        <v-col v-if="!resourceSelectedList.length > 0" cols="12" sm="4" md="6">
+          <v-card :class="['black_selected']">
+            <v-card-subtitle>
+              No hay recursos insertados vuelva al paso anterior
+            </v-card-subtitle>
+          </v-card>
+        </v-col>
+        <v-form v-if="resourceSelectedList.length > 0">
+          <v-row>
+            <v-col cols="12" sm="6" md="4">
+              <v-select
+                v-model="selectResourceIncident"
+                :items="incidentAbstractionList"
+                item-value="id"
+                item-text="name"
+                :return-object="true"
+                hide-selected
+                label="Seleccionar un incidente"
+                persistent-hint
+                chips
+                @change="resourceIncidentSelected(selectResourceIncident)"
+              ></v-select>
+            </v-col>
+            <v-col
+              v-if="!resourceTypeIncidentSelectAvalible"
+              cols="12"
               sm="6"
               md="4"
-              v-for="(item, index) in resourceViewSelectedList"
-              :key="index"
             >
-              <v-card-text>
-                <v-chip
-                  small
-                  label
-                  class="mb-1"
-                  color="grey_selected"
-                  text-color="white"
-                >
-                  <v-icon left>label</v-icon>
-                  {{
-                    (item.TypeIncident != null
-                      ? item.TypeIncident + " - "
-                      : "") + item.Incident
-                  }}
-                </v-chip>
-                <p class="mt-2">{{ item.descriptionResource }}</p>
-                <v-btn
-                  color="success"
-                  class="mr-2"
-                  outlined
-                  small
-                  @click="changeFormResource(index)"
-                  >Editar</v-btn
-                >
-                <v-btn
-                  color="primary"
-                  outlined
-                  small
-                  @click="deleteResource(item.id)"
-                  >Eliminar</v-btn
-                >
-              </v-card-text>
-            </v-card>
-          </v-flex>
-        </v-layout>
+              <v-card :class="['pa-2', 'black_selected']">
+                <v-card-subtitle>
+                  No hay Tipo de incidentes cargados para este incidente
+                </v-card-subtitle>
+              </v-card>
+            </v-col>
+            <v-col
+              v-if="resourceTypeIncidentSelectAvalible"
+              cols="12"
+              sm="6"
+              md="4"
+            >
+              <v-select
+                v-model="selectedResourceIncidentType"
+                :items="TypeListSelected"
+                item-value="id"
+                item-text="nameIncident"
+                :return-object="true"
+                :search-input.sync="search"
+                hide-selected
+                label="Seleccionar un tipo de incidente"
+                persistent-hint
+                chips
+                @change="
+                  resourceIncidentTypeSelected(selectedResourceIncidentType)
+                "
+                @input.native="course = $event.srcElement.value"
+              ></v-select>
+            </v-col>
+          </v-row>
+          <v-form v-if="isListResourceAvaliable">
+            <v-row>
+              <v-col cols="12" sm="4" md="8">
+                <v-autocomplete
+                  v-model="autoCompleteResource"
+                  :items="resourceSelectedList"
+                  item-text="descriptionResource"
+                  multiple
+                  label="Seleccione el o los recursos "
+                  @change="addResourceSelected(autoCompleteResource)"
+                ></v-autocomplete>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-form>
         <v-btn color="primary" @click="increaseStep()">Continue</v-btn>
         <v-btn
           text
-          @click="clearComboBox"
+          @click="clearFields"
           outlined
           color="grey_selected"
           class="ml-2"
@@ -643,23 +629,51 @@
 
     <!-- mensajaes de advertencias -->
     <v-snackbar v-model="snackbar" color="primary" :timeout="timeout" top="top">
-      {{ messagge }}
+      {{ messaggeSnackbar }}
       <template v-slot:action="{ attrs }">
         <v-btn color="black" text v-bind="attrs" @click="snackbar = false"
           >Close</v-btn
         >
       </template>
     </v-snackbar>
+
+    <!-- dialog confirm -->
+    <v-dialog v-model="dialog" width="350">
+      <v-card>
+        <v-card-title>{{ messaggeDialog }}</v-card-title>
+
+        <v-card-text></v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn color="green darken-1" text @click="dialog = false">No</v-btn>
+
+          <v-btn color="green darken-1" text>Continuar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
+import {
+  Domain,
+  SupervisorAlias,
+  IncidentAbstraction,
+  IncidentType,
+  MapPointDescription,
+  ResourceType
+} from "@/domain/initialConfig";
 export default {
   name: "DomainInformation",
 
   data() {
     return {
+      domainObject: {},
       snackbar: false,
+      functionS: "",
+      dialog: false,
       isMapPointAvaliable: false,
       isListResourceAvaliable: false,
       formDescriptionMapPoint: true,
@@ -667,68 +681,81 @@ export default {
       formAddSupervisor: true,
       formAddIncident: true,
       formAddTypeIncident: true,
+      formAddResource: true,
       typeIncidentSelectAvalible: false,
       resourceTypeIncidentSelectAvalible: false,
-      domainField: "",
+      domainName: "Hola",
       newMapDescription: "",
       newResourceDescription: "",
       textFieldSupervisor: "",
       textFieldTypeIncident: "",
       textFieldIncident: "",
-      AdminField: "",
+      textFieldResource: "",
+      adminAlias: "Hola",
       stepNumber: "1",
-      comboSupervisor: "",
+      autoCompleteResource: "",
       AutoCompleteIncident: "",
       selectedIncidentType: "",
-      comoboIncident: "",
       search: null,
-      itemsSupervisorList: [
+      supervisorAliasesStringList: [
         { id: 1, name: "Supervisor" },
         { id: 2, name: "Encargado" },
         { id: 3, name: "Tester" }
       ],
       TypeListSelected: [],
-      itemsIncidenteList: [
+      incidentAbstractionList: [
         {
           id: 1,
           name: "Incendio",
-          nameType: [
+          incidentTypes: [
             { nameIncident: "casa" },
             { nameIncident: "edificio" },
             { nameIncident: "campo" }
           ]
         },
-        { id: 2, name: "Rastrillaje", nameType: [] },
+        { id: 2, name: "Rastrillaje", incidentTypes: [] },
         {
           id: 3,
           name: "Rescate de felino domestico",
-          nameType: [{ nameIncident: "arbol" }, { nameIncident: "chimenea" }]
+          incidentTypes: [
+            { nameIncident: "arbol" },
+            { nameIncident: "chimenea" }
+          ]
         },
-        { id: 4, name: "Auxilio", nameType: [] }
+        { id: 4, name: "Auxilio", incidentTypes: [] }
       ],
       MapPointSelectedList: [],
       MapPointViewSelectedList: [],
       MapPointDescriptionList: [],
-      resourceViewSelectedList: [],
+      incidentResourceList: [],
       resourceSelectedList: [],
       itemsResource: [],
+      domainList: [],
       name: "",
-      messagge: "",
+      messaggeSnackbar: "",
+      messaggeDialog: "",
       timeout: 1500,
       selectIncident: "",
       selectedResourceIncidentType: "",
       selectResourceIncident: "",
       indexMapPoint: "",
-      indexResource: ""
+      indexResource: "",
+      idDelete: "",
+      MapPointLisTest: {
+        incident: "",
+        typeIncident: "",
+        mapPoints: [],
+        resource: []
+      }
     };
   },
   methods: {
     increaseStep() {
       switch (this.stepNumber) {
         case "1":
-          if (this.domainField.trim().length === 0) {
-            this.domainField = "";
-            this.messagge = "Debe ingresar el nobmre del dominio";
+          if (this.domainName.trim().length === 0) {
+            this.domainName = "";
+            this.messaggeSnackbar = "Debe ingresar el nobmre del dominio";
             this.snackbar = true;
           } else {
             this.stepNumber = "2";
@@ -736,9 +763,9 @@ export default {
           break;
 
         case "2":
-          if (this.AdminField.trim().length === 0 || this.AdminField === "") {
-            this.AdminField = "";
-            this.messagge = "Debe ingresar el alias del administrador";
+          if (this.adminAlias.trim().length === 0 || this.adminAlias === "") {
+            this.adminAlias = "";
+            this.messaggeSnackbar = "Debe ingresar el alias del administrador";
             this.snackbar = true;
           } else {
             this.stepNumber = "3";
@@ -746,8 +773,8 @@ export default {
           break;
 
         case "3":
-          if (this.itemsSupervisorList.length === 0) {
-            this.messagge = "Debe ingresar alias para supervisor/es";
+          if (this.supervisorAliasesStringList.length === 0) {
+            this.messaggeSnackbar = "Debe ingresar alias para supervisor/es";
             this.snackbar = true;
           } else {
             this.stepNumber = "4";
@@ -755,138 +782,324 @@ export default {
           break;
 
         case "4":
-          if (this.itemsIncidenteList.length === 0) {
-            this.messagge = "Debe ingresar al menos un tipo de incidentes";
+          if (this.incidentAbstractionList.length === 0) {
+            this.messaggeSnackbar =
+              "Debe ingresar al menos un tipo de incidentes";
             this.snackbar = true;
           } else {
+            this.textFieldIncident = "";
             this.stepNumber = "5";
           }
           break;
 
         case "5":
-          this.selectIncident = null;
+          this.selectIncident = "";
+          this.textFieldTypeIncident = "";
+          this.formAddTypeIncident = true;
           this.stepNumber = "6";
           break;
 
         case "6":
           this.selectIncident = null;
           this.selectedIncidentType = null;
+          this.isMapPointAvaliable = false;
+          this.TypeListSelected = [];
+          this.formDescriptionMapPoint = true;
           this.stepNumber = "7";
           break;
 
         case "7":
+          this.textFieldResource = "";
+          this.formAddResource = true;
           this.stepNumber = "8";
+          break;
+        case "8":
+          this.selectResourceIncident = null;
+          this.isListResourceAvaliable = false;
+          this.TypeListSelected = [];
+          this.stepNumber = "9";
+          this.domainCreate();
+
           break;
 
         default:
-          console.log("fuera");
+          console.log("se rompio el step");
           console.log(this.stepNumber);
           break;
       }
     },
+    firstStep() {
+      this.increaseStep();
+      // Validar (increaseStep)
+      // Armar el Domain
+      const domain = new Domain();
+      domain.name = this.domainName;
+      this.domainObject = domain;
+    },
+    secondStep() {
+      this.increaseStep();
+      // Validar (increaseStep)
+      // ingresar admin alias en domain
+      this.domainObject.adminAlias = this.adminAlias;
+    },
+    thirdStep() {
+      this.increaseStep();
+      // Validar (increaseStep)
+      // ingresar admin alias en domain
+      const supervisorAliasObjects = [];
+      this.supervisorAliasesStringList.forEach(supervisorAlias => {
+        supervisorAliasObjects.push(new SupervisorAlias(supervisorAlias.name));
+      });
+      this.domainObject.supervisorAliases = supervisorAliasObjects;
+    },
+    fourthStep() {
+      this.increaseStep();
+      // Validar (increaseStep)
+      // ingresar listado de incidentAbstractions
+      /*const incidentAbstractionsObjects = []
+      this.incidentAbstractionList.forEach((incidentAbstraction) => {
+        const incidentAbstractionInstance = new IncidentAbstraction()
+        incidentAbstractionInstance.name = incidentAbstraction.name
+        incidentAbstractionsObjects.push(incidentAbstractionInstance)
+      })
+      this.domainObject.incidentAbstractions = incidentAbstractionsObjects*/
+    },
+    fifthStep() {
+      this.increaseStep();
+      // Validar (increaseStep)
+      // ingresar listado de incidentTypes en cada abstraction
+      const incidentAbstractionsObjects = [];
+      this.incidentAbstractionList.forEach(incidentAbstraction => {
+        const incidentAbstractionInstance = new IncidentAbstraction();
+        incidentAbstractionInstance.name = incidentAbstraction.name;
+        const incidentTypeObjects = [];
+        incidentAbstraction.incidentTypes.forEach(incidentType => {
+          const incidentTypeInstance = new IncidentType();
+          incidentTypeInstance.name = incidentType.nameIncident;
+          incidentTypeObjects.push(incidentTypeInstance);
+          // resourceTypes
+          // MapPointDescriptions
+        });
+        incidentAbstractionInstance.types = incidentTypeObjects;
+        incidentAbstractionsObjects.push(incidentAbstractionInstance);
+      });
+      this.domainObject.incidentAbstractions = incidentAbstractionsObjects;
+    },
+    sixthStep() {
+      this.increaseStep();
+      const incidentAbstractionsObjects = [];
+      this.incidentAbstractionList.forEach(incidentAbstraction => {
+        const incidentAbstractionInstance = new IncidentAbstraction();
+        incidentAbstractionInstance.name = incidentAbstraction.name;
+        const incidentTypeObjects = [];
+        incidentAbstraction.incidentTypes.forEach(incidentType => {
+          const incidentTypeInstance = new IncidentType();
+          incidentTypeInstance.name = incidentType.nameIncident;
+          incidentTypeObjects.push(incidentTypeInstance);
+          // resourceTypes
+          // MapPointDescriptions
+        });
+        incidentAbstractionInstance.types = incidentTypeObjects;
+        incidentAbstractionsObjects.push(incidentAbstractionInstance);
+      });
+      this.domainObject.incidentAbstractions = incidentAbstractionsObjects;
+    },
+    seventhStep() {
+      this.increaseStep();
+    },
+    domainCreate() {
+      const incidentAbstractionsObjects = [];
+      this.incidentAbstractionList.forEach(incidentAbstraction => {
+        const incidentAbstractionInstance = new IncidentAbstraction();
+        incidentAbstractionInstance.name = incidentAbstraction.name;
+        const incidentTypeObjects = [];
 
-    clearComboBox() {
+        if (incidentAbstraction.incidentTypes.length > 0) {
+          incidentAbstraction.incidentTypes.forEach(incidentType => {
+            const incidentTypeInstance = new IncidentType();
+            incidentTypeInstance.name = incidentType.nameIncident;
+            const mapPointObjects = [];
+            const resourceObjects = [];
+
+            const filteredMapPoints = this.MapPointSelectedList.filter(
+              e => e.TypeIncident == incidentType.nameIncident
+            );
+
+            const filteredResources = this.incidentResourceList.filter(
+              e => e.TypeIncident == incidentType.nameIncident
+            );
+            console.log({ filteredResources });
+
+            filteredMapPoints.forEach(filteredMapPoint => {
+              mapPointObjects.push(
+                new MapPointDescription(filteredMapPoint.descriptionPoint)
+              );
+            });
+            filteredResources.forEach(filteredResource => {
+              filteredResource.Resources.forEach(resource => {
+                resourceObjects.push(new ResourceType(resource));
+              });
+            });
+
+            incidentTypeInstance.descriptions = mapPointObjects;
+            incidentTypeInstance.resourceTypes = resourceObjects;
+            incidentTypeObjects.push(incidentTypeInstance);
+          });
+        } else {
+          const incidentTypeInstance = new IncidentType();
+          incidentTypeInstance.name = incidentAbstractionInstance.name;
+          const mapPointObjects = [];
+          const resourceObjects = [];
+
+          const filteredMapPoints = this.MapPointSelectedList.filter(
+            e => e.Incident == incidentAbstractionInstance.name
+          );
+
+          const filteredResources = this.incidentResourceList.filter(
+            e => e.Incident == incidentAbstractionInstance.name
+          );
+
+          filteredMapPoints.forEach(filteredMapPoint => {
+            mapPointObjects.push(
+              new MapPointDescription(filteredMapPoint.descriptionPoint)
+            );
+          });
+          filteredResources.forEach(filteredResource => {
+            filteredResource.Resources.forEach(resource => {
+              resourceObjects.push(new ResourceType(resource));
+            });
+          });
+
+          incidentTypeInstance.descriptions = mapPointObjects;
+          incidentTypeInstance.resourceTypes = resourceObjects;
+          incidentTypeObjects.push(incidentTypeInstance);
+        }
+        incidentAbstractionInstance.types = incidentTypeObjects;
+        incidentAbstractionsObjects.push(incidentAbstractionInstance);
+      });
+      this.domainObject.incidentAbstractions = incidentAbstractionsObjects;
+      console.log(this.domainObject);
+      console.log(JSON.stringify(this.domainObject));
+    },
+
+    clearFields() {
       switch (this.stepNumber) {
         case "1":
-          this.domainField = "";
+          this.domainName = "";
           break;
         case "2":
-          this.AdminField = "";
+          this.adminAlias = "";
           break;
         case "3":
-          this.comboSupervisor = "";
+          this.textFieldSupervisor = "";
           break;
         case "4":
-          this.selectIncident = "";
+          this.textFieldIncident = "";
+
           break;
         case "5":
+          this.textFieldTypeIncident = "";
           this.selectIncident = "";
+          this.formAddTypeIncident = true;
           break;
         case "6":
           this.selectIncident = null;
           this.selectedIncidentType = null;
+          this.isMapPointAvaliable = false;
+          this.TypeListSelected = [];
+          this.formDescriptionMapPoint = true;
+
+          break;
+        case "7":
+          this.textFieldResource = "";
+          this.formAddResource = true;
+          break;
+        case "8":
+          this.selectResourceIncident = null;
+          this.isListResourceAvaliable = false;
+          this.TypeListSelected = [];
           break;
       }
     },
 
     addResource() {
-      if (this.newResourceDescription.trim().length === 0) {
-        this.messagge = "Debe ingresar la tarea";
+      if (this.textFieldResource.trim().length === 0) {
+        this.messaggeSnackbar = "Debe ingresar el recurso";
         this.snackbar = true;
         return;
       }
-      var descriptionIsRepeated = this.resourceViewSelectedList.some(
+      var descriptionIsRepeated = this.resourceSelectedList.some(
         e =>
           e.descriptionResource.toLowerCase() ==
-          this.newResourceDescription.toLowerCase()
+          this.textFieldResource.toLowerCase()
       );
 
       if (descriptionIsRepeated) {
-        this.messagge = "El recurso ingresado ya existe ";
+        this.messaggeSnackbar = "El recurso ingresado ya existe ";
         this.snackbar = true;
         return;
       }
 
       this.resourceSelectedList.push({
         id: Date.now(),
-        Incident: this.selectResourceIncident.name,
-        TypeIncident: this.selectedResourceIncidentType.nameIncident,
-        descriptionResource: this.newResourceDescription
-      });
-      this.resourceViewSelectedList.push({
-        id: Date.now(),
-        Incident: this.selectResourceIncident.name,
-        TypeIncident: this.selectedResourceIncidentType.nameIncident,
-        descriptionResource: this.newResourceDescription
+        descriptionResource: this.textFieldResource
       });
 
-      this.newResourceDescription = "";
+      this.textFieldResource = "";
     },
 
     addIncident() {
       if (this.textFieldIncident.trim().length === 0) {
-        this.messagge = "El campo de incidente esta vacío";
+        this.messaggeSnackbar = "El campo de incidente esta vacío";
         this.snackbar = true;
         return;
       }
-      var incidentIsRepeated = this.itemsIncidenteList.some(
+      var incidentIsRepeated = this.incidentAbstractionList.some(
         e =>
           e.name.toLowerCase().trim() ==
           this.textFieldIncident.toLowerCase().trim()
       );
       if (incidentIsRepeated) {
-        this.messagge = "El incidente ingresado ya existe";
+        this.messaggeSnackbar = "El incidente ingresado ya existe";
         this.snackbar = true;
         return;
       }
-      this.itemsIncidenteList.push({
+      this.incidentAbstractionList.push({
         id: Date.now(),
         name: this.textFieldIncident.trim(),
-        nameType: []
+        incidentTypes: []
       });
       this.textFieldIncident = "";
     },
+    /* showdeleteIncident(id) {
+      this.messaggeDialog = "Desea elimninar este incidente?";
+      this.dialog = true;
+      this.idDelete = id;
+    },*/
     deleteIncident(id) {
-      if (confirm("Desea elimninar este incidente?")) {
-        this.itemsIncidenteList = this.itemsIncidenteList.filter(
+      if (confirm("Desea elimninar este supervisor?")) {
+        this.incidentAbstractionList = this.incidentAbstractionList.filter(
           e => e.id != id
         );
       }
     },
     editIncident() {
-      this.itemsIncidenteList[this.IncidetnIndex].name = this.textFieldIncident;
+      this.incidentAbstractionList[
+        this.IncidetnIndex
+      ].name = this.textFieldIncident;
       this.textFieldIncident = "";
       this.formAddIncident = true;
     },
     changeFormIncident(IncidetnIndex) {
       this.formAddIncident = false;
-      this.textFieldIncident = this.itemsIncidenteList[IncidetnIndex].name;
+      this.textFieldIncident = this.incidentAbstractionList[IncidetnIndex].name;
       this.IncidetnIndex = IncidetnIndex;
     },
 
     addTypeIncident() {
       if (this.textFieldTypeIncident.trim().length === 0) {
-        this.messagge = "Debe ingresar un tipo de incidente para agregarlo";
+        this.messaggeSnackbar =
+          "Debe ingresar un tipo de incidente para agregarlo";
         this.snackbar = true;
         return;
       }
@@ -896,31 +1109,32 @@ export default {
           this.textFieldTypeIncident.toLowerCase()
       );
       if (typeIncidentIsRepeated) {
-        this.messagge = "El supervisor ingresado ya existe";
+        this.messaggeSnackbar = "El supervisor ingresado ya existe";
         this.snackbar = true;
         return;
       }
-      console.log(this.TypeListSelected);
+
       this.TypeListSelected.push({
         nameIncident: this.textFieldTypeIncident
       });
+
       this.textFieldTypeIncident = "";
     },
     addSupervisor() {
       if (this.textFieldSupervisor.trim().length === 0) {
-        this.messagge = "Debe ingresar un supervisor para agregarlo";
+        this.messaggeSnackbar = "Debe ingresar un supervisor para agregarlo";
         this.snackbar = true;
         return;
       }
-      var supervisorIsRepeated = this.itemsSupervisorList.some(
+      var supervisorIsRepeated = this.supervisorAliasesStringList.some(
         e => e.name.toLowerCase() == this.textFieldSupervisor.toLowerCase()
       );
       if (supervisorIsRepeated) {
-        this.messagge = "El supervisor ingresado ya existe";
+        this.messaggeSnackbar = "El supervisor ingresado ya existe";
         this.snackbar = true;
         return;
       }
-      this.itemsSupervisorList.push({
+      this.supervisorAliasesStringList.push({
         id: Date.now(),
         name: this.textFieldSupervisor
       });
@@ -929,14 +1143,13 @@ export default {
 
     deleteSupervisor(id) {
       if (confirm("Desea elimninar este supervisor?")) {
-        this.itemsSupervisorList = this.itemsSupervisorList.filter(
+        this.supervisorAliasesStringList = this.supervisorAliasesStringList.filter(
           e => e.id != id
         );
       }
     },
     deleteTypeIncident(index) {
       if (confirm("Desea elimninar este tipo de incidente?")) {
-        console.log(index);
         this.TypeListSelected.splice(index, 1);
       }
     },
@@ -957,26 +1170,29 @@ export default {
     },
 
     editSupervisor() {
-      this.itemsSupervisorList[
+      this.supervisorAliasesStringList[
         this.supervisorAliasIndex
       ].name = this.textFieldSupervisor;
       this.textFieldSupervisor = "";
       this.formAddSupervisor = true;
     },
+
     changeFormSupervisor(supervisorAliasIndex) {
       this.formAddSupervisor = false;
-      this.textFieldSupervisor = this.itemsSupervisorList[
+      this.textFieldSupervisor = this.supervisorAliasesStringList[
         supervisorAliasIndex
       ].name;
       this.supervisorAliasIndex = supervisorAliasIndex;
     },
+
     IncidentSelected(valueSelected) {
       this.TypeListSelected = "";
-      this.TypeListSelected = valueSelected.nameType;
+      this.TypeListSelected = valueSelected.incidentTypes;
     },
+
     addMapPoint() {
       if (this.newMapDescription.trim().length === 0) {
-        this.messagge = "Debe ingresar la tarea";
+        this.messaggeSnackbar = "Debe ingresar la tarea";
         this.snackbar = true;
         return;
       }
@@ -988,7 +1204,7 @@ export default {
       );
 
       if (descriptionIsRepeated) {
-        this.messagge = "La tarea ingresada ya existe ";
+        this.messaggeSnackbar = "La tarea ingresada ya existe ";
         this.snackbar = true;
         return;
       }
@@ -999,6 +1215,7 @@ export default {
         TypeIncident: this.selectedIncidentType.nameIncident,
         descriptionPoint: this.newMapDescription
       });
+
       this.MapPointViewSelectedList.push({
         id: Date.now(),
         Incident: this.selectIncident.name,
@@ -1018,24 +1235,7 @@ export default {
         );
       }
     },
-    incidentMapPointSelected(valueSelected) {
-      if (valueSelected.nameType.length > 0) {
-        this.TypeListSelected = valueSelected.nameType;
-        this.typeIncidentSelectAvalible = true;
-        this.isMapPointAvaliable = false;
-        return;
-      }
-      if (valueSelected.nameType.length == 0) {
-        this.selectedIncidentType = "";
-        this.TypeListSelected = valueSelected.nameType;
-        this.typeIncidentSelectAvalible = false;
-        this.isMapPointAvaliable = true;
-        this.MapPointViewSelectedList = this.MapPointSelectedList.filter(
-          e => e.Incident == valueSelected.name
-        );
-        return;
-      }
-    },
+
     changeFormMapPoint(index) {
       this.formDescriptionMapPoint = false;
       this.newMapDescription = this.MapPointSelectedList[
@@ -1055,9 +1255,6 @@ export default {
 
       this.formDescriptionMapPoint = true;
       this.newMapDescription = "";
-
-      console.log(this.MapPointSelectedList);
-      console.log(this.MapPointViewSelectedList);
     },
     incidentTypeMapPointSelected(valueSelected) {
       this.MapPointViewSelectedList = this.MapPointSelectedList.filter(
@@ -1066,51 +1263,99 @@ export default {
       this.isMapPointAvaliable = true;
     },
 
-    resourceIncidentSelected(incidentSelected) {
-      console.log(this.resourceSelectedList);
-      console.log(this.resourceViewSelectedList);
-      if (incidentSelected.nameType.length > 0) {
-        this.TypeListSelected = incidentSelected.nameType;
-        this.resourceTypeIncidentSelectAvalible = true;
-        this.isListResourceAvaliable = false;
+    incidentMapPointSelected(valueSelected) {
+      if (valueSelected.incidentTypes.length > 0) {
+        this.TypeListSelected = valueSelected.incidentTypes;
+        this.typeIncidentSelectAvalible = true;
+        this.isMapPointAvaliable = false;
         return;
       }
-      if (incidentSelected.nameType.length == 0) {
-        this.selectedResourceIncidentType = "";
-        this.TypeListSelected = incidentSelected.nameType;
-        this.resourceTypeIncidentSelectAvalible = false;
-        this.isListResourceAvaliable = true;
-        this.resourceViewSelectedList = this.resourceSelectedList.filter(
-          e => e.Incident == incidentSelected.name
+      if (valueSelected.incidentTypes.length == 0) {
+        this.selectedIncidentType = "";
+        this.TypeListSelected = valueSelected.incidentTypes;
+        this.typeIncidentSelectAvalible = false;
+        this.isMapPointAvaliable = true;
+        this.MapPointViewSelectedList = this.MapPointSelectedList.filter(
+          e => e.Incident == valueSelected.name
         );
         return;
       }
     },
-    resourceIncidentTypeMapPointSelected(typeIncidentSelected) {
-      this.resourceViewSelectedList = this.resourceSelectedList.filter(
+
+    resourceIncidentSelected(incidentSelected) {
+      if (incidentSelected.incidentTypes.length > 0) {
+        this.TypeListSelected = incidentSelected.incidentTypes;
+        this.resourceTypeIncidentSelectAvalible = true;
+        this.isListResourceAvaliable = false;
+        return;
+      }
+      if (incidentSelected.incidentTypes.length == 0) {
+        this.selectedResourceIncidentType = "";
+        this.TypeListSelected = incidentSelected.incidentTypes;
+        this.resourceTypeIncidentSelectAvalible = false;
+        this.isListResourceAvaliable = true;
+
+        var IncidentFilter = this.incidentResourceList.filter(
+          e => e.Incident == incidentSelected.name
+        );
+
+        var resourceFilter = [];
+        IncidentFilter.forEach(element => {
+          if (resourceFilter.length > 0) {
+            resourceFilter.pop();
+          }
+          resourceFilter.push(element.Resources);
+        });
+
+        this.autoCompleteResource = resourceFilter[0];
+
+        return;
+      }
+    },
+    resourceIncidentTypeSelected(typeIncidentSelected) {
+      this.isListResourceAvaliable = true;
+
+      var IncidentFilter = this.incidentResourceList.filter(
         e => e.TypeIncident == typeIncidentSelected.nameIncident
       );
-      this.isListResourceAvaliable = true;
+
+      var resourceFilter = [];
+      IncidentFilter.forEach(element => {
+        if (resourceFilter.length > 0) {
+          resourceFilter.pop();
+        }
+        resourceFilter.push(element.Resources);
+      });
+
+      this.autoCompleteResource = resourceFilter[0];
     },
     changeFormResource(index) {
-      this.formDescriptionResource = false;
-      this.newResourceDescription = this.resourceSelectedList[
+      this.formAddResource = false;
+      this.textFieldResource = this.resourceSelectedList[
         index
       ].descriptionResource;
       this.indexResource = index;
     },
 
     editResource() {
+      var descriptionIsRepeated = this.resourceSelectedList.some(
+        e =>
+          e.descriptionResource.toLowerCase() ==
+          this.textFieldResource.toLowerCase()
+      );
+
+      if (descriptionIsRepeated) {
+        this.messaggeSnackbar = "El recurso ingresado ya existe ";
+        this.snackbar = true;
+        return;
+      }
+
       this.resourceSelectedList[
         this.indexResource
-      ].descriptionResource = this.newResourceDescription;
+      ].descriptionResource = this.textFieldResource;
 
-      this.resourceViewSelectedList[
-        this.indexResource
-      ].descriptionResource = this.newResourceDescription;
-
-      this.formDescriptionResource = true;
-      this.newResourceDescription = "";
+      this.formAddResource = true;
+      this.textFieldResource = "";
     },
 
     deleteResource(id) {
@@ -1118,10 +1363,45 @@ export default {
         this.resourceSelectedList = this.resourceSelectedList.filter(
           e => e.id != id
         );
-        this.resourceViewSelectedList = this.resourceViewSelectedList.filter(
-          e => e.id != id
-        );
       }
+    },
+
+    addResourceSelected(resourcesSelected) {
+      console.log({ resourcesSelected });
+
+      if (this.selectedResourceIncidentType.nameIncident != undefined) {
+        var filterIncidentList = this.incidentResourceList.filter(
+          e => e.Incident == this.selectResourceIncident.name
+        );
+
+        var filterIncidentTypeList = filterIncidentList.filter(
+          x => x.TypeIncident == this.selectedResourceIncidentType.nameIncident
+        );
+
+        if (filterIncidentTypeList.length > 0) {
+          this.incidentResourceList = this.incidentResourceList.filter(
+            e => e.id != filterIncidentTypeList[0].id
+          );
+        }
+      } else {
+        filterIncidentList = this.incidentResourceList.filter(
+          e => e.Incident == this.selectResourceIncident.name
+        );
+        if (filterIncidentList.length > 0) {
+          this.incidentResourceList = this.incidentResourceList.filter(
+            e => e.id != filterIncidentList[0].id
+          );
+        }
+      }
+
+      var ident = Date.now();
+      this.incidentResourceList.push({
+        id: ident,
+        Incident: this.selectResourceIncident.name,
+        TypeIncident: this.selectedResourceIncidentType.nameIncident,
+        Resources: resourcesSelected
+      });
+      console.log(this.incidentResourceList);
     }
   }
 };
