@@ -1,6 +1,6 @@
 <template>
   <v-app id="App">
-    <NavBar v-if="isLoggedIn"></NavBar>
+    <NavBar v-if="showNavBar"></NavBar>
 
     <v-overlay v-if="isLoading">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
@@ -40,8 +40,8 @@ export default {
       isLoading: "uiParams/isLoading",
       isLoggedIn: "restAuth/isLoggedIn"
     }),
-    isLogged: function() {
-      if (authServices.userStored()) {
+    showNavBar: function() {
+      if (this.isLoggedIn) {
         return true;
       } else {
         return false;

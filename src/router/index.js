@@ -2,11 +2,16 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
 import Login from "../views/Login.vue";
+import Error from "../views/Error.vue";
 import authServices from "@/services/authServices";
 
 Vue.use(VueRouter);
 
 const routes = [
+  {
+    path: "*",
+    redirect: { name: "Error" }
+  },
   {
     path: "/",
     name: "Home",
@@ -24,11 +29,21 @@ const routes = [
     meta: {
       guest: true
     }
+  },
+  {
+    path: "/error-page",
+    name: "Error",
+    component: Error,
+    meta: {
+      requires_auth: true,
+      is_admin: true,
+      is_supervisor: true
+    }
   }
 ];
 
 const router = new VueRouter({
-  mode: "hash",
+  mode: "history",
   base: process.env.BASE_URL,
   routes
 });
@@ -55,27 +70,26 @@ router.beforeEach((to, from, next) => {
       });
     } else if (!authServices.tokenIsExpired(accessToken)) {
       if (to.matched.some(record => record.meta.is_admin) && isAdmin) {
+        console.log("Is admin.");
         next();
       } else if (
         to.matched.some(record => record.meta.is_supervisor) &&
         isSupervisor
       ) {
+        console.log("Is supervisor.");
         next();
       } else if (
         to.matched.some(record => record.meta.is_resource) &&
         isResource
       ) {
+        console.log("Is resource.");
         next();
       } else {
         //TODO: Add error view. Example:
-        // router.push({
-        //   name: "error-page",
-        //   params: {
-        //     errorCode: 403,
-        //     errorMessage:
-        //       "Sorry, you don't have the right permissions to enter this page"
-        //   }
-        // });
+        console.log("Trying push error page.");
+        router.push({
+          name: "Error"
+        });
       }
       // TODO: prepare logic for all possible roles
     } else {
