@@ -30,12 +30,32 @@ export default {
       domainAccessCode: null
     };
   },
+  async mounted() {
+    await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
+    await this.$store
+      .dispatch("domainConfig/getDomainAccessCode")
+      .then(response => {
+        this.domainAccessCode = response.data.domain_code;
+      })
+      .finally(
+        async () => await this.$store.dispatch("uiParams/turnOffSpinnerOverlay")
+      );
+  },
   methods: {
     goHome() {
       this.$router.push({ name: "Home" });
     },
-    generateNewDomainAccessCode() {
-      console.log("Generate new domain access code");
+    async generateNewDomainAccessCode() {
+      await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
+      await this.$store
+        .dispatch("domainConfig/refreshDomainAccessCode")
+        .then(response => {
+          this.domainAccessCode = response.data.domain_code;
+        })
+        .finally(
+          async () =>
+            await this.$store.dispatch("uiParams/turnOffSpinnerOverlay")
+        );
     }
   }
 };
