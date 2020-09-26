@@ -1,3 +1,5 @@
 export default {
-  displaySpinnerOverlay: false
+  displaySpinnerOverlay: false,
+  errorDetected: false,
+  showNavBar: true
 };

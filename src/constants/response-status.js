@@ -1,0 +1,6 @@
+export const STATUS = {
+  FORBIDDEN: 403,
+  UNAUTHORIZED: 401,
+  SERVER_ERROR: 500,
+  NOT_FOUND: 404
+};
