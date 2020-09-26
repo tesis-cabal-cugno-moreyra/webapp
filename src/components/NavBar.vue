@@ -4,9 +4,7 @@
       <v-layout mt-4 column align-center>
         <v-flex>
           <v-avatar>
-            <v-img
-              src="https://avatar-management--avatars.us-west-2.prod.public.atl-paas.net/default-avatar.png"
-            ></v-img>
+            <v-img src="@/assets/avatar.png"></v-img>
           </v-avatar>
         </v-flex>
         <v-flex>
