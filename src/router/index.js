@@ -85,13 +85,10 @@ router.beforeEach((to, from, next) => {
         console.log("Is resource.");
         next();
       } else {
-        //TODO: Add error view. Example:
-        console.log("Trying push error page.");
         router.push({
           name: "Error"
         });
       }
-      // TODO: prepare logic for all possible roles
     } else {
       next({
         name: "Login"

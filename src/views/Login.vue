@@ -46,13 +46,6 @@
                   v-on:click="loginWithJWT"
                   >Ingresar</v-btn
                 >
-                <v-btn
-                  v-google-signin-button="clientId"
-                  class="google-signin-button"
-                  color="error"
-                  :loading="tryToLoginWithGoogle"
-                  >Google</v-btn
-                >
               </v-card-actions>
             </v-card>
           </v-col>
@@ -72,9 +65,6 @@ export default {
       username: "",
       password: "",
       tryToLogin: false,
-      tryToLoginWithGoogle: false,
-      source: "",
-      clientId: "",
       loginError: false,
       errorMessage: ""
     };
@@ -120,21 +110,6 @@ export default {
       }
       this.tryToLogin = false;
     },
-    loginWithGoogle: function() {
-      this.tryToLoginWithGoogle = true;
-      this.$store.dispatch("googleLogin/apiTrial");
-      this.tryToLoginWithGoogle = false;
-    },
-    OnGoogleAuthSuccess: function(idToken) {
-      console.log(idToken);
-      // Receive the idToken and make your magic with the backend
-      // Send token to localhost:8000/api-auth/google-login/
-      // this.$store.dispatch("googleLogin/sendGoogleTokenToBackend", idToken);
-      this.$store.dispatch("googleLogin/apiTrial");
-    },
-    OnGoogleAuthFail: function(error) {
-      console.log(error);
-    },
     resetErrors: function() {
       this.loginError = false;
     }
@@ -143,9 +118,6 @@ export default {
     ...mapGetters({
       token: "restAuth/accessToken"
     })
-  },
-  created() {
-    this.clientId = process.env.GOOGLE_CLIENT_ID;
   }
 };
 </script>
