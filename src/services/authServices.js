@@ -27,14 +27,9 @@ export default {
   getRoles() {
     let roles = [];
     const parsedJWT = this.parseJwt();
-    console.log(this.parseJwt());
-    console.log(parsedJWT.roles);
     if (parsedJWT.roles !== null && parsedJWT.roles !== []) {
       parsedJWT.roles.forEach(function(role) {
-        // console.log(role);
         let unwrappedRole = Object.keys(role);
-        console.log(unwrappedRole[0]);
-        console.log(ROLES.ADMIN.toString());
         switch (unwrappedRole[0]) {
           case ROLES.ADMIN.toString():
             roles.push(ROLES.ADMIN.toString());
@@ -46,37 +41,39 @@ export default {
             roles.push(ROLES.RESOURCE.toString());
             break;
         }
-        // console.log(Object.keys(context.roles));
       });
     }
-    console.log(roles);
     return roles;
   },
   isAdmin() {
+    let isAdmin = false;
     const roles = this.getRoles();
     roles.forEach(function(role) {
-      if (role === ROLES.ADMIN.toString()) {
-        return true;
+      if (role.toString() === ROLES.ADMIN.toString()) {
+        isAdmin = true;
       }
     });
-    return false;
+    return isAdmin;
   },
   isSupervisor() {
+    let isSupervisor = false;
     const roles = this.getRoles();
     roles.forEach(function(role) {
       if (role === ROLES.SUPERVISOR.toString()) {
-        return true;
+        isSupervisor = true;
       }
     });
-    return false;
+    return isSupervisor;
   },
   isResource() {
+    let isResource = false;
     const roles = this.getRoles();
     roles.forEach(function(role) {
       if (role === ROLES.RESOURCE.toString()) {
-        return true;
+        isResource = true;
       }
     });
+    return isResource;
   },
   getUser() {
     let user = {
