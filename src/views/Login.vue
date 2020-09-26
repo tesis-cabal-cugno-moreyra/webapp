@@ -57,6 +57,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import authServices from "@/services/authServices";
 
 export default {
   name: "Login",
@@ -83,18 +84,19 @@ export default {
           .then(response => {
             let accessToken = response.data.access_token;
             let refreshToken = response.data.refresh_token;
+
+            this.$store.dispatch("restAuth/updateAccessToken", accessToken);
+            this.$store.dispatch("restAuth/updateRefreshToken", refreshToken);
+
+            let roles = authServices.getRoles();
             let user = {
               username: response.data.user.username,
               email: response.data.user.email,
               firstName: response.data.user.first_name,
               lastName: response.data.user.last_name,
-              role: "admin" //TODO: Stop hardcoding this key.
+              roles: roles
             };
-
-            this.$store.dispatch("restAuth/updateAccessToken", accessToken);
-            this.$store.dispatch("restAuth/updateRefreshToken", refreshToken);
             this.$store.dispatch("restAuth/updateUser", user);
-
             this.$router.push({ name: "Home" });
           })
           .catch(e => {

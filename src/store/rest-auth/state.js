@@ -6,6 +6,6 @@ export default {
     email: localStorage.getItem("user.email"),
     firstName: localStorage.getItem("user.firstName"),
     lastName: localStorage.getItem("user.lastName"),
-    role: localStorage.getItem("user.role")
+    roles: localStorage.getItem("user.roles")
   }
 };

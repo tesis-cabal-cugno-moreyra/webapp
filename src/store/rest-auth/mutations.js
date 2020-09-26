@@ -1,5 +1,3 @@
-import { ROLES } from "@/constants/roles";
-
 export default {
   updateAccessToken(state, newToken) {
     localStorage.setItem("access-token", newToken);
@@ -20,17 +18,7 @@ export default {
     state.user.email = user.email;
     state.user.firstName = user.firstName;
     state.user.lastName = user.lastName;
-    switch (user.role) {
-      case ROLES.ADMIN:
-        state.user.role = ROLES.ADMIN;
-        break;
-      case ROLES.SUPERVISOR:
-        state.user.role = ROLES.SUPERVISOR;
-        break;
-      case ROLES.RESOURCE:
-        state.user.role = ROLES.RESOURCE;
-        break;
-    }
+    state.user.roles = user.roles;
     localStorage.setItem("user", JSON.stringify(state.user));
   },
   removeUser(state) {
@@ -39,6 +27,6 @@ export default {
     state.user.email = null;
     state.user.firstName = null;
     state.user.lastName = null;
-    state.user.role = null;
+    state.user.roles = null;
   }
 };

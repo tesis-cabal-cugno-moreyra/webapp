@@ -80,19 +80,16 @@ router.beforeEach((to, from, next) => {
       });
     } else if (!authServices.tokenIsExpired(accessToken)) {
       if (to.matched.some(record => record.meta.is_admin) && isAdmin) {
-        console.log("Is admin.");
         next();
       } else if (
         to.matched.some(record => record.meta.is_supervisor) &&
         isSupervisor
       ) {
-        console.log("Is supervisor.");
         next();
       } else if (
         to.matched.some(record => record.meta.is_resource) &&
         isResource
       ) {
-        console.log("Is resource.");
         next();
       } else {
         router.push({
@@ -105,7 +102,7 @@ router.beforeEach((to, from, next) => {
       });
     }
   } else if (to.matched.some(record => record.meta.guest)) {
-    if (accessToken == null) {
+    if (accessToken === null) {
       next();
     } else {
       next({
