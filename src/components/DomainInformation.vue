@@ -1,57 +1,55 @@
 <template>
   <div id="app">
     <v-stepper v-model="stepNumber" vertical>
-      <v-stepper-step :complete="stepNumber > 1" step="1"
+      <v-stepper-step :complete="stepNumber > 1" step="1" editable
         >Nombre del dominio</v-stepper-step
       >
       <v-stepper-content step="1">
         <v-row>
           <v-col cols="12" sm="6" md="4">
-            <v-form ref="form">
-              <v-text-field
-                v-model="domainName"
-                label="Agregar el nombre del dominio"
-                autocomplete="off"
-              ></v-text-field>
-            </v-form>
+            <v-text-field
+              v-model="domainName"
+              label="Agregar el nombre del dominio"
+              autocomplete="off"
+              v-on:keyup.enter="increaseStep()"
+            ></v-text-field>
           </v-col>
         </v-row>
 
-        <v-btn color="primary" @click="firstStep()">Continue</v-btn>
+        <v-btn color="primary" @click="increaseStep()">Continuar</v-btn>
         <v-btn
           text
           @click="clearFields"
           outlined
           color="grey_selected"
           class="ml-2"
-          >Cancel</v-btn
+          >Cancelar</v-btn
         >
       </v-stepper-content>
 
-      <v-stepper-step :complete="stepNumber > 2" step="2"
+      <v-stepper-step :complete="stepNumber > 2" step="2" editable
         >Alias del administrador</v-stepper-step
       >
       <v-stepper-content step="2">
         <v-row>
           <v-col cols="12" sm="6" md="4">
-            <v-form>
-              <v-text-field
-                v-model="adminAlias"
-                label="Agregar alias"
-                autocomplete="off"
-              ></v-text-field>
-            </v-form>
+            <v-text-field
+              v-model="adminAlias"
+              label="Agregar alias"
+              autocomplete="off"
+              v-on:keyup.enter="increaseStep()"
+            ></v-text-field>
           </v-col>
         </v-row>
 
-        <v-btn color="primary" @click="secondStep()">Continue</v-btn>
+        <v-btn color="primary" @click="increaseStep()">Continuar</v-btn>
         <v-btn
           text
           @click="clearFields"
           outlined
           color="grey_selected"
           class="ml-2"
-          >Cancel</v-btn
+          >Cancelar</v-btn
         >
       </v-stepper-content>
 
@@ -70,6 +68,15 @@
               <v-btn color="success" outlined small type="submit"
                 >Agregar</v-btn
               >
+              <v-btn
+                text
+                @click="clearFields"
+                small
+                outlined
+                color="grey_selected"
+                class="ml-2"
+                >Cancelar</v-btn
+              >
             </v-form>
             <v-form @submit.prevent="editSupervisor" v-if="!formAddSupervisor">
               <v-text-field
@@ -78,6 +85,15 @@
                 autocomplete="off"
               ></v-text-field>
               <v-btn color="warning" outlined small type="submit">Editar</v-btn>
+              <v-btn
+                text
+                @click="clearFields"
+                small
+                outlined
+                color="grey_selected"
+                class="ml-2"
+                >Cancelar</v-btn
+              >
             </v-form>
           </v-col>
         </v-row>
@@ -94,6 +110,7 @@
             >
               <v-card sm="6" md="4" width="400" left>
                 <v-card-subtitle>Supervisores actuales</v-card-subtitle>
+
                 <v-card-text
                   :class="['pa-2', 'black_selected']"
                   sm="6"
@@ -101,39 +118,39 @@
                   v-for="(item, index) in supervisorAliasesStringList"
                   :key="index"
                 >
-                  {{ item.name }}
-                  <v-btn
-                    icon
-                    color="success"
-                    class="['mr-2','float-right']"
-                    small
-                    @click="changeFormSupervisor(index)"
-                  >
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
-                  <v-btn
-                    icon
-                    color="primary"
-                    small
-                    @click="deleteSupervisor(item.id)"
-                  >
-                    <v-icon>mdi-delete</v-icon>
-                  </v-btn>
+                  <v-row>
+                    <v-col md="9" :class="['ml-2']">
+                      {{ item.name }}
+                    </v-col>
+                    <v-col md="1">
+                      <v-btn
+                        icon
+                        color="success"
+                        class="['mr-2','float-right']"
+                        small
+                        @click="changeFormSupervisor(index)"
+                      >
+                        <v-icon>mdi-pencil</v-icon>
+                      </v-btn>
+                    </v-col>
+                    <v-col md="1">
+                      <v-btn
+                        icon
+                        color="primary"
+                        small
+                        @click="deleteSupervisor(item.id)"
+                      >
+                        <v-icon>mdi-delete</v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
                 </v-card-text>
               </v-card>
             </v-form>
           </v-col>
         </v-row>
 
-        <v-btn color="primary" @click="thirdStep()">Continue</v-btn>
-        <v-btn
-          text
-          @click="clearFields"
-          outlined
-          color="grey_selected"
-          class="ml-2"
-          >Cancel</v-btn
-        >
+        <v-btn color="primary" @click="increaseStep()">Continuar</v-btn>
       </v-stepper-content>
 
       <v-stepper-step :complete="stepNumber > 4" step="4" editable
@@ -151,6 +168,15 @@
               <v-btn color="success" outlined small type="submit"
                 >Agregar</v-btn
               >
+              <v-btn
+                text
+                @click="clearFields"
+                small
+                outlined
+                color="grey_selected"
+                class="ml-2"
+                >Cancelar</v-btn
+              >
             </v-form>
             <v-form @submit.prevent="editIncident" v-if="!formAddIncident">
               <v-text-field
@@ -159,6 +185,15 @@
                 autocomplete="off"
               ></v-text-field>
               <v-btn color="warning" outlined small type="submit">Editar</v-btn>
+              <v-btn
+                text
+                @click="clearFields"
+                small
+                outlined
+                color="grey_selected"
+                class="ml-2"
+                >Cancelar</v-btn
+              >
             </v-form>
           </v-col>
         </v-row>
@@ -180,42 +215,42 @@
                   v-for="(item, index) in incidentAbstractionList"
                   :key="index"
                 >
-                  {{ item.name }}
-                  <v-btn
-                    icon
-                    color="success"
-                    class="['mr-2','float-right']"
-                    small
-                    @click="changeFormIncident(index)"
-                  >
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
-                  <v-btn
-                    icon
-                    color="primary"
-                    small
-                    @click="deleteIncident(item.id)"
-                  >
-                    <v-icon>mdi-delete</v-icon>
-                  </v-btn>
+                  <v-row>
+                    <v-col md="9" :class="['ml-2']">
+                      {{ item.name }}
+                    </v-col>
+                    <v-col md="1">
+                      <v-btn
+                        icon
+                        color="success"
+                        class="['mr-2','float-right']"
+                        small
+                        @click="changeFormIncident(index)"
+                      >
+                        <v-icon>mdi-pencil</v-icon>
+                      </v-btn>
+                    </v-col>
+                    <v-col md="1">
+                      <v-btn
+                        icon
+                        color="primary"
+                        small
+                        @click="deleteIncident(item.id)"
+                      >
+                        <v-icon>mdi-delete</v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
                 </v-card-text>
               </v-card>
             </v-form>
           </v-col>
         </v-row>
 
-        <v-btn color="primary" @click="fourthStep()">Continue</v-btn>
-        <v-btn
-          text
-          @click="clearFields"
-          outlined
-          color="grey_selected"
-          class="ml-2"
-          >Cancel</v-btn
-        >
+        <v-btn color="primary" @click="increaseStep()">Continuar</v-btn>
       </v-stepper-content>
 
-      <v-stepper-step :complete="stepNumber > 5" step="5" editable
+      <v-stepper-step :complete="stepNumber > 5" step="5"
         >Alias de tipos de incidentes</v-stepper-step
       >
       <v-stepper-content step="5">
@@ -255,24 +290,32 @@
                     v-for="(item, index) in TypeListSelected"
                     :key="index"
                   >
-                    {{ item.nameIncident }}
-                    <v-btn
-                      icon
-                      color="success"
-                      class="['mr-2','float-right']"
-                      small
-                      @click="changeFormTypeIncident(index)"
-                    >
-                      <v-icon>mdi-pencil</v-icon>
-                    </v-btn>
-                    <v-btn
-                      icon
-                      color="primary"
-                      small
-                      @click="deleteTypeIncident(index)"
-                    >
-                      <v-icon>mdi-delete</v-icon>
-                    </v-btn>
+                    <v-row>
+                      <v-col md="9" :class="['ml-2']">
+                        {{ item.nameIncident }}
+                      </v-col>
+                      <v-col md="1">
+                        <v-btn
+                          icon
+                          color="success"
+                          class="['mr-2','float-right']"
+                          small
+                          @click="changeFormTypeIncident(index)"
+                        >
+                          <v-icon>mdi-pencil</v-icon>
+                        </v-btn>
+                      </v-col>
+                      <v-col md="1">
+                        <v-btn
+                          icon
+                          color="primary"
+                          small
+                          @click="deleteTypeIncident(index)"
+                        >
+                          <v-icon>mdi-delete</v-icon>
+                        </v-btn>
+                      </v-col>
+                    </v-row>
                   </v-card-text>
                 </v-card>
               </v-form>
@@ -292,6 +335,15 @@
                 <v-btn color="success" outlined small type="submit"
                   >Agregar</v-btn
                 >
+                <v-btn
+                  text
+                  @click="clearFields"
+                  small
+                  outlined
+                  color="grey_selected"
+                  class="ml-2"
+                  >Cancelar</v-btn
+                >
               </v-form>
               <v-form
                 @submit.prevent="editTypeIncident"
@@ -299,25 +351,26 @@
               >
                 <v-text-field
                   v-model="textFieldTypeIncident"
-                  label="Edotar el nombre del tipo incidente"
+                  label="Editar el nombre del tipo incidente"
                   autocomplete="off"
                 ></v-text-field>
                 <v-btn color="warning" outlined small type="submit"
                   >editar</v-btn
                 >
+                <v-btn
+                  text
+                  @click="clearFields"
+                  small
+                  outlined
+                  color="grey_selected"
+                  class="ml-2"
+                  >Cancelar</v-btn
+                >
               </v-form>
             </v-col>
           </v-row>
         </v-form>
-        <v-btn color="primary" @click="fifthStep()">Continue</v-btn>
-        <v-btn
-          text
-          @click="clearFields"
-          outlined
-          color="grey_selected"
-          class="ml-2"
-          >Cancel</v-btn
-        >
+        <v-btn color="primary" @click="increaseStep()">Continuar</v-btn>
       </v-stepper-content>
 
       <v-stepper-step :complete="stepNumber > 6" step="6" editable
@@ -327,7 +380,7 @@
         <v-row>
           <v-col cols="12" sm="6" md="4">
             <v-select
-              v-model="selectIncident"
+              v-model="selectIncidentStep6"
               :items="incidentAbstractionList"
               item-value="id"
               item-text="name"
@@ -336,7 +389,7 @@
               label="Seleccionar un tipo de incidente"
               persistent-hint
               chips
-              @change="incidentMapPointSelected(selectIncident)"
+              @change="incidentMapPointSelected(selectIncidentStep6)"
             ></v-select>
           </v-col>
           <v-col v-if="!typeIncidentSelectAvalible" cols="12" sm="6" md="4">
@@ -396,10 +449,19 @@
                 <v-form @submit.prevent="editMapPoint">
                   <v-text-field
                     v-model="newMapDescription"
-                    label="Descripcion de la tarea"
+                    label="Editar la tarea"
                   ></v-text-field>
                   <v-btn color="warning" small outlined type="submit"
                     >Editar</v-btn
+                  >
+                  <v-btn
+                    text
+                    @click="clearFields"
+                    small
+                    outlined
+                    color="grey_selected"
+                    class="ml-2"
+                    >Cancelar</v-btn
                   >
                 </v-form>
               </v-card-text>
@@ -435,7 +497,7 @@
                   class="mr-2"
                   outlined
                   small
-                  @click="changeFormMapPoint(index)"
+                  @click="changeFormMapPoint(index, item)"
                   >Editar</v-btn
                 >
                 <v-btn
@@ -449,15 +511,7 @@
             </v-card>
           </v-flex>
         </v-layout>
-        <v-btn color="primary" @click="sixthStep()">Continue</v-btn>
-        <v-btn
-          text
-          @click="clearFields"
-          outlined
-          color="grey_selected"
-          class="ml-2"
-          >Cancel</v-btn
-        >
+        <v-btn color="primary" @click="increaseStep()">Continuar</v-btn>
       </v-stepper-content>
       <v-stepper-step :complete="stepNumber > 7" step="7" editable
         >Tipos de recursos</v-stepper-step
@@ -503,42 +557,50 @@
                   v-for="(item, index) in resourceSelectedList"
                   :key="index"
                 >
-                  {{ item.descriptionResource }}
-                  <v-btn
-                    icon
-                    color="success"
-                    class="['mr-2','float-right']"
-                    small
-                    @click="changeFormResource(index)"
-                  >
-                    <v-icon>mdi-pencil</v-icon>
-                  </v-btn>
-                  <v-btn
-                    icon
-                    color="primary"
-                    small
-                    @click="deleteResource(item.id)"
-                  >
-                    <v-icon>mdi-delete</v-icon>
-                  </v-btn>
+                  <v-row>
+                    <v-col md="9" :class="['ml-2']">
+                      {{ item.descriptionResource }}
+                    </v-col>
+                    <v-col md="1">
+                      <v-btn
+                        icon
+                        color="success"
+                        class="['mr-2','float-right']"
+                        small
+                        @click="changeFormResource(index)"
+                      >
+                        <v-icon>mdi-pencil</v-icon>
+                      </v-btn>
+                    </v-col>
+                    <v-col md="1">
+                      <v-btn
+                        icon
+                        color="primary"
+                        small
+                        @click="deleteResource(item.id)"
+                      >
+                        <v-icon>mdi-delete</v-icon>
+                      </v-btn>
+                    </v-col>
+                  </v-row>
                 </v-card-text>
               </v-card>
             </v-form>
           </v-col>
         </v-row>
 
-        <v-btn color="primary" @click="seventhStep()">Continue</v-btn>
+        <v-btn color="primary" @click="increaseStep()">Continuar</v-btn>
         <v-btn
           text
           @click="clearFields"
           outlined
           color="grey_selected"
           class="ml-2"
-          >Cancel</v-btn
+          >Cancelar</v-btn
         >
       </v-stepper-content>
-      <v-stepper-step :complete="stepNumber > 8" step="8" editable
-        >Tipos de recursos</v-stepper-step
+      <v-stepper-step :complete="stepNumber > 8" step="8"
+        >Relación entre incidentes y recursos</v-stepper-step
       >
       <v-stepper-content step="8">
         <v-col v-if="!resourceSelectedList.length > 0" cols="12" sm="4" md="6">
@@ -615,14 +677,14 @@
             </v-row>
           </v-form>
         </v-form>
-        <v-btn color="primary" @click="increaseStep()">Continue</v-btn>
+        <v-btn color="primary" @click="increaseStep()">Continuar</v-btn>
         <v-btn
           text
           @click="clearFields"
           outlined
           color="grey_selected"
           class="ml-2"
-          >Cancel</v-btn
+          >Cancelar</v-btn
         >
       </v-stepper-content>
     </v-stepper>
@@ -637,22 +699,25 @@
       </template>
     </v-snackbar>
 
-    <!-- dialog confirm -->
-    <v-dialog v-model="dialog" width="350">
-      <v-card>
-        <v-card-title>{{ messaggeDialog }}</v-card-title>
+    <!-- mensajes de confirmacion -->
+    <v-layout>
+      <v-dialog v-model="dialog" width="410">
+        <v-card cols="12" sm="4" md="8">
+          <v-card-title>{{ messaggeDialog }}</v-card-title>
 
-        <v-card-text></v-card-text>
+          <v-card-text></v-card-text>
+          <v-card-actions>
+            <v-btn color="green darken-1" text @click="dialog = false"
+              >No</v-btn
+            >
 
-        <v-card-actions>
-          <v-spacer></v-spacer>
-
-          <v-btn color="green darken-1" text @click="dialog = false">No</v-btn>
-
-          <v-btn color="green darken-1" text>Continuar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+            <v-btn color="green darken-1" text @click="deleteOrganization()"
+              >Continuar</v-btn
+            >
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-layout>
   </div>
 </template>
 
@@ -672,38 +737,37 @@ export default {
     return {
       domainObject: {},
       snackbar: false,
-      functionS: "",
       dialog: false,
       isMapPointAvaliable: false,
       isListResourceAvaliable: false,
       formDescriptionMapPoint: true,
-      formDescriptionResource: true,
       formAddSupervisor: true,
       formAddIncident: true,
       formAddTypeIncident: true,
       formAddResource: true,
       typeIncidentSelectAvalible: false,
       resourceTypeIncidentSelectAvalible: false,
-      domainName: "Hola",
+      domainName: "",
       newMapDescription: "",
-      newResourceDescription: "",
       textFieldSupervisor: "",
       textFieldTypeIncident: "",
       textFieldIncident: "",
       textFieldResource: "",
-      adminAlias: "Hola",
+      adminAlias: "",
       stepNumber: "1",
       autoCompleteResource: "",
-      AutoCompleteIncident: "",
       selectedIncidentType: "",
       search: null,
       supervisorAliasesStringList: [
+        /*
         { id: 1, name: "Supervisor" },
         { id: 2, name: "Encargado" },
         { id: 3, name: "Tester" }
+     */
       ],
       TypeListSelected: [],
       incidentAbstractionList: [
+        /*
         {
           id: 1,
           name: "Incendio",
@@ -723,30 +787,24 @@ export default {
           ]
         },
         { id: 4, name: "Auxilio", incidentTypes: [] }
+     */
       ],
       MapPointSelectedList: [],
       MapPointViewSelectedList: [],
-      MapPointDescriptionList: [],
       incidentResourceList: [],
       resourceSelectedList: [],
-      itemsResource: [],
-      domainList: [],
       name: "",
       messaggeSnackbar: "",
       messaggeDialog: "",
       timeout: 1500,
       selectIncident: "",
+      selectIncidentStep6: "",
       selectedResourceIncidentType: "",
       selectResourceIncident: "",
       indexMapPoint: "",
+      idMapPoint: "",
       indexResource: "",
-      idDelete: "",
-      MapPointLisTest: {
-        incident: "",
-        typeIncident: "",
-        mapPoints: [],
-        resource: []
-      }
+      pointerToDelete: ""
     };
   },
   methods: {
@@ -787,20 +845,34 @@ export default {
               "Debe ingresar al menos un tipo de incidentes";
             this.snackbar = true;
           } else {
-            this.textFieldIncident = "";
-            this.stepNumber = "5";
+            let isEmptyType = false;
+            this.incidentAbstractionList.forEach(incident => {
+              if (incident.incidentTypes.length > 0) {
+                isEmptyType = true;
+              }
+            });
+            if (isEmptyType) {
+              this.stepNumber = "6";
+
+              this.messaggeSnackbar =
+                "Ya no puede modificar los tipos de incidentes";
+              this.snackbar = true;
+            } else {
+              this.textFieldIncident = "";
+              this.stepNumber = "5";
+            }
           }
           break;
 
         case "5":
-          this.selectIncident = "";
-          this.textFieldTypeIncident = "";
-          this.formAddTypeIncident = true;
-          this.stepNumber = "6";
+          this.messaggeDialog =
+            "¿No podra volver a editar este punto realmente desea continuar?";
+          this.pointerToDelete = "";
+          this.dialog = true;
           break;
 
         case "6":
-          this.selectIncident = null;
+          this.selectIncidentStep6 = null;
           this.selectedIncidentType = null;
           this.isMapPointAvaliable = false;
           this.TypeListSelected = [];
@@ -819,95 +891,32 @@ export default {
           this.TypeListSelected = [];
           this.stepNumber = "9";
           this.domainCreate();
+          this.supervisorAliasesToDomainObject();
+          this.fillDomainWithDependencies();
 
           break;
 
         default:
-          console.log("se rompio el step");
-          console.log(this.stepNumber);
           break;
       }
     },
-    firstStep() {
-      this.increaseStep();
-      // Validar (increaseStep)
-      // Armar el Domain
+
+    domainCreate() {
       const domain = new Domain();
       domain.name = this.domainName;
       this.domainObject = domain;
-    },
-    secondStep() {
-      this.increaseStep();
-      // Validar (increaseStep)
-      // ingresar admin alias en domain
       this.domainObject.adminAlias = this.adminAlias;
     },
-    thirdStep() {
-      this.increaseStep();
-      // Validar (increaseStep)
-      // ingresar admin alias en domain
+
+    supervisorAliasesToDomainObject() {
       const supervisorAliasObjects = [];
       this.supervisorAliasesStringList.forEach(supervisorAlias => {
         supervisorAliasObjects.push(new SupervisorAlias(supervisorAlias.name));
       });
       this.domainObject.supervisorAliases = supervisorAliasObjects;
     },
-    fourthStep() {
-      this.increaseStep();
-      // Validar (increaseStep)
-      // ingresar listado de incidentAbstractions
-      /*const incidentAbstractionsObjects = []
-      this.incidentAbstractionList.forEach((incidentAbstraction) => {
-        const incidentAbstractionInstance = new IncidentAbstraction()
-        incidentAbstractionInstance.name = incidentAbstraction.name
-        incidentAbstractionsObjects.push(incidentAbstractionInstance)
-      })
-      this.domainObject.incidentAbstractions = incidentAbstractionsObjects*/
-    },
-    fifthStep() {
-      this.increaseStep();
-      // Validar (increaseStep)
-      // ingresar listado de incidentTypes en cada abstraction
-      const incidentAbstractionsObjects = [];
-      this.incidentAbstractionList.forEach(incidentAbstraction => {
-        const incidentAbstractionInstance = new IncidentAbstraction();
-        incidentAbstractionInstance.name = incidentAbstraction.name;
-        const incidentTypeObjects = [];
-        incidentAbstraction.incidentTypes.forEach(incidentType => {
-          const incidentTypeInstance = new IncidentType();
-          incidentTypeInstance.name = incidentType.nameIncident;
-          incidentTypeObjects.push(incidentTypeInstance);
-          // resourceTypes
-          // MapPointDescriptions
-        });
-        incidentAbstractionInstance.types = incidentTypeObjects;
-        incidentAbstractionsObjects.push(incidentAbstractionInstance);
-      });
-      this.domainObject.incidentAbstractions = incidentAbstractionsObjects;
-    },
-    sixthStep() {
-      this.increaseStep();
-      const incidentAbstractionsObjects = [];
-      this.incidentAbstractionList.forEach(incidentAbstraction => {
-        const incidentAbstractionInstance = new IncidentAbstraction();
-        incidentAbstractionInstance.name = incidentAbstraction.name;
-        const incidentTypeObjects = [];
-        incidentAbstraction.incidentTypes.forEach(incidentType => {
-          const incidentTypeInstance = new IncidentType();
-          incidentTypeInstance.name = incidentType.nameIncident;
-          incidentTypeObjects.push(incidentTypeInstance);
-          // resourceTypes
-          // MapPointDescriptions
-        });
-        incidentAbstractionInstance.types = incidentTypeObjects;
-        incidentAbstractionsObjects.push(incidentAbstractionInstance);
-      });
-      this.domainObject.incidentAbstractions = incidentAbstractionsObjects;
-    },
-    seventhStep() {
-      this.increaseStep();
-    },
-    domainCreate() {
+
+    fillDomainWithDependencies() {
       const incidentAbstractionsObjects = [];
       this.incidentAbstractionList.forEach(incidentAbstraction => {
         const incidentAbstractionInstance = new IncidentAbstraction();
@@ -928,7 +937,6 @@ export default {
             const filteredResources = this.incidentResourceList.filter(
               e => e.TypeIncident == incidentType.nameIncident
             );
-            console.log({ filteredResources });
 
             filteredMapPoints.forEach(filteredMapPoint => {
               mapPointObjects.push(
@@ -978,8 +986,6 @@ export default {
         incidentAbstractionsObjects.push(incidentAbstractionInstance);
       });
       this.domainObject.incidentAbstractions = incidentAbstractionsObjects;
-      console.log(this.domainObject);
-      console.log(JSON.stringify(this.domainObject));
     },
 
     clearFields() {
@@ -991,22 +997,21 @@ export default {
           this.adminAlias = "";
           break;
         case "3":
+          this.formAddSupervisor = true;
           this.textFieldSupervisor = "";
           break;
         case "4":
+          this.formAddIncident = true;
+
           this.textFieldIncident = "";
 
           break;
         case "5":
           this.textFieldTypeIncident = "";
-          this.selectIncident = "";
           this.formAddTypeIncident = true;
           break;
         case "6":
-          this.selectIncident = null;
-          this.selectedIncidentType = null;
           this.isMapPointAvaliable = false;
-          this.TypeListSelected = [];
           this.formDescriptionMapPoint = true;
 
           break;
@@ -1021,31 +1026,61 @@ export default {
           break;
       }
     },
+    deleteOrganization() {
+      switch (this.stepNumber) {
+        case "3":
+          this.supervisorAliasesStringList = this.supervisorAliasesStringList.filter(
+            e => e.id != this.pointerToDelete
+          );
+          this.dialog = false;
+          this.pointerToDelete = "";
+          break;
+        case "4":
+          this.incidentAbstractionList = this.incidentAbstractionList.filter(
+            e => e.id != this.pointerToDelete
+          );
+          this.dialog = false;
+          this.pointerToDelete = "";
 
-    addResource() {
-      if (this.textFieldResource.trim().length === 0) {
-        this.messaggeSnackbar = "Debe ingresar el recurso";
-        this.snackbar = true;
-        return;
+          break;
+
+        case "5":
+          if (this.pointerToDelete == "") {
+            this.selectIncident = "";
+            this.textFieldTypeIncident = "";
+            this.formAddTypeIncident = true;
+            this.dialog = false;
+            this.stepNumber = "6";
+          } else {
+            this.TypeListSelected.splice(this.pointerToDelete, 1);
+            this.dialog = false;
+            this.pointerToDelete = "";
+          }
+
+          break;
+
+        case "6":
+          this.MapPointSelectedList = this.MapPointSelectedList.filter(
+            e => e.id != this.pointerToDelete
+          );
+          this.MapPointViewSelectedList = this.MapPointViewSelectedList.filter(
+            e => e.id != this.pointerToDelete
+          );
+          this.dialog = false;
+          this.pointerToDelete = "";
+          break;
+
+        case "7":
+          this.resourceSelectedList = this.resourceSelectedList.filter(
+            e => e.id != this.pointerToDelete
+          );
+          this.dialog = false;
+          this.pointerToDelete = "";
+          break;
+
+        default:
+          break;
       }
-      var descriptionIsRepeated = this.resourceSelectedList.some(
-        e =>
-          e.descriptionResource.toLowerCase() ==
-          this.textFieldResource.toLowerCase()
-      );
-
-      if (descriptionIsRepeated) {
-        this.messaggeSnackbar = "El recurso ingresado ya existe ";
-        this.snackbar = true;
-        return;
-      }
-
-      this.resourceSelectedList.push({
-        id: Date.now(),
-        descriptionResource: this.textFieldResource
-      });
-
-      this.textFieldResource = "";
     },
 
     addIncident() {
@@ -1071,25 +1106,36 @@ export default {
       });
       this.textFieldIncident = "";
     },
-    /* showdeleteIncident(id) {
-      this.messaggeDialog = "Desea elimninar este incidente?";
-      this.dialog = true;
-      this.idDelete = id;
-    },*/
+
     deleteIncident(id) {
-      if (confirm("Desea elimninar este supervisor?")) {
-        this.incidentAbstractionList = this.incidentAbstractionList.filter(
-          e => e.id != id
-        );
-      }
+      this.messaggeDialog = "¿Desea elimninar este incidente?";
+      this.dialog = true;
+      this.pointerToDelete = id;
     },
+
     editIncident() {
+      if (this.textFieldIncident.trim().length === 0) {
+        this.messaggeSnackbar = "El campo de incidente esta vacío";
+        this.snackbar = true;
+        return;
+      }
+      var incidentIsRepeated = this.incidentAbstractionList.some(
+        e =>
+          e.name.toLowerCase().trim() ==
+          this.textFieldIncident.toLowerCase().trim()
+      );
+      if (incidentIsRepeated) {
+        this.messaggeSnackbar = "El incidente ingresado ya existe";
+        this.snackbar = true;
+        return;
+      }
       this.incidentAbstractionList[
         this.IncidetnIndex
       ].name = this.textFieldIncident;
       this.textFieldIncident = "";
       this.formAddIncident = true;
     },
+
     changeFormIncident(IncidetnIndex) {
       this.formAddIncident = false;
       this.textFieldIncident = this.incidentAbstractionList[IncidetnIndex].name;
@@ -1120,6 +1166,75 @@ export default {
 
       this.textFieldTypeIncident = "";
     },
+
+    deleteTypeIncident(index) {
+      this.messaggeDialog = "¿Desea elimninar este tipo de incidente?";
+      this.dialog = true;
+      this.pointerToDelete = index;
+    },
+
+    changeFormTypeIncident(indexTypeIncident) {
+      this.formAddTypeIncident = false;
+      this.textFieldTypeIncident = this.TypeListSelected[
+        indexTypeIncident
+      ].nameIncident;
+      this.indexTypeIncident = indexTypeIncident;
+    },
+
+    editTypeIncident() {
+      if (this.textFieldTypeIncident.trim().length === 0) {
+        this.messaggeSnackbar =
+          "Debe ingresar un tipo de incidente para agregarlo";
+        this.snackbar = true;
+        return;
+      }
+      var typeIncidentIsRepeated = this.TypeListSelected.some(
+        e =>
+          e.nameIncident.toLowerCase() ==
+          this.textFieldTypeIncident.toLowerCase()
+      );
+      if (typeIncidentIsRepeated) {
+        this.messaggeSnackbar = "El supervisor ingresado ya existe";
+        this.snackbar = true;
+        return;
+      }
+
+      this.TypeListSelected[
+        this.indexTypeIncident
+      ].nameIncident = this.textFieldTypeIncident;
+      this.textFieldTypeIncident = "";
+      this.formAddTypeIncident = true;
+    },
+
+    editSupervisor() {
+      if (this.textFieldSupervisor.trim().length === 0) {
+        this.messaggeSnackbar = "Debe ingresar un supervisor para agregarlo";
+        this.snackbar = true;
+        return;
+      }
+      var supervisorIsRepeated = this.supervisorAliasesStringList.some(
+        e => e.name.toLowerCase() == this.textFieldSupervisor.toLowerCase()
+      );
+      if (supervisorIsRepeated) {
+        this.messaggeSnackbar = "El supervisor ingresado ya existe";
+        this.snackbar = true;
+        return;
+      }
+      this.supervisorAliasesStringList[
+        this.supervisorAliasIndex
+      ].name = this.textFieldSupervisor;
+      this.textFieldSupervisor = "";
+      this.formAddSupervisor = true;
+    },
+
+    changeFormSupervisor(supervisorAliasIndex) {
+      this.formAddSupervisor = false;
+      this.textFieldSupervisor = this.supervisorAliasesStringList[
+        supervisorAliasIndex
+      ].name;
+      this.supervisorAliasIndex = supervisorAliasIndex;
+    },
+
     addSupervisor() {
       if (this.textFieldSupervisor.trim().length === 0) {
         this.messaggeSnackbar = "Debe ingresar un supervisor para agregarlo";
@@ -1142,47 +1257,9 @@ export default {
     },
 
     deleteSupervisor(id) {
-      if (confirm("Desea elimninar este supervisor?")) {
-        this.supervisorAliasesStringList = this.supervisorAliasesStringList.filter(
-          e => e.id != id
-        );
-      }
-    },
-    deleteTypeIncident(index) {
-      if (confirm("Desea elimninar este tipo de incidente?")) {
-        this.TypeListSelected.splice(index, 1);
-      }
-    },
-    changeFormTypeIncident(indexTypeIncident) {
-      this.formAddTypeIncident = false;
-      this.textFieldTypeIncident = this.TypeListSelected[
-        indexTypeIncident
-      ].nameIncident;
-      this.indexTypeIncident = indexTypeIncident;
-    },
-
-    editTypeIncident() {
-      this.TypeListSelected[
-        this.indexTypeIncident
-      ].nameIncident = this.textFieldTypeIncident;
-      this.textFieldTypeIncident = "";
-      this.formAddTypeIncident = true;
-    },
-
-    editSupervisor() {
-      this.supervisorAliasesStringList[
-        this.supervisorAliasIndex
-      ].name = this.textFieldSupervisor;
-      this.textFieldSupervisor = "";
-      this.formAddSupervisor = true;
-    },
-
-    changeFormSupervisor(supervisorAliasIndex) {
-      this.formAddSupervisor = false;
-      this.textFieldSupervisor = this.supervisorAliasesStringList[
-        supervisorAliasIndex
-      ].name;
-      this.supervisorAliasIndex = supervisorAliasIndex;
+      this.messaggeDialog = "¿Desea elimninar este supervisor?";
+      this.dialog = true;
+      this.pointerToDelete = id;
     },
 
     IncidentSelected(valueSelected) {
@@ -1208,16 +1285,16 @@ export default {
         this.snackbar = true;
         return;
       }
-
+      const idUnic = Date.now();
       this.MapPointSelectedList.push({
-        id: Date.now(),
+        id: idUnic,
         Incident: this.selectIncident.name,
         TypeIncident: this.selectedIncidentType.nameIncident,
         descriptionPoint: this.newMapDescription
       });
 
       this.MapPointViewSelectedList.push({
-        id: Date.now(),
+        id: idUnic,
         Incident: this.selectIncident.name,
         TypeIncident: this.selectedIncidentType.nameIncident,
         descriptionPoint: this.newMapDescription
@@ -1225,42 +1302,67 @@ export default {
 
       this.newMapDescription = "";
     },
+
     deleteMapPoint(id) {
-      if (confirm("Desea elimninar esta tarea?")) {
-        this.MapPointSelectedList = this.MapPointSelectedList.filter(
-          e => e.id != id
-        );
-        this.MapPointViewSelectedList = this.MapPointViewSelectedList.filter(
-          e => e.id != id
-        );
-      }
+      this.messaggeDialog = "¿Desea elimninar esta tarea?";
+      this.dialog = true;
+      this.pointerToDelete = id;
     },
 
-    changeFormMapPoint(index) {
+    changeFormMapPoint(indexMapPointView, itemSelected) {
       this.formDescriptionMapPoint = false;
-      this.newMapDescription = this.MapPointSelectedList[
-        index
+
+      this.newMapDescription = this.MapPointViewSelectedList[
+        indexMapPointView
       ].descriptionPoint;
-      this.indexMapPoint = index;
+
+      this.indexMapPoint = indexMapPointView;
+      this.idMapPoint = itemSelected.id;
     },
 
     editMapPoint() {
-      this.MapPointSelectedList[
-        this.indexMapPoint
-      ].descriptionPoint = this.newMapDescription;
+      if (this.newMapDescription.trim().length === 0) {
+        this.messaggeSnackbar = "Debe ingresar la tarea";
+        this.snackbar = true;
+        return;
+      }
+
+      var descriptionIsRepeated = this.MapPointViewSelectedList.some(
+        e =>
+          e.descriptionPoint.toLowerCase() ==
+          this.newMapDescription.toLowerCase()
+      );
+
+      if (descriptionIsRepeated) {
+        this.messaggeSnackbar = "La tarea ingresada ya existe ";
+        this.snackbar = true;
+        return;
+      }
 
       this.MapPointViewSelectedList[
         this.indexMapPoint
+      ].descriptionPoint = this.newMapDescription;
+      let idMap = "";
+      this.MapPointSelectedList.forEach((mapPoints, index) => {
+        if (mapPoints.id == this.idMapPoint) {
+          idMap = index;
+        }
+      });
+      this.MapPointSelectedList[
+        idMap
       ].descriptionPoint = this.newMapDescription;
 
       this.formDescriptionMapPoint = true;
       this.newMapDescription = "";
     },
+
     incidentTypeMapPointSelected(valueSelected) {
       this.MapPointViewSelectedList = this.MapPointSelectedList.filter(
         e => e.TypeIncident == valueSelected.nameIncident
       );
       this.isMapPointAvaliable = true;
+      this.formDescriptionMapPoint = true;
+      this.newMapDescription = "";
     },
 
     incidentMapPointSelected(valueSelected) {
@@ -1268,6 +1370,8 @@ export default {
         this.TypeListSelected = valueSelected.incidentTypes;
         this.typeIncidentSelectAvalible = true;
         this.isMapPointAvaliable = false;
+        this.formDescriptionMapPoint = true;
+        this.newMapDescription = "";
         return;
       }
       if (valueSelected.incidentTypes.length == 0) {
@@ -1275,6 +1379,8 @@ export default {
         this.TypeListSelected = valueSelected.incidentTypes;
         this.typeIncidentSelectAvalible = false;
         this.isMapPointAvaliable = true;
+        this.formDescriptionMapPoint = true;
+        this.newMapDescription = "";
         this.MapPointViewSelectedList = this.MapPointSelectedList.filter(
           e => e.Incident == valueSelected.name
         );
@@ -1312,6 +1418,7 @@ export default {
         return;
       }
     },
+
     resourceIncidentTypeSelected(typeIncidentSelected) {
       this.isListResourceAvaliable = true;
 
@@ -1329,6 +1436,33 @@ export default {
 
       this.autoCompleteResource = resourceFilter[0];
     },
+
+    addResource() {
+      if (this.textFieldResource.trim().length === 0) {
+        this.messaggeSnackbar = "Debe ingresar el recurso";
+        this.snackbar = true;
+        return;
+      }
+      var descriptionIsRepeated = this.resourceSelectedList.some(
+        resource =>
+          resource.descriptionResource.toLowerCase() ==
+          this.textFieldResource.toLowerCase()
+      );
+
+      if (descriptionIsRepeated) {
+        this.messaggeSnackbar = "El recurso ingresado ya existe ";
+        this.snackbar = true;
+        return;
+      }
+
+      this.resourceSelectedList.push({
+        id: Date.now(),
+        descriptionResource: this.textFieldResource
+      });
+
+      this.textFieldResource = "";
+    },
+
     changeFormResource(index) {
       this.formAddResource = false;
       this.textFieldResource = this.resourceSelectedList[
@@ -1338,6 +1472,12 @@ export default {
     },
 
     editResource() {
+      if (this.textFieldResource.trim().length === 0) {
+        this.messaggeSnackbar = "Debe ingresar el recurso";
+        this.snackbar = true;
+        return;
+      }
+
       var descriptionIsRepeated = this.resourceSelectedList.some(
         e =>
           e.descriptionResource.toLowerCase() ==
@@ -1359,16 +1499,12 @@ export default {
     },
 
     deleteResource(id) {
-      if (confirm("Desea elimninar este recurso?")) {
-        this.resourceSelectedList = this.resourceSelectedList.filter(
-          e => e.id != id
-        );
-      }
+      this.messaggeDialog = "¿Desea elimninar este recurso?";
+      this.dialog = true;
+      this.pointerToDelete = id;
     },
 
     addResourceSelected(resourcesSelected) {
-      console.log({ resourcesSelected });
-
       if (this.selectedResourceIncidentType.nameIncident != undefined) {
         var filterIncidentList = this.incidentResourceList.filter(
           e => e.Incident == this.selectResourceIncident.name
@@ -1401,7 +1537,6 @@ export default {
         TypeIncident: this.selectedResourceIncidentType.nameIncident,
         Resources: resourcesSelected
       });
-      console.log(this.incidentResourceList);
     }
   }
 };
