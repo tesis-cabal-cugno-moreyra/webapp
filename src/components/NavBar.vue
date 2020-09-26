@@ -4,11 +4,11 @@
       <v-layout mt-4 column align-center>
         <v-flex>
           <v-avatar>
-            <v-img src="https://randomuser.me/api/portraits/lego/6.jpg"></v-img>
+            <v-img src="@/assets/avatar.png"></v-img>
           </v-avatar>
         </v-flex>
         <v-flex>
-          <p class="gray--text mt-3 headline">Facundito</p>
+          <p class="gray--text mt-3 headline">{{ this.user.username }}</p>
         </v-flex>
       </v-layout>
       <v-divider></v-divider>
@@ -36,7 +36,7 @@
           <v-icon color="grey darken-1">mdi-settings</v-icon>
         </v-list-item-icon>
         <v-list-item-title class="grey--text text--darken-1"
-          >Configuracion</v-list-item-title
+          >Configuración</v-list-item-title
         >
       </v-list-item>
 
@@ -49,9 +49,18 @@
             $vuetify.theme.dark
               ? 'Cambiar a tema claro'
               : 'Cambiar a tema oscuro'
-          }  `
+          }`
         "
       ></v-switch>
+      <v-divider></v-divider>
+      <v-list-item link v-on:click="logout">
+        <v-list-item-icon>
+          <v-icon color="grey darken-1">mdi-logout</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title class="grey--text text--darken-1"
+          >Cerrar sesión</v-list-item-title
+        >
+      </v-list-item>
     </v-navigation-drawer>
 
     <v-app-bar app clipped-left>
@@ -66,12 +75,25 @@
 </template>
 
 <script>
+import router from "@/router";
+import authServices from "@/services/authServices";
+
 export default {
   name: "NavBar",
-  data: () => ({
-    drawer: false
-  }),
+  data: function() {
+    return {
+      drawer: false,
+      user: null
+    };
+  },
+  created() {
+    this.user = authServices.getUser();
+  },
   methods: {
+    logout: function() {
+      this.$store.dispatch("restAuth/logout");
+      router.push({ name: "Login" });
+    },
     goHome() {
       this.$router.push({ name: "Home" });
     },
