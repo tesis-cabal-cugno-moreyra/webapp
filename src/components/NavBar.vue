@@ -13,6 +13,24 @@
       </v-layout>
       <v-divider></v-divider>
 
+      <v-list-item link v-on:click="goHome">
+        <v-list-item-icon>
+          <v-icon color="grey darken-1">mdi-home</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title class="grey--text text--darken-1"
+          >Página principal</v-list-item-title
+        >
+      </v-list-item>
+
+      <v-list-item link v-on:click="goDomainAccessCode">
+        <v-list-item-icon>
+          <v-icon color="grey darken-1">mdi-settings</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title class="grey--text text--darken-1"
+          >Código de Acceso</v-list-item-title
+        >
+      </v-list-item>
+
       <v-list-item link>
         <v-list-item-icon>
           <v-icon color="grey darken-1">mdi-settings</v-icon>
@@ -52,6 +70,14 @@ export default {
   name: "NavBar",
   data: () => ({
     drawer: false
-  })
+  }),
+  methods: {
+    goHome() {
+      this.$router.push({ name: "Home" });
+    },
+    goDomainAccessCode() {
+      this.$router.push({ name: "DomainAccessCode" });
+    }
+  }
 };
 </script>
