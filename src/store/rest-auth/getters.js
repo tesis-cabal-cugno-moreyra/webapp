@@ -14,12 +14,33 @@ export default {
     return state.user;
   },
   isAdmin(state) {
-    return state.user.role === ROLES.ADMIN;
+    if (state.user.roles !== null) {
+      state.user.roles.forEach(function(role) {
+        if (role === ROLES.ADMIN.toString()) {
+          return true;
+        }
+      });
+    }
+    return false;
   },
   isSupervisor(state) {
-    return state.user.role === ROLES.SUPERVISOR;
+    if (state.user.roles !== null) {
+      state.user.roles.forEach(function(role) {
+        if (role === ROLES.SUPERVISOR.toString()) {
+          return true;
+        }
+      });
+    }
+    return false;
   },
   isResource(state) {
-    return state.user.role === ROLES.RESOURCE;
+    if (state.user.roles !== null) {
+      state.user.roles.forEach(function(role) {
+        if (role === ROLES.RESOURCE.toString()) {
+          return true;
+        }
+      });
+    }
+    return false;
   }
 };

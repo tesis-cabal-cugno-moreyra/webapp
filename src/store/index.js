@@ -3,7 +3,7 @@ import Vuex from "vuex";
 
 import uiParams from "./ui-params";
 import restAuth from "./rest-auth";
-import googleLogin from "./google-login";
+import domainConfig from "./domain-config";
 
 Vue.use(Vuex);
 
@@ -11,6 +11,6 @@ export default new Vuex.Store({
   modules: {
     uiParams,
     restAuth,
-    googleLogin
+    domainConfig
   }
 });

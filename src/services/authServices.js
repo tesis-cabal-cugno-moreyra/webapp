@@ -24,19 +24,56 @@ export default {
   getToken() {
     return localStorage.getItem("access-token");
   },
-  getRole() {
-    let user = JSON.parse(localStorage.getItem("user"));
-    return user.role;
+  getRoles() {
+    let roles = [];
+    const parsedJWT = this.parseJwt();
+    if (parsedJWT.roles !== null && parsedJWT.roles !== []) {
+      parsedJWT.roles.forEach(function(role) {
+        let unwrappedRole = Object.keys(role);
+        switch (unwrappedRole[0]) {
+          case ROLES.ADMIN.toString():
+            roles.push(ROLES.ADMIN.toString());
+            break;
+          case ROLES.SUPERVISOR.toString():
+            roles.push(ROLES.SUPERVISOR.toString());
+            break;
+          case ROLES.RESOURCE.toString():
+            roles.push(ROLES.RESOURCE.toString());
+            break;
+        }
+      });
+    }
+    return roles;
   },
   isAdmin() {
-    // console.log(ROLES.ADMIN);
-    return this.getRole() === ROLES.ADMIN.toString();
+    let isAdmin = false;
+    const roles = this.getRoles();
+    roles.forEach(function(role) {
+      if (role.toString() === ROLES.ADMIN.toString()) {
+        isAdmin = true;
+      }
+    });
+    return isAdmin;
   },
   isSupervisor() {
-    return this.getRole() === ROLES.SUPERVISOR.toString();
+    let isSupervisor = false;
+    const roles = this.getRoles();
+    roles.forEach(function(role) {
+      if (role === ROLES.SUPERVISOR.toString()) {
+        isSupervisor = true;
+      }
+    });
+    return isSupervisor;
   },
   isResource() {
-    return this.getRole() === ROLES.RESOURCE.toString();
+    let isResource = false;
+    const roles = this.getRoles();
+    roles.forEach(function(role) {
+      if (role === ROLES.RESOURCE.toString()) {
+        isResource = true;
+      }
+    });
+    return isResource;
   },
   getUser() {
     let user = {
