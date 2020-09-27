@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <v-main>
     <v-stepper v-model="stepNumber" vertical>
       <v-stepper-step :complete="stepNumber > 1" step="1" editable
         >Nombre del dominio</v-stepper-step
@@ -707,18 +707,16 @@
 
           <v-card-text></v-card-text>
           <v-card-actions>
-            <v-btn color="green darken-1" text @click="dialog = false"
-              >No</v-btn
-            >
+            <v-btn color="grey_selected" text @click="dialog = false">No</v-btn>
 
-            <v-btn color="green darken-1" text @click="deleteOrganization()"
+            <v-btn color="primary" text @click="deleteOrganization()"
               >Continuar</v-btn
             >
           </v-card-actions>
         </v-card>
       </v-dialog>
     </v-layout>
-  </div>
+  </v-main>
 </template>
 
 <script>
@@ -893,12 +891,35 @@ export default {
           this.domainCreate();
           this.supervisorAliasesToDomainObject();
           this.fillDomainWithDependencies();
+          this.sendDomainConfig();
 
           break;
 
         default:
           break;
       }
+    },
+
+    async sendDomainConfig() {
+      await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
+      await this.$store
+        .dispatch("domainConfig/createDomainConfig", this.domainObject)
+        .then(async () => {
+          await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+          this.messaggeSnackbar = "Creación del dominio exitosa!";
+          this.snackbar = true;
+          setTimeout(() => {
+            this.$router.push({ name: "Home" });
+          }, this.timeout);
+        })
+        .catch(async () => {
+          this.messaggeSnackbar = "No se pudo crear el dominio!";
+          this.snackbar = true;
+        })
+        .finally(
+          async () =>
+            await this.$store.dispatch("uiParams/turnOffSpinnerOverlay")
+        );
     },
 
     domainCreate() {
@@ -985,7 +1006,9 @@ export default {
         incidentAbstractionInstance.types = incidentTypeObjects;
         incidentAbstractionsObjects.push(incidentAbstractionInstance);
       });
+
       this.domainObject.incidentAbstractions = incidentAbstractionsObjects;
+      this.domainObject.resourceTypes = []; //Los recursos sin relaciones se pierden DOCUMENTAR
     },
 
     clearFields() {
