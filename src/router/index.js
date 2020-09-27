@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
+import DomainInformation from "../components/DomainInformation.vue";
 import Login from "../views/Login.vue";
 import Error from "../views/Error.vue";
 import authServices from "@/services/authServices";
@@ -38,6 +39,15 @@ const routes = [
       requires_auth: true,
       is_admin: true,
       is_supervisor: true
+    }
+  },
+  {
+    path: "/domain-config",
+    name: "Config",
+    component: DomainInformation,
+    meta: {
+      requires_auth: true,
+      is_admin: true
     }
   }
 ];
