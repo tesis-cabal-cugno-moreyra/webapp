@@ -70,9 +70,7 @@ const tokenCheck = (
   } else if (!authServices.tokenIsExpired(accessToken)) {
     rolesCheck(to, next, isAdmin, isSupervisor, isResource);
   } else {
-    // Renovar token, si no se puede mandar a vista de error!
-    // En la vista de error, decir que el token es invalido, y brindar boton a login
-    // Vista de error toma título, texto del boton  y nombre de ruta a redireccionar ()
+    //TODO: Renovar token, si no se puede mandar a vista de error! En la vista de error, decir que el token es invalido, y brindar boton a login. Vista de error toma título, texto del boton  y nombre de ruta a redireccionar ()
     next({
       name: "Login"
     });
@@ -101,7 +99,6 @@ router.beforeEach((to, from, next) => {
   let isAdmin = false;
   let isSupervisor = false;
   let isResource = false;
-  console.log("Router");
   try {
     accessToken = authServices.getToken();
     isAdmin = authServices.isAdmin();
