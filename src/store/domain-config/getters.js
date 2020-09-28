@@ -1,1 +1,5 @@
-export default {};
+export default {
+  domainConfig(state) {
+    return state.domainConfig;
+  }
+};
