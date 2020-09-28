@@ -32,5 +32,17 @@ export default {
         return reject(e);
       }
     });
+  },
+  getDomainConfig() {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        const domainConfigResponse = await api.get("/api/v1/domain-config/");
+        this.commit("domainConfig/addDomainConfig", domainConfigResponse.data);
+        return resolve(domainConfigResponse);
+      } catch (e) {
+        return reject(e);
+      }
+    });
   }
 };

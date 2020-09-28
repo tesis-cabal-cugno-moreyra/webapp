@@ -46,10 +46,13 @@ const routes = [
     meta: {
       guest: true
     }
-  },
+  }
+];
+
+export const domainConfigRoutes = [
   {
     path: "/domain-config",
-    name: "Config",
+    name: "DomainConfig",
     component: DomainInformation,
     meta: {
       requires_auth: true,

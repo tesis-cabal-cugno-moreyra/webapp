@@ -864,7 +864,7 @@ export default {
 
         case "5":
           this.messaggeDialog =
-            "¿No podra volver a editar este punto realmente desea continuar?";
+            "No podrá volver a editar este punto, ¿realmente desea continuar?";
           this.pointerToDelete = "";
           this.dialog = true;
           break;

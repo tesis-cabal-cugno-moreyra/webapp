@@ -117,10 +117,7 @@ class Api {
         return;
       }
 
-      if (
-        STATUS.SERVER_ERROR === error.status ||
-        STATUS.NOT_FOUND === error.status
-      ) {
+      if (STATUS.SERVER_ERROR === error.status) {
         return window.location.replace("/error/not-found");
       }
 
