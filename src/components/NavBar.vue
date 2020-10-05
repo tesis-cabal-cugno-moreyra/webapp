@@ -53,7 +53,7 @@
         "
       ></v-switch>
       <v-divider></v-divider>
-      <v-list-item link v-on:click="logout">
+      <v-list-item link v-on:click="openLogoutModal">
         <v-list-item-icon>
           <v-icon color="grey darken-1">mdi-logout</v-icon>
         </v-list-item-icon>
@@ -71,28 +71,36 @@
 
       <!--  <v-btn class="success" @click="accountDialog = 'true'">Ingresar</v-btn>-->
     </v-app-bar>
+    <LogoutModal
+      v-if="logoutModal"
+      v-on:close-modal="closeLogoutModal"
+    ></LogoutModal>
   </v-container>
 </template>
 
 <script>
-import router from "@/router";
 import authServices from "@/services/authServices";
+import LogoutModal from "@/components/LogoutModal";
 
 export default {
-  name: "NavBar",
-  data: function() {
+  name: "ourNavBar",
+  components: LogoutModal,
+  data() {
     return {
       drawer: false,
-      user: null
+      user: null,
+      logoutModal: false
     };
   },
   created() {
     this.user = authServices.getUser();
   },
   methods: {
-    logout: function() {
-      this.$store.dispatch("restAuth/logout");
-      router.push({ name: "Login" });
+    closeLogoutModal() {
+      this.logoutModal = false;
+    },
+    openLogoutModal: function() {
+      this.logoutModal = true;
     },
     goHome() {
       this.$router.push({ name: "Home" });
