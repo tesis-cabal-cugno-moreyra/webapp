@@ -5,15 +5,13 @@ export default {
   getSupervisorAliases(domainConfig) {
     let supervisorAliases = [];
     domainConfig.supervisorAliases.forEach(supervisorAlias => {
-      console.log(supervisorAlias.name);
       supervisorAliases.push(supervisorAlias.name);
     });
     return supervisorAliases;
   },
   getResourceAliases(domainConfig) {
     let resourceAliases = [];
-    domainConfig.supervisorAliases.forEach(resourceAlias => {
-      console.log(resourceAlias.name);
+    domainConfig.resourceTypes.forEach(resourceAlias => {
       resourceAliases.push(resourceAlias.name);
     });
     return resourceAliases;
@@ -22,7 +20,6 @@ export default {
     let adminAlias = this.getAdminAliases(domainConfig);
     let supervisorAliases = this.getSupervisorAliases(domainConfig);
     let resourceAliases = this.getResourceAliases(domainConfig);
-    console.log(adminAlias);
     return {
       adminAlias: adminAlias,
       supervisorAliases: supervisorAliases,

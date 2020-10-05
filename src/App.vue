@@ -14,15 +14,9 @@
 import { mapGetters } from "vuex";
 import NavBar from "@/components/NavBar.vue";
 import authServices from "@/services/authServices";
-import domainConfigServices from "@/services/domainConfigServices";
 
 export default {
   name: "App",
-  data: function() {
-    return {
-      aliases: null
-    };
-  },
   components: {
     NavBar
   },
@@ -37,29 +31,16 @@ export default {
   },
   async created() {
     this.$vuetify.theme.dark = true;
-    if (this.aliases === null) {
-      await this.$store
-        .dispatch("domainConfig/getDomainConfig")
-        .then(response => {
-          console.log(response.data);
-        })
-        .catch(e => {
-          console.log(e);
-        });
-      let aliases = domainConfigServices.getDomainConfigAlias(
-        this.domainConfig
-      );
-      console.log(aliases);
-      this.aliases = aliases;
-    }
+    await this.$store.dispatch("domainConfig/getDomainConfig").catch(e => {
+      console.log(e);
+    });
   },
 
   computed: {
     ...mapGetters({
       isLoading: "uiParams/isLoading",
       isNavBarEnable: "uiParams/showNavBar",
-      isLoggedIn: "restAuth/isLoggedIn",
-      domainConfig: "domainConfig/domainConfig"
+      isLoggedIn: "restAuth/isLoggedIn"
     }),
     showNavBar: function() {
       if (this.isLoggedIn && this.isNavBarEnable) {

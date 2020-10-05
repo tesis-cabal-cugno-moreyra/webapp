@@ -1,4 +1,5 @@
 import api from "@/services/api";
+import domainConfigServices from "@/services/domainConfigServices";
 
 export default {
   getDomainAccessCode() {
@@ -39,6 +40,10 @@ export default {
       try {
         const domainConfigResponse = await api.get("/api/v1/domain-config/");
         this.commit("domainConfig/addDomainConfig", domainConfigResponse.data);
+        this.commit(
+          "domainConfig/addDomainConfigAliases",
+          domainConfigServices.getDomainConfigAlias(domainConfigResponse.data)
+        );
         return resolve(domainConfigResponse);
       } catch (e) {
         return reject(e);
