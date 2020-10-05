@@ -21,7 +21,7 @@ export default {
   components: {
     NavBar
   },
-  beforeCreate() {
+  async beforeCreate() {
     if (authServices.getUser()) {
       this.$store.dispatch("restAuth/updateUser", authServices.getUser());
       this.$store.dispatch(
@@ -29,6 +29,16 @@ export default {
         authServices.getToken()
       );
     }
+    await this.$store
+      .dispatch("domainConfig/getDomainConfig")
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+    console.log("///");
+    await this.$store.dispatch("domainConfig/getDomainConfigAlias");
   },
   created() {
     this.$vuetify.theme.dark = true;
