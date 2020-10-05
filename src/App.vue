@@ -1,56 +1,51 @@
 <template>
-  <v-app>
-    <v-app-bar app color="primary" dark>
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
+  <v-app id="App">
+    <NavBar v-if="showNavBar"></NavBar>
 
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
+    <v-overlay v-if="isLoading">
+      <v-progress-circular indeterminate size="64"></v-progress-circular>
+    </v-overlay>
 
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
-
-    <v-content>
-      <HelloWorld />
-    </v-content>
+    <router-view />
   </v-app>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld";
+import { mapGetters } from "vuex";
+import NavBar from "@/components/NavBar.vue";
+import authServices from "@/services/authServices";
 
 export default {
   name: "App",
 
   components: {
-    HelloWorld
+    NavBar
   },
-
-  data: () => ({
-    //
-  })
+  beforeCreate() {
+    if (authServices.getUser()) {
+      this.$store.dispatch("restAuth/updateUser", authServices.getUser());
+      this.$store.dispatch(
+        "restAuth/updateAccessToken",
+        authServices.getToken()
+      );
+    }
+  },
+  created() {
+    this.$vuetify.theme.dark = true;
+  },
+  computed: {
+    ...mapGetters({
+      isLoading: "uiParams/isLoading",
+      isNavBarEnable: "uiParams/showNavBar",
+      isLoggedIn: "restAuth/isLoggedIn"
+    }),
+    showNavBar: function() {
+      if (this.isLoggedIn && this.isNavBarEnable) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
 };
 </script>

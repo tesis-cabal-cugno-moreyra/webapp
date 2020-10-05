@@ -1,18 +1,16 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
-import app from "./modules/app";
-
-import * as getters from "./getters";
+import uiParams from "./ui-params";
+import restAuth from "./rest-auth";
+import domainConfig from "./domain-config";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-  state: {},
-  mutations: {},
-  actions: {},
   modules: {
-    app
-  },
-  getters
+    uiParams,
+    restAuth,
+    domainConfig
+  }
 });
