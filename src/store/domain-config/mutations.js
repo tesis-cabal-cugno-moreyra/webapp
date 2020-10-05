@@ -4,9 +4,5 @@ export default {
   },
   addDomainConfigAliases(state, aliases) {
     state.aliases = aliases;
-  },
-  retrieveDomainConfig(state) {
-    let domainConfig = console.log(state.domainConfig.adminAlias);
-    return domainConfig;
   }
 };
