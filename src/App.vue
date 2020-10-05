@@ -31,16 +31,19 @@ export default {
   },
   async created() {
     this.$vuetify.theme.dark = true;
-    await this.$store.dispatch("domainConfig/getDomainConfig").catch(e => {
-      console.log(e);
-    });
+    if (this.domainConfig === null) {
+      await this.$store.dispatch("domainConfig/getDomainConfig").catch(e => {
+        console.log(e);
+      });
+    }
   },
 
   computed: {
     ...mapGetters({
       isLoading: "uiParams/isLoading",
       isNavBarEnable: "uiParams/showNavBar",
-      isLoggedIn: "restAuth/isLoggedIn"
+      isLoggedIn: "restAuth/isLoggedIn",
+      domainConfig: "domainConfig/domainConfig"
     }),
     showNavBar: function() {
       if (this.isLoggedIn && this.isNavBarEnable) {
