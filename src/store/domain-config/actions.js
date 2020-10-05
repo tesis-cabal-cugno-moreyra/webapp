@@ -1,5 +1,4 @@
 import api from "@/services/api";
-import domainConfigServices from "@/services/domainConfigServices";
 
 export default {
   getDomainAccessCode() {
@@ -45,21 +44,5 @@ export default {
         return reject(e);
       }
     });
-  },
-  getDomainConfigAlias() {
-    setTimeout(console.log("Esperando..."), 3000);
-    const domainConfig = this.commit("domainConfig/retrieveDomainConfig");
-    console.log(domainConfig);
-    let adminAlias = domainConfigServices.getAdminAliases(domainConfig);
-    let supervisorAliases = domainConfigServices.getSupervisorAliases(
-      domainConfig
-    );
-    let resourceAliases = domainConfigServices.getResourceAliases(domainConfig);
-    console.log(adminAlias);
-    return {
-      adminAlias: adminAlias,
-      supervisorAliases: supervisorAliases,
-      resourcesAliases: resourceAliases
-    };
   }
 };

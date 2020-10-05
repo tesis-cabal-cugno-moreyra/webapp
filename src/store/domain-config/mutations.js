@@ -3,6 +3,7 @@ export default {
     state.domainConfig = domainConfig;
   },
   retrieveDomainConfig(state) {
-    return state.domainConfig;
+    let domainConfig = console.log(state.domainConfig.adminAlias);
+    return domainConfig;
   }
 };

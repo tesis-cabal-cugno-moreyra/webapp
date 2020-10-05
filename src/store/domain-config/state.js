@@ -1,3 +1,3 @@
 export default {
-  domainConfig: {}
+  domainConfig: null
 };
