@@ -17,7 +17,6 @@ import authServices from "@/services/authServices";
 
 export default {
   name: "App",
-
   components: {
     NavBar
   },
@@ -30,14 +29,22 @@ export default {
       );
     }
   },
-  created() {
+  async mounted() {
     this.$vuetify.theme.dark = true;
+    console.log(this.domainConfig);
+    if (this.domainConfig === null) {
+      await this.$store.dispatch("domainConfig/getDomainConfig").catch(e => {
+        console.log(e);
+      });
+    }
   },
+
   computed: {
     ...mapGetters({
       isLoading: "uiParams/isLoading",
       isNavBarEnable: "uiParams/showNavBar",
-      isLoggedIn: "restAuth/isLoggedIn"
+      isLoggedIn: "restAuth/isLoggedIn",
+      domainConfig: "domainConfig/domainConfig"
     }),
     showNavBar: function() {
       if (this.isLoggedIn && this.isNavBarEnable) {

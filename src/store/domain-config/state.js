@@ -1,3 +1,4 @@
 export default {
-  domainConfig: {}
+  domainConfig: null,
+  aliases: null
 };
