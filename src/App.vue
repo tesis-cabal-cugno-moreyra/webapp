@@ -29,8 +29,9 @@ export default {
       );
     }
   },
-  async created() {
+  async mounted() {
     this.$vuetify.theme.dark = true;
+    console.log(this.domainConfig);
     if (this.domainConfig === null) {
       await this.$store.dispatch("domainConfig/getDomainConfig").catch(e => {
         console.log(e);

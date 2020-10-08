@@ -11,8 +11,12 @@ export default {
   },
   getResourceAliases(domainConfig) {
     let resourceAliases = [];
-    domainConfig.resourceTypes.forEach(resourceAlias => {
-      resourceAliases.push(resourceAlias.name);
+    domainConfig.incidentAbstractions.forEach(incidentAbstraction => {
+      incidentAbstraction.types.forEach(incidentType => {
+        incidentType.resourceTypes.forEach(resourceType => {
+          resourceAliases.push(resourceType.name);
+        });
+      });
     });
     return resourceAliases;
   },
