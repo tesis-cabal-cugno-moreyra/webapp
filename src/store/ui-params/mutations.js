@@ -4,5 +4,8 @@ export default {
   },
   changeNavBarState(state, value) {
     state.showNavBar = value;
+  },
+  changeSignInSupervisorState(state, value) {
+    state.showSignInSupervisor = value;
   }
 };

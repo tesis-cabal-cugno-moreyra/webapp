@@ -5,7 +5,7 @@
         <v-row align="center" justify="center">
           <v-col cols="12" sm="8" md="4">
             <v-card class="elevation-12" color="black_selected">
-              <v-toolbar color="red_selected" dark flat>
+              <v-toolbar color="primary" dark flat>
                 <v-toolbar-title>Iniciar sesión</v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
@@ -41,16 +41,60 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn
-                  color="red_selected"
+                  color="primary"
                   :loading="tryToLogin"
                   v-on:click="loginWithJWT"
                   >Ingresar</v-btn
+                >
+                <v-btn
+                  text
+                  color="primary"
+                  :loading="tryToLogin"
+                  v-on:click="ConfirmDomain = true"
+                  >Registrarse</v-btn
                 >
               </v-card-actions>
             </v-card>
           </v-col>
         </v-row>
       </v-container>
+
+      <v-row justify="center">
+        <v-dialog v-model="ConfirmDomain" persistent max-width="290">
+          <v-card>
+            <v-card-title>
+              Ingrese el codigo
+            </v-card-title>
+            <v-card-text>
+              <v-text-field
+                v-model="requiredCode"
+                label=" codigo de acceso al dominio *"
+                required
+              >
+              </v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="green darken-1"
+                text
+                v-on:click="SendConfirm(requiredCode)"
+              >
+                Enviar
+              </v-btn>
+              <v-btn
+                color="green darken-1"
+                text
+                v-on:click="(ConfirmDomain = false), (requiredCode = '')"
+              >
+                Cancelar
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
+
+      <SignInSupervisor></SignInSupervisor>
     </v-main>
   </v-app>
 </template>
@@ -58,16 +102,22 @@
 <script>
 import { mapGetters } from "vuex";
 import authServices from "@/services/authServices";
+import SignInSupervisor from "../components/SignInSupervisor.vue";
 
 export default {
   name: "Login",
+  components: {
+    SignInSupervisor
+  },
   data: function() {
     return {
       username: "",
       password: "",
       tryToLogin: false,
       loginError: false,
-      errorMessage: ""
+      errorMessage: "",
+      ConfirmDomain: false,
+      requiredCode: ""
     };
   },
   methods: {
@@ -114,6 +164,24 @@ export default {
     },
     resetErrors: function() {
       this.loginError = false;
+    },
+    SendConfirm(requiredCode) {
+      // tengo que hacer que empiece el dialog SignInSupervisor en false y cambiarle el valor del componente desde acá
+
+      // llamar a la api consultar si el codigo esta bien
+
+      if (requiredCode == "asdasd") {
+        this.$store.commit(
+          "uiParams/changeSignInSupervisorState",
+          !this.$store.state.uiParams.showSignInSupervisor
+        );
+      } else {
+        if (requiredCode.trim() == "") {
+          alert("ingrese el codigo");
+        } else {
+          alert("codigo incorrecto");
+        }
+      }
     }
   },
   computed: {

@@ -1,5 +1,6 @@
 export default {
   displaySpinnerOverlay: false,
   errorDetected: false,
-  showNavBar: true
+  showNavBar: true,
+  showSignInSupervisor: false
 };
