@@ -5,9 +5,12 @@
         <v-row align="center" justify="center">
           <v-container text-center>
             <v-form>
-              <v-select :items="items" label="Incidente"></v-select>
+              <v-select :items="incidents" label="Incidente"></v-select>
 
-              <v-select :items="items" label="Tipo de Incidente"></v-select>
+              <v-select
+                :items="incidentTypes"
+                label="Tipo de Incidente"
+              ></v-select>
               <v-text-field
                 id="place"
                 v-model="place"
