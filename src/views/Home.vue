@@ -1,39 +1,40 @@
 <template>
   <v-app>
-    <v-main>
-      <v-container>
+    <v-container fill-height fill-width>
+      <v-layout row>
         <v-row align="center" justify="center">
-          <v-col cols="1" sm="8" md="3">
-            <v-btn
-              rounded
-              color="primary"
-              dark
-              x-large
-              v-on:click="createIncident"
-            >
-              Crear Incidente
-            </v-btn>
-          </v-col>
-          <v-col cols="1" sm="8" md="3">
-            <v-btn rounded color="primary" dark x-large v-on:click="beRude">
-              Ver Incidentes
-            </v-btn>
-          </v-col>
+          <v-container text-center>
+            <v-row align="center" justify="center">
+              <v-col cols="2" sm="12" md="12">
+                <v-btn
+                  rounded
+                  color="primary"
+                  dark
+                  x-large
+                  class="ma-5 pa-5"
+                  v-on:click="createIncident"
+                >
+                  Crear Incidente
+                </v-btn>
+              </v-col>
+              <v-col cols="2" sm="12" md="12">
+                <v-btn rounded color="primary" dark x-large class="ma-5 pa-5">
+                  Ver Incidentes
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row align="center" justify="center">
+              <v-col cols="2" sm="12" md="12">
+                <v-btn rounded color="primary" dark x-large class="ma-5 pa-5">
+                  Ver Recursos
+                </v-btn>
+              </v-col>
+              <v-col cols="1" sm="8" md="3"> </v-col>
+            </v-row>
+          </v-container>
         </v-row>
-        <v-row align="center" justify="center">
-          <v-col cols="1" sm="8" md="3">
-            <v-btn rounded color="primary" dark x-large>
-              Ver Recursos
-            </v-btn>
-          </v-col>
-          <v-col cols="1" sm="8" md="3">
-            <v-btn rounded color="primary" dark x-large>
-              Ver Incidentes
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
+      </v-layout>
+    </v-container>
   </v-app>
 </template>
 <script>
