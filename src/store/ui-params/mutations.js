@@ -7,5 +7,22 @@ export default {
   },
   changeSignInSupervisorState(state, value) {
     state.showSignInSupervisor = value;
+  },
+  dispatchAlert(state, payload) {
+    state.snackbar.text = payload.text;
+
+    if (payload.color) {
+      state.snackbar.color = payload.color;
+    }
+
+    if (payload.timeout) {
+      state.snackbar.timeout = payload.timeout;
+    }
+
+    state.snackbar.visible = true;
+  },
+  closeAlert(state) {
+    state.snackbar.visible = false;
+    state.snackbar.text = null;
   }
 };

@@ -103,7 +103,6 @@
 import { mapGetters } from "vuex";
 import authServices from "@/services/authServices";
 import SignInSupervisor from "../components/SignInSupervisor.vue";
-
 export default {
   name: "Login",
   components: {
@@ -165,23 +164,40 @@ export default {
     resetErrors: function() {
       this.loginError = false;
     },
-    SendConfirm(requiredCode) {
-      // tengo que hacer que empiece el dialog SignInSupervisor en false y cambiarle el valor del componente desde acá
 
-      // llamar a la api consultar si el codigo esta bien
-
-      if (requiredCode == "asdasd") {
-        this.$store.commit(
-          "uiParams/changeSignInSupervisorState",
-          !this.$store.state.uiParams.showSignInSupervisor
-        );
-      } else {
-        if (requiredCode.trim() == "") {
-          alert("ingrese el codigo");
-        } else {
-          alert("codigo incorrecto");
-        }
+    async SendConfirm(requiredCode) {
+      if (requiredCode.trim() == "") {
+        this.$store.commit("uiParams/dispatchAlert", {
+          text: "Ingrese un codigo"
+        });
+        return;
       }
+
+      await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
+      await this.$store
+        .dispatch("domainConfig/checkDomainAccessCode", {
+          domain_code: requiredCode
+        })
+        .then(async () => {
+          // last correct code SUSRFK3P6I
+          await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+
+          await this.$store.commit("domainConfig/addDomainCode", requiredCode);
+
+          this.$store.commit(
+            "uiParams/changeSignInSupervisorState",
+            !this.$store.state.uiParams.showSignInSupervisor
+          );
+        })
+        .catch(async () => {
+          this.$store.commit("uiParams/dispatchAlert", {
+            text: "Codigo incorrecto"
+          });
+        })
+        .finally(
+          async () =>
+            await this.$store.dispatch("uiParams/turnOffSpinnerOverlay")
+        );
     }
   },
   computed: {

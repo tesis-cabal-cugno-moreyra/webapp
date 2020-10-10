@@ -19,6 +19,7 @@
                       :rules="UserNameRules"
                       autocomplete="off"
                       label="Nombre de usuario*"
+                      :error-messages="errorUserNameField"
                       required
                     ></v-text-field>
                   </v-col>
@@ -48,6 +49,7 @@
                       autocomplete="off"
                       v-model="email"
                       :rules="emailRules"
+                      :error-messages="errorEmailField"
                     ></v-text-field>
                   </v-col>
 
@@ -91,15 +93,13 @@
             </v-card-text>
             <v-card-actions :class="['mb-2', 'pa-1', 'mr-3']">
               <v-spacer></v-spacer>
-              <v-btn color="primary" text v-on:click="validatedRegister()"
-                >OK</v-btn
-              >
               <v-btn
                 color="primary"
                 text
-                @click="$store.state.uiParams.showSignInSupervisor = false"
-                >Close</v-btn
+                v-on:click="validateAndCreateSupervisor()"
+                >OK</v-btn
               >
+              <v-btn color="primary" text @click="onClose()">Close</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -109,6 +109,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "SignInSupervisor",
   data: function() {
@@ -140,32 +142,103 @@ export default {
       confirmPasswordRules: [
         v => !!v || "Debe repetir la contraseña",
         v => v == this.password || "Las contreñas no son iguales"
-      ]
+      ],
+      errorEmailField: null,
+      errorUserNameField: null
     };
   },
   methods: {
-    validatedRegister() {
-      if (this.$refs.form.validate()) {
-        console.log("Datos para pasar al la api");
-        console.log(
-          this.userName +
-            " " +
-            this.name +
-            " " +
-            this.lastName +
-            " " +
-            this.email +
-            " " +
-            this.password +
-            " " +
-            this.confirmPassword +
-            " " +
-            this.supervisorAliasesSelect
-        );
+    clearCustomErrors() {
+      this.errorEmailField = null;
+      this.errorUserNameField = null;
+    },
+    onClose() {
+      this.clearCustomErrors();
+      this.$store.state.uiParams.showSignInSupervisor = false;
+    },
+    // nombre de dominio "DominioPersonalizado"
+    async validateAndCreateSupervisor() {
+      this.clearCustomErrors();
+      let isValid = this.$refs.form.validate();
+      console.log(this.$refs.form.validate());
+      if (isValid) {
+        let userInfo = {
+          username: this.userName,
+          password: this.password,
+          first_name: this.name,
+          last_name: this.lastName,
+          email: this.email,
+          domain_code: this.domainCode
+        };
+        // last correct code SUSRFK3P6I
+
+        await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
+        await this.$store
+          .dispatch("domainConfig/createUser", userInfo)
+          .then(async response => {
+            let userId = response.data.id;
+            this.createSupervisorProfile(userId);
+          })
+          .catch(async responseError => {
+            console.log(responseError);
+            if (responseError.data.email) {
+              this.errorEmailField = "Este email ya se encuetra registrado";
+              return;
+            }
+            if (responseError.data.username) {
+              this.errorUserNameField =
+                "Este usuario ya se encuetra registrado";
+              return;
+            }
+            this.$store.commit("uiParams/dispatchAlert", {
+              text: "Problemas para crear usuario",
+              color: "primary"
+            });
+          })
+          .finally(
+            async () =>
+              await this.$store.dispatch("uiParams/turnOffSpinnerOverlay")
+          );
       } else {
-        console.log("no se va a la api por logi");
+        this.$store.commit("uiParams/dispatchAlert", {
+          text: "Debe rellenar todos los campos",
+          color: "primary"
+        });
       }
+    },
+
+    async createSupervisorProfile(userId) {
+      // el domain_name esta hardcodeado por que se necesita traer el nombre del store lo esta haciendo emi
+      let supervisorInfo = {
+        domain_code: this.domainCode,
+        user: userId,
+        domain_name: "DominioPersonalizado",
+        alias: this.supervisorAliasesSelect
+      };
+
+      // Luego de creado el usuario, le da sus valores a el supervisor
+      await this.$store
+        .dispatch("domainConfig/createSupervisor", supervisorInfo)
+        .then(async resp => {
+          await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+          this.$store.commit("uiParams/dispatchAlert", {
+            text: "Creacion del usuario supervisor exitosa",
+            color: "success"
+          });
+          console.log(resp);
+        })
+        .catch(async () => {
+          this.$store.commit("uiParams/dispatchAlert", {
+            text: "Problemas dentro de la creacion del supervisor",
+            color: "primary"
+          });
+        });
     }
+  },
+  computed: {
+    ...mapGetters({
+      domainCode: "domainConfig/domainCode"
+    })
   }
 };
 </script>
