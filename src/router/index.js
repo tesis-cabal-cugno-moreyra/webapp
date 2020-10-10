@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Home from "../views/Home.vue";
+import Map from "../views/Map.vue";
 import DomainInformation from "../components/DomainInformation.vue";
 import Login from "../views/Login.vue";
 import Error from "../views/Error.vue";
@@ -43,6 +44,14 @@ const routes = [
     path: "/error-page",
     name: "Error",
     component: Error,
+    meta: {
+      guest: true
+    }
+  },
+  {
+    path: "/map",
+    name: "Map",
+    component: Map,
     meta: {
       guest: true
     }
