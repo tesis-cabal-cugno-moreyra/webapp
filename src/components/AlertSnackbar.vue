@@ -15,11 +15,13 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   computed: {
-    snackbar() {
-      return this.$store.state.uiParams.snackbar;
-    }
+    ...mapGetters({
+      snackbar: "uiParams/snackbar"
+    })
   },
   methods: {
     CloseAlert() {

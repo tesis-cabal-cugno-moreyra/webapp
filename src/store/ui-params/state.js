@@ -3,8 +3,6 @@ export default {
   errorDetected: false,
   showNavBar: true,
   showSignInSupervisor: false,
-  showAlertSnackbar: false,
-  messaggeAlert: "",
   snackbar: {
     visible: false,
     color: "primary",

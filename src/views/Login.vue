@@ -47,10 +47,9 @@
                   >Ingresar</v-btn
                 >
                 <v-btn
-                  text
                   color="primary"
                   :loading="tryToLogin"
-                  v-on:click="ConfirmDomain = true"
+                  v-on:click="confirmDomain = true"
                   >Registrarse</v-btn
                 >
               </v-card-actions>
@@ -60,15 +59,15 @@
       </v-container>
 
       <v-row justify="center">
-        <v-dialog v-model="ConfirmDomain" persistent max-width="290">
+        <v-dialog v-model="confirmDomain" persistent max-width="330">
           <v-card>
             <v-card-title>
-              Ingrese el codigo
+              Codigo de acceso al dominio
             </v-card-title>
             <v-card-text>
               <v-text-field
                 v-model="requiredCode"
-                label=" codigo de acceso al dominio *"
+                label=" Ingrese el codigo *"
                 required
               >
               </v-text-field>
@@ -76,16 +75,17 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn
-                color="green darken-1"
+                :loading="tryToLogin"
+                color="primary"
                 text
                 v-on:click="SendConfirm(requiredCode)"
               >
                 Enviar
               </v-btn>
               <v-btn
-                color="green darken-1"
+                color="primary"
                 text
-                v-on:click="(ConfirmDomain = false), (requiredCode = '')"
+                v-on:click="(confirmDomain = false), (requiredCode = '')"
               >
                 Cancelar
               </v-btn>
@@ -115,7 +115,7 @@ export default {
       tryToLogin: false,
       loginError: false,
       errorMessage: "",
-      ConfirmDomain: false,
+      confirmDomain: false,
       requiredCode: ""
     };
   },
@@ -166,43 +166,55 @@ export default {
     },
 
     async SendConfirm(requiredCode) {
+      this.tryToLogin = true;
+      await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
+
       if (requiredCode.trim() == "") {
         this.$store.commit("uiParams/dispatchAlert", {
-          text: "Ingrese un codigo"
+          text: "Ingrese un codigo",
+          color: "primary"
         });
+        await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+        this.tryToLogin = false;
         return;
       }
 
-      await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
       await this.$store
         .dispatch("domainConfig/checkDomainAccessCode", {
           domain_code: requiredCode
         })
         .then(async () => {
-          // last correct code SUSRFK3P6I
+          this.tryToLogin = false;
           await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
 
           await this.$store.commit("domainConfig/addDomainCode", requiredCode);
 
           this.$store.commit(
             "uiParams/changeSignInSupervisorState",
-            !this.$store.state.uiParams.showSignInSupervisor
+            !this.showSignInSupervisor
           );
+
+          this.confirmDomain = false;
+          this.requiredCode = "";
         })
         .catch(async () => {
+          this.tryToLogin = false;
           this.$store.commit("uiParams/dispatchAlert", {
-            text: "Codigo incorrecto"
+            text: "Codigo incorrecto",
+            color: "primary"
           });
         })
         .finally(
           async () =>
-            await this.$store.dispatch("uiParams/turnOffSpinnerOverlay")
+            await this.$store.dispatch("uiParams/turnOffSpinnerOverlay"),
+          (this.tryToLogin = false)
         );
     }
   },
   computed: {
     ...mapGetters({
-      token: "restAuth/accessToken"
+      token: "restAuth/accessToken",
+      showSignInSupervisor: "uiParams/showSignInSupervisor"
     })
   }
 };

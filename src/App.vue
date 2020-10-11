@@ -32,6 +32,7 @@ export default {
         authServices.getToken()
       );
     }
+    this.$store.dispatch("domainConfig/getDomainConfig");
   },
   created() {
     this.$vuetify.theme.dark = true;

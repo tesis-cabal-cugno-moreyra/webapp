@@ -2,10 +2,7 @@
   <v-main>
     <v-form ref="form" lazy-validation>
       <v-row justify="center">
-        <v-dialog
-          v-model="$store.state.uiParams.showSignInSupervisor"
-          max-width="600px"
-        >
+        <v-dialog v-model="showSignInSupervisor" persistent max-width="600px">
           <v-card>
             <v-card-title>
               <span class="headline">Registro de supervisor</span>
@@ -80,7 +77,7 @@
                   <v-col cols="12" sm="6">
                     <v-autocomplete
                       v-model="supervisorAliasesSelect"
-                      :items="supervisorAliases"
+                      :items="domainConfig.supervisorAliases"
                       item-text="name"
                       label="Cargo a ocupar"
                       :rules="[v => !!v || 'Debe seleccionar un alias']"
@@ -97,9 +94,9 @@
                 color="primary"
                 text
                 v-on:click="validateAndCreateSupervisor()"
-                >OK</v-btn
+                >Enviar</v-btn
               >
-              <v-btn color="primary" text @click="onClose()">Close</v-btn>
+              <v-btn color="primary" text @click="onClose()">Cerrar</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -117,11 +114,7 @@ export default {
     return {
       adminMessaggeProblem: false,
       messaggeProblem: "",
-      supervisorAliases: [
-        { name: "Bombero" },
-        { name: "Oficial" },
-        { name: "Suboficial" }
-      ],
+      supervisorAliases: [],
       userName: "",
       name: "",
       lastName: "",
@@ -154,13 +147,11 @@ export default {
     },
     onClose() {
       this.clearCustomErrors();
-      this.$store.state.uiParams.showSignInSupervisor = false;
+      this.$store.commit("uiParams/changeSignInSupervisorState", false);
     },
-    // nombre de dominio "DominioPersonalizado"
     async validateAndCreateSupervisor() {
       this.clearCustomErrors();
       let isValid = this.$refs.form.validate();
-      console.log(this.$refs.form.validate());
       if (isValid) {
         let userInfo = {
           username: this.userName,
@@ -170,7 +161,6 @@ export default {
           email: this.email,
           domain_code: this.domainCode
         };
-        // last correct code SUSRFK3P6I
 
         await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
         await this.$store
@@ -180,20 +170,28 @@ export default {
             this.createSupervisorProfile(userId);
           })
           .catch(async responseError => {
-            console.log(responseError);
             if (responseError.data.email) {
               this.errorEmailField = "Este email ya se encuetra registrado";
-              return;
             }
             if (responseError.data.username) {
+              if (
+                responseError.data.username ==
+                "Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters."
+              ) {
+                this.errorUserNameField =
+                  "El usuario solo puede contener, letras, numeros y/o @/./+/-/_";
+                return;
+              }
               this.errorUserNameField =
                 "Este usuario ya se encuetra registrado";
               return;
             }
-            this.$store.commit("uiParams/dispatchAlert", {
-              text: "Problemas para crear usuario",
-              color: "primary"
-            });
+            if (!responseError.data.email && !responseError.data.username) {
+              this.$store.commit("uiParams/dispatchAlert", {
+                text: "Problemas para crear usuario intente luego",
+                color: "primary"
+              });
+            }
           })
           .finally(
             async () =>
@@ -208,24 +206,24 @@ export default {
     },
 
     async createSupervisorProfile(userId) {
-      // el domain_name esta hardcodeado por que se necesita traer el nombre del store lo esta haciendo emi
       let supervisorInfo = {
         domain_code: this.domainCode,
         user: userId,
-        domain_name: "DominioPersonalizado",
+        domain_name: this.domainConfig.name,
         alias: this.supervisorAliasesSelect
       };
 
       // Luego de creado el usuario, le da sus valores a el supervisor
       await this.$store
         .dispatch("domainConfig/createSupervisor", supervisorInfo)
-        .then(async resp => {
+        .then(async () => {
+          this.onClose();
           await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
           this.$store.commit("uiParams/dispatchAlert", {
-            text: "Creacion del usuario supervisor exitosa",
-            color: "success"
+            text: "Se creo el usuario supervisor, debe esperar habilitacion",
+            color: "success",
+            timeout: 5000
           });
-          console.log(resp);
         })
         .catch(async () => {
           this.$store.commit("uiParams/dispatchAlert", {
@@ -237,7 +235,9 @@ export default {
   },
   computed: {
     ...mapGetters({
-      domainCode: "domainConfig/domainCode"
+      domainCode: "domainConfig/domainCode",
+      showSignInSupervisor: "uiParams/showSignInSupervisor",
+      domainConfig: "domainConfig/domainConfig"
     })
   }
 };
