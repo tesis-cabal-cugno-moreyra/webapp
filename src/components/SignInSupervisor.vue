@@ -77,7 +77,7 @@
                   <v-col cols="12" sm="6">
                     <v-autocomplete
                       v-model="supervisorAliasesSelect"
-                      :items="domainConfig.supervisorAliases"
+                      :items="aliases.supervisorAliases"
                       item-text="name"
                       label="Cargo a ocupar"
                       :rules="[v => !!v || 'Debe seleccionar un alias']"
@@ -237,7 +237,8 @@ export default {
     ...mapGetters({
       domainCode: "domainConfig/domainCode",
       showSignInSupervisor: "uiParams/showSignInSupervisor",
-      domainConfig: "domainConfig/domainConfig"
+      domainConfig: "domainConfig/domainConfig",
+      aliases: "domainConfig/aliases"
     })
   }
 };

@@ -1,4 +1,9 @@
 export default {
   domainConfig: {},
-  domainCode: null
+  domainCode: null,
+  aliases: {
+    adminAlias: null,
+    supervisorAliases: null,
+    resourcesAliases: null
+  }
 };

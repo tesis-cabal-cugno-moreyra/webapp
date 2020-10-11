@@ -4,5 +4,8 @@ export default {
   },
   domainCode(state) {
     return state.domainCode;
+  },
+  aliases(state) {
+    return state.aliases;
   }
 };

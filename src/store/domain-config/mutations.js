@@ -4,5 +4,8 @@ export default {
   },
   addDomainCode(state, domainCode) {
     state.domainCode = domainCode;
+  },
+  addDomainConfigAliases(state, aliases) {
+    state.aliases = aliases;
   }
 };
