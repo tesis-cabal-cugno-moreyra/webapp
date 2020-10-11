@@ -39,6 +39,7 @@
                 </v-form>
               </v-card-text>
               <v-card-actions>
+                <v-btn color="red_selected" to="Map">Go to maps</v-btn>
                 <v-spacer></v-spacer>
                 <v-btn
                   color="red_selected"
