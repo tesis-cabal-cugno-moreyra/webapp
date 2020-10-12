@@ -14,6 +14,7 @@
 import { mapGetters } from "vuex";
 import NavBar from "@/components/NavBar.vue";
 import authServices from "@/services/authServices";
+import { domainConfigRoutes } from "@/router";
 
 export default {
   name: "App",
@@ -32,9 +33,12 @@ export default {
   async mounted() {
     this.$vuetify.theme.dark = true;
     if (this.domainConfig === null) {
-      await this.$store.dispatch("domainConfig/getDomainConfig").catch(e => {
-        console.log(e);
-      });
+      await this.$store
+        .dispatch("domainConfig/getDomainConfig")
+        .catch(async () => {
+          this.$router.addRoutes(domainConfigRoutes);
+          await this.$router.push({ name: "DomainConfig" });
+        });
     }
   },
 

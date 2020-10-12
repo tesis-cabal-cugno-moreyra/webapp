@@ -44,6 +44,12 @@ export default {
           "domainConfig/addDomainConfigAliases",
           domainConfigServices.getDomainConfigAlias(domainConfigResponse.data)
         );
+        this.commit(
+          "domainConfig/addDomainConfigIncidents",
+          domainConfigServices.getIncidentAbstractions(
+            domainConfigResponse.data
+          )
+        );
         return resolve(domainConfigResponse);
       } catch (e) {
         return reject(e);

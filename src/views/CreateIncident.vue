@@ -5,11 +5,20 @@
         <v-row align="center" justify="center">
           <v-container text-center>
             <v-form>
-              <v-select :items="incidents" label="Incidente"></v-select>
-
               <v-select
+                v-model="incidentAbstractionSelected"
+                :items="incidentAbstractions"
+                label="Incidente"
+              ></v-select>
+              <v-select
+                v-model="incidentTypeSelected"
                 :items="incidentTypes"
                 label="Tipo de Incidente"
+              ></v-select>
+              <v-select
+                v-model="incidentAbstractionSelected"
+                :items="incidentAbstractions"
+                label="Visibilidad"
               ></v-select>
               <v-text-field
                 id="place"
@@ -19,10 +28,10 @@
                 type="text"
               ></v-text-field>
               <v-text-field
-                id="incident-id"
-                v-model="incident_id"
+                id="reference"
+                v-model="reference"
                 label="Referencia"
-                name="incident-id"
+                name="reference"
                 type="text"
               ></v-text-field>
             </v-form>
@@ -34,8 +43,8 @@
               x-large
               fab
               color="primary"
-              :loading="tryToLogin"
-              v-on:click="loginWithJWT"
+              :loading="tryToCreateIncident"
+              v-on:click="createIncident"
               style="height: 200px; width: 200px;"
               >¡Crear!</v-btn
             >
@@ -50,8 +59,45 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
-  name: "CreateIncident"
+  name: "CreateIncident",
+  data: function() {
+    return {
+      incidentAbstractionSelected: "",
+      incidentTypeSelected: "",
+      place: "",
+      reference: "",
+      errorMessage: "",
+      tryToCreateIncident: false
+    };
+  },
+  methods: {
+    createIncident() {
+      this.tryToCreateIncident = true;
+      this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
+      // TODO: armar módulo de incidente en Vuex para interactuar con la API
+      alert("Creando incidente...");
+      this.tryToCreateIncident = false;
+      this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+    }
+  },
+  computed: {
+    ...mapGetters({
+      incidentConfig: "domainConfig/incidentConfig",
+      incidentAbstractions: "domainConfig/incidentAbstractions"
+    }),
+    incidentTypes() {
+      let incidentTypes = [];
+      this.incidentConfig.forEach(incident => {
+        if (incident.incidentAbstraction == this.incidentAbstractionSelected) {
+          incidentTypes = incident.incidentTypes;
+        }
+      });
+      return incidentTypes;
+    }
+  }
 };
 </script>
 

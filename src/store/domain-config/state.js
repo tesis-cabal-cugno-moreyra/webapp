@@ -1,4 +1,5 @@
 export default {
   domainConfig: null,
-  aliases: null
+  aliases: null,
+  incidentConfig: null
 };
