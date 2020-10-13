@@ -54,9 +54,6 @@ export default {
     createIncident: function() {
       console.log("Hi");
       this.$router.push({ name: "CreateIncident" });
-    },
-    beRude: function() {
-      console.log("Asshole!");
     }
   }
 };

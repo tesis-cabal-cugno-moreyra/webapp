@@ -16,17 +16,11 @@
                 label="Tipo de Incidente"
               ></v-select>
               <v-select
-                v-model="incidentAbstractionSelected"
-                :items="incidentAbstractions"
+                v-model="visibility"
+                :items="visibilityList"
                 label="Visibilidad"
               ></v-select>
-              <v-text-field
-                id="place"
-                v-model="place"
-                label="Lugar"
-                name="place"
-                type="text"
-              ></v-text-field>
+              <map-modal></map-modal>
               <v-text-field
                 id="reference"
                 v-model="reference"
@@ -60,13 +54,17 @@
 
 <script>
 import { mapGetters } from "vuex";
+import MapModal from "@/components/MapModal";
 
 export default {
   name: "CreateIncident",
+  components: { MapModal },
   data: function() {
     return {
       incidentAbstractionSelected: "",
       incidentTypeSelected: "",
+      visibilityList: ["Privado", "Publico"],
+      visibility: "",
       place: "",
       reference: "",
       errorMessage: "",
