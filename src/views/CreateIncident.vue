@@ -65,7 +65,6 @@ export default {
       incidentTypeSelected: "",
       visibilityList: ["Privado", "Publico"],
       visibility: "",
-      place: "",
       reference: "",
       errorMessage: "",
       tryToCreateIncident: false
@@ -88,11 +87,15 @@ export default {
     }),
     incidentTypes() {
       let incidentTypes = [];
-      this.incidentConfig.forEach(incident => {
-        if (incident.incidentAbstraction == this.incidentAbstractionSelected) {
-          incidentTypes = incident.incidentTypes;
-        }
-      });
+      if (this.incidentConfig !== null) {
+        this.incidentConfig.forEach(incident => {
+          if (
+            incident.incidentAbstraction == this.incidentAbstractionSelected
+          ) {
+            incidentTypes = incident.incidentTypes;
+          }
+        });
+      }
       return incidentTypes;
     }
   }

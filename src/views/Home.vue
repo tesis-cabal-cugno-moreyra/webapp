@@ -52,7 +52,6 @@ export default {
   },
   methods: {
     createIncident: function() {
-      console.log("Hi");
       this.$router.push({ name: "CreateIncident" });
     }
   }
