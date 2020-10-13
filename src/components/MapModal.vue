@@ -52,47 +52,48 @@
               >
                 Buscar
               </v-btn>
-            </v-row>
-            <template>
-              <v-app>
-                <v-main>
-                  <h1>Autocomplete Example</h1>
-                  <label>
-                    AutoComplete
-                    <gmap-autocomplete
-                      placeholder="Ingrese el lugar del incidente aquí"
-                      @place_changed="addMarkerOnSearch"
+
+              <template>
+                <v-app>
+                  <v-main>
+                    <h1>Autocomplete Example</h1>
+                    <label>
+                      AutoComplete
+                      <gmap-autocomplete
+                        placeholder="Ingrese el lugar del incidente aquí"
+                        @place_changed="addMarkerOnSearch"
+                      >
+                      </gmap-autocomplete>
+                      <button @click="saveMarker">Add</button>
+                    </label>
+                    <gmap-map
+                      class="map"
+                      :zoom="15"
+                      :options="{ styles: style }"
+                      @click="addMarkerOnClick($event)"
+                      :center="{ lat: centerLatitude, lng: centerLongitude }"
                     >
-                    </gmap-autocomplete>
-                    <button @click="saveMarker">Add</button>
-                  </label>
-                  <gmap-map
-                    class="map"
-                    :zoom="15"
-                    :options="{ styles: style }"
-                    @click="addMarkerOnClick($event)"
-                    :center="{ lat: centerLatitude, lng: centerLongitude }"
-                  >
-                    <gmap-marker
-                      v-if="this.searchedPlace"
-                      label="Lugar de incidente"
-                      :position="{
-                        lat: this.searchedPlace.geometry.location.lat(),
-                        lng: this.searchedPlace.geometry.location.lng()
-                      }"
-                    ></gmap-marker>
-                    <gmap-marker
-                      v-if="this.clickedPlace"
-                      label="Lugar de incidente"
-                      :position="{
-                        lat: this.clickedPlace.lat(),
-                        lng: this.clickedPlace.lng()
-                      }"
-                    ></gmap-marker>
-                  </gmap-map>
-                </v-main>
-              </v-app>
-            </template>
+                      <gmap-marker
+                        v-if="this.searchedPlace"
+                        label="Lugar de incidente"
+                        :position="{
+                          lat: this.searchedPlace.geometry.location.lat(),
+                          lng: this.searchedPlace.geometry.location.lng()
+                        }"
+                      ></gmap-marker>
+                      <gmap-marker
+                        v-if="this.clickedPlace"
+                        label="Lugar de incidente"
+                        :position="{
+                          lat: this.clickedPlace.lat(),
+                          lng: this.clickedPlace.lng()
+                        }"
+                      ></gmap-marker>
+                    </gmap-map>
+                  </v-main>
+                </v-app>
+              </template>
+            </v-row>
           </v-card-text>
           <div style="flex: 1 1 auto;"></div>
         </v-card>
