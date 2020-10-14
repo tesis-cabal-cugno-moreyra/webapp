@@ -6,6 +6,7 @@ import Login from "../views/Login.vue";
 import Error from "../views/Error.vue";
 import DomainAccessCode from "@/views/DomainAccessCode";
 import authServices from "@/services/authServices";
+import IncidentDetails from "@/components/IncidentDetails";
 
 Vue.use(VueRouter);
 
@@ -37,6 +38,14 @@ const routes = [
     meta: {
       requires_auth: true,
       is_admin: true
+    }
+  },
+  {
+    path: "/incident-detail",
+    name: "IncidentDetail",
+    component: IncidentDetails,
+    meta: {
+      guest: true
     }
   },
   {
