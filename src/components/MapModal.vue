@@ -1,14 +1,37 @@
 <template>
   <div>
     <v-row justify="center">
-      <v-text-field
-        id="place"
-        v-model="place"
-        label="Lugar"
-        name="place"
-        type="text"
-        class="ma-1 pa-2"
-      ></v-text-field>
+      <!--      <v-text-field-->
+      <!--        id="place"-->
+      <!--        v-model="place"-->
+      <!--        label="Lugar"-->
+      <!--        name="place"-->
+      <!--        type="text"-->
+      <!--        class="ma-1 pa-2"-->
+      <!--      ></v-text-field>-->
+      <div
+        class="v-input theme--dark v-text-field v-text-field--is-booted ma-1 pa-2"
+      >
+        <div class="v-input__control">
+          <div class="v-input__slot">
+            <div class="v-text-field__slot">
+              <gmap-autocomplete
+                class="v-input v-text-field"
+                name="reference"
+                id="reference1"
+                placeholder="Ingrese el lugar del incidente aquí"
+                @place_changed="addMarkerOnSearch"
+              >
+              </gmap-autocomplete>
+            </div>
+          </div>
+          <div class="v-text-field__details">
+            <div class="v-messages theme--dark">
+              <div class="v-messages__wrapper"></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <v-btn color="secundary" class="ma-2" dark @click="dialog = false">
         Buscar
       </v-btn>
@@ -37,35 +60,61 @@
           </v-toolbar>
           <v-card-text>
             <v-row justify="center">
-              <v-text-field
-                id="place"
-                v-model="place"
-                label="Lugar"
-                name="place"
-                type="text"
-              ></v-text-field>
+              <!--              <v-text-field-->
+              <!--                id="place"-->
+              <!--                v-model="place"-->
+              <!--                label="Lugar"-->
+              <!--                name="place"-->
+              <!--                type="text"-->
+              <!--              ><gmap-autocomplete-->
+              <!--                  placeholder="Ingrese el lugar del incidente aquí"-->
+              <!--                  @place_changed="addMarkerOnSearch"-->
+              <!--              >-->
+              <!--              </gmap-autocomplete></v-text-field>-->
+              <div
+                class="v-input theme--dark v-text-field v-text-field--is-booted ma-3"
+              >
+                <div class="v-input__control">
+                  <div class="v-input__slot">
+                    <div class="v-text-field__slot">
+                      <gmap-autocomplete
+                        class="v-input v-text-field"
+                        name="reference"
+                        id="reference2"
+                        placeholder="Ingrese el lugar del incidente aquí"
+                        @place_changed="addMarkerOnSearch"
+                      >
+                      </gmap-autocomplete>
+                    </div>
+                  </div>
+                  <div class="v-text-field__details">
+                    <div class="v-messages theme--dark">
+                      <div class="v-messages__wrapper"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <v-btn
-                color="secundary"
+                color="secundary ma-6"
                 class="ma-2"
                 dark
-                @click="dialog = false"
+                @click="dialog = false && saveMarker"
               >
-                Buscar
+                Agregar
               </v-btn>
             </v-row>
             <template>
               <v-app>
                 <v-main>
-                  <!--                  <h1>Autocomplete Example</h1>-->
-                  <label>
-                    AutoComplete
-                    <gmap-autocomplete
-                      placeholder="Ingrese el lugar del incidente aquí"
-                      @place_changed="addMarkerOnSearch"
-                    >
-                    </gmap-autocomplete>
-                    <button @click="saveMarker">Add</button>
-                  </label>
+                  <!--                  <label>-->
+                  <!--                    AutoComplete-->
+                  <!--                    <gmap-autocomplete-->
+                  <!--                      placeholder="Ingrese el lugar del incidente aquí"-->
+                  <!--                      @place_changed="addMarkerOnSearch"-->
+                  <!--                    >-->
+                  <!--                    </gmap-autocomplete>-->
+                  <!--                    <button @click="saveMarker">Add</button>-->
+                  <!--                  </label>-->
                   <gmap-map
                     class="map"
                     :zoom="15"
