@@ -1,6 +1,8 @@
 <template>
   <v-app>
     <v-main>
+      <IncidentResourceList></IncidentResourceList>
+
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
           <v-col cols="12" sm="8" md="4">
@@ -93,7 +95,6 @@
           </v-card>
         </v-dialog>
       </v-row>
-
       <SignInSupervisor></SignInSupervisor>
     </v-main>
   </v-app>
@@ -103,10 +104,15 @@
 import { mapGetters } from "vuex";
 import authServices from "@/services/authServices";
 import SignInSupervisor from "../components/SignInSupervisor.vue";
+/* quitar esto es solo para probar */
+import IncidentResourceList from "../components/IncidentResourceList.vue";
+
 export default {
   name: "Login",
   components: {
-    SignInSupervisor
+    SignInSupervisor,
+    //esto tambien
+    IncidentResourceList
   },
   data: function() {
     return {
