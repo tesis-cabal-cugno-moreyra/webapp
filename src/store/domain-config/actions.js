@@ -81,5 +81,25 @@ export default {
         return reject(e);
       }
     });
+  },
+  postResourceIncident(context, playload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        return resolve(await api.post(playload));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  getResource(context, playload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        return resolve(await api.get("/api/v1/resources/", playload));
+      } catch (e) {
+        return reject(e);
+      }
+    });
   }
 };
