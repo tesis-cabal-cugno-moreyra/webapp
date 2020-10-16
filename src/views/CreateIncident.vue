@@ -20,7 +20,7 @@
                 :items="visibilityList"
                 label="Visibilidad"
               ></v-select>
-              <map-modal></map-modal>
+              <map-modal v-on:place="placeChanged"></map-modal>
               <v-text-field
                 id="reference"
                 v-model="reference"
@@ -65,6 +65,7 @@ export default {
       incidentTypeSelected: "",
       visibilityList: ["Privado", "Publico"],
       visibility: "",
+      place: null,
       reference: "",
       errorMessage: "",
       tryToCreateIncident: false
@@ -78,6 +79,10 @@ export default {
       alert("Creando incidente...");
       this.tryToCreateIncident = false;
       this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+    },
+    placeChanged(place) {
+      alert(place);
+      this.place = place;
     }
   },
   computed: {

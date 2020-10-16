@@ -17,9 +17,9 @@
             <div class="v-text-field__slot">
               <gmap-autocomplete
                 class="v-input v-text-field theme--dark"
-                name="reference"
-                id="reference1"
-                placeholder="Ingrese el lugar del incidente aquí"
+                name="place"
+                id="place1"
+                placeholder="Lugar"
                 @place_changed="addMarkerOnSearch"
               >
               </gmap-autocomplete>
@@ -79,9 +79,9 @@
                     <div class="v-text-field__slot">
                       <gmap-autocomplete
                         class="v-input v-text-field"
-                        name="reference"
-                        id="reference2"
-                        placeholder="Ingrese el lugar del incidente aquí"
+                        name="place"
+                        id="place2"
+                        placeholder="Lugar"
                         @place_changed="addMarkerOnSearch"
                       >
                       </gmap-autocomplete>
@@ -386,6 +386,8 @@ export default {
       this.centerLongitude = place.geometry.location.lng();
       // ClickedPlace is no useful here
       this.clickedPlace = null;
+      console.log(place);
+      this.$emit("place", place);
     },
     saveMarker() {
       alert(this.searchedPlace);
