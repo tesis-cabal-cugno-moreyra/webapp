@@ -3,28 +3,46 @@
     <v-btn @click="isComponentEnable = true">
       Mostrar recursos para incidentes</v-btn
     >
-
     <v-card>
       <v-dialog v-model="isComponentEnable" width="600" persistent dark>
         <v-card-title :class="['pa-4', 'mb-2', 'black_selected']">
           Recursos para relacionar
           <v-spacer></v-spacer>
+          <v-row>
+            <v-col cols="6">
+              <v-text-field
+                v-model="searchName"
+                append-icon="mdi-magnify"
+                label="Enter para buscar por nombre"
+                v-on:keyup.enter="serchResource()"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="6">
+              <v-text-field
+                v-model="searchLastName"
+                append-icon="mdi-magnify"
+                label="Enter para buscar por apellido"
+                v-on:keyup.enter="serchResource()"
+              ></v-text-field>
+            </v-col>
 
-          <v-text-field
-            v-model="search"
-            append-icon="mdi-magnify"
-            label="Enter para buscar"
-            hide-details
-            single-line
-            v-on:keyup.enter="serchResource()"
-          ></v-text-field>
+            <v-col cols="6">
+              <v-autocomplete
+                v-model="autoCompleteTypeResource"
+                :items="typeResourceSelectedList"
+                item-text="name"
+                clearable
+                label="Tipo de recurso"
+                @change="serchResource()"
+              ></v-autocomplete>
+            </v-col>
+          </v-row>
         </v-card-title>
 
         <v-card-text :class="[' black_selected', 'pa-3']">
           <v-data-table
             v-model="selected"
             :headers="headers"
-            :search="search"
             :items="resourceData"
             :single-select="singleSelect"
             item-key="id"
@@ -38,7 +56,6 @@
             class="my-4"
             :total-visible="10"
             :length="numberOfPage"
-            next="nextPagination"
           ></v-pagination>
         </v-card-text>
 
@@ -61,25 +78,29 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   name: "incidentResourceList",
   data() {
     return {
       isComponentEnable: false,
       singleSelect: false,
-      search: "",
+      searchName: "",
+      searchLastName: "",
+      autoCompleteTypeResource: "",
       page: 1,
       numberOfPage: 1,
       selected: [],
+      typeResourceSelectedList: [],
       nextPagination: null,
       headers: [
         {
-          text: "Nombre del recurso",
+          text: "Nombre",
           align: "start",
           sortable: false,
-          //value: '"user.first_name" + " " + "user.last_name"'
           value: "user.first_name"
         },
+        { text: "Apellido", sortable: false, value: "user.last_name" },
         { text: "Tipos de Recursos", sortable: false, value: "type.name" }
       ],
       resourceData: []
@@ -101,10 +122,7 @@ export default {
           `/api/v1/resources/?page=${pageNow}`
         )
         .then(response => {
-          this.resourceData = response.data.results;
-          console.log(response);
-          this.nextPagination = response.data.next;
-          this.numberOfPage = 2;
+          this.loadResourceData(response);
         })
         .catch(async resp => {
           console.log(resp);
@@ -113,11 +131,23 @@ export default {
           async () =>
             await this.$store.dispatch("uiParams/turnOffSpinnerOverlay")
         );
+
+      this.typeResourceSelectedList = this.domainConfig.incidentAbstractions[1].types[0].resourceTypes;
+    },
+    loadResourceData(completeData) {
+      this.resourceData = completeData.data.results;
+      //operaciones y variables para calcular la cantidad de paginas necesarias
+      let countResource = completeData.data.count / 10;
+      const countAuxResource = completeData.data.count % 10;
+      if (countAuxResource > 0) {
+        this.numberOfPage = Math.floor(countResource) + 1;
+      } else {
+        this.numberOfPage = countResource;
+      }
     },
     async proccessInfo() {
       await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
       let errorPost = "";
-      console.log(this.selected);
       this.selected.forEach(async (element, index) => {
         //tan mal estos datos tengo que poner el id del incidente?????? y poner el id del recurso o el eky
         const urlPost =
@@ -126,12 +156,10 @@ export default {
           "/resources/" +
           element.type.id +
           "/";
-        console.log(urlPost);
         await this.$store
           .dispatch("domainConfig/postResourceIncident", urlPost)
           .then(async () => {
             await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
-            console.log("Se cargo");
           })
           .catch(async () => {
             //comparo el indice de el array con la cantidad de elementos para cambiar el mensaje
@@ -171,15 +199,25 @@ export default {
       });
     },
     async serchResource() {
-      console.log(this.search);
+      let resourceType = this.autoCompleteTypeResource;
+      if (
+        resourceType == undefined &&
+        this.searchName == "" &&
+        this.searchLastName == ""
+      ) {
+        this.page = 1;
+      }
+      if (resourceType == undefined) {
+        resourceType = "";
+      }
+
       await this.$store
         .dispatch(
           "domainConfig/getResource",
-          `/api/v1/resources/?user__first_name=${this.search}`
+          `/api/v1/resources/?user__first_name=${this.searchName}&user__last_name=${this.searchLastName}&type__name=${resourceType}`
         )
         .then(response => {
-          this.resourceData = response.data.results;
-          console.log(response);
+          this.loadResourceData(response);
         })
         .catch(async resp => {
           console.log(resp);
@@ -188,8 +226,12 @@ export default {
           async () =>
             await this.$store.dispatch("uiParams/turnOffSpinnerOverlay")
         );
-      this.page = 1;
     }
+  },
+  computed: {
+    ...mapGetters({
+      domainConfig: "domainConfig/domainConfig"
+    })
   }
 };
 </script>
