@@ -96,7 +96,7 @@ export default {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
-        return resolve(await api.get("/api/v1/resources/", playload));
+        return resolve(await api.get(playload));
       } catch (e) {
         return reject(e);
       }
