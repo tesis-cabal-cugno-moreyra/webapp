@@ -92,6 +92,7 @@
               <v-spacer></v-spacer>
               <v-btn
                 color="primary"
+                :loading="loadingCreate"
                 text
                 v-on:click="validateAndCreateSupervisor()"
                 >Enviar</v-btn
@@ -112,6 +113,7 @@ export default {
   name: "SignInSupervisor",
   data: function() {
     return {
+      loadingCreate: false,
       adminMessaggeProblem: false,
       messaggeProblem: "",
       supervisorAliases: [],
@@ -150,6 +152,7 @@ export default {
       this.$store.commit("uiParams/changeSignInSupervisorState", false);
     },
     async validateAndCreateSupervisor() {
+      this.loadingCreate = true;
       this.clearCustomErrors();
       let isValid = this.$refs.form.validate();
       if (isValid) {
@@ -193,10 +196,9 @@ export default {
               });
             }
           })
-          .finally(
-            async () =>
-              await this.$store.dispatch("uiParams/turnOffSpinnerOverlay")
-          );
+          .finally(async () => {
+            this.loadingCreate = false;
+          });
       } else {
         this.$store.commit("uiParams/dispatchAlert", {
           text: "Debe rellenar todos los campos",

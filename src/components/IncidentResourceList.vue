@@ -41,6 +41,8 @@
 
         <v-card-text :class="[' black_selected', 'pa-3']">
           <v-data-table
+            :loading="loadingTable"
+            loading-text="Cargando... Espere por favor"
             v-model="selected"
             :headers="headers"
             :items="resourceData"
@@ -62,8 +64,9 @@
         <v-card-actions :class="['pa-2', 'pb-1', ' black_selected']">
           <v-spacer></v-spacer>
           <v-btn
+            :loading="loadingProcessInfo"
             :class="['mb-2', 'mr-1', 'primary', 'float-right']"
-            @click="proccessInfo()"
+            v-on:click="proccessInfo()"
             >Continuar</v-btn
           >
           <v-btn
@@ -83,6 +86,8 @@ export default {
   name: "incidentResourceList",
   data() {
     return {
+      loadingTable: false,
+      loadingProcessInfo: false,
       isComponentEnable: false,
       singleSelect: false,
       searchName: "",
@@ -116,15 +121,22 @@ export default {
   },
   methods: {
     async fetchPage(pageNow) {
+      this.loadingTable = true;
       await this.$store
         .dispatch("domainConfig/getResource", pageNow)
         .then(response => {
           this.loadResourceData(response);
         })
-        .catch(async resp => {
-          console.log(resp);
+        .catch(async () => {
+          this.$store.commit("uiParams/dispatchAlert", {
+            text: "A ocurrido un error intente mas tarde ",
+            color: "primary",
+            timeout: 3000
+          });
         })
-        .finally();
+        .finally(async () => {
+          this.loadingTable = false;
+        });
 
       this.typeResourceSelectedList = this.domainConfig.incidentAbstractions[1].types[0].resourceTypes;
     },
@@ -140,6 +152,7 @@ export default {
       }
     },
     async proccessInfo() {
+      this.loadingProcessInfo = true;
       let errorPost = "";
       this.selected.forEach(async (element, index) => {
         //tan mal estos datos tengo que poner el id del incidente?????? y poner el id del recurso o el eky
@@ -176,7 +189,9 @@ export default {
                 ", ";
             }
           })
-          .finally();
+          .finally(async () => {
+            this.loadingProcessInfo = false;
+          });
         if (errorPost.length > 2) {
           this.$store.commit("uiParams/dispatchAlert", {
             text: "No se pudieron cargar los recursos: " + errorPost,
@@ -193,6 +208,7 @@ export default {
       });
     },
     async serchResource() {
+      this.loadingTable = true;
       let resourceType = this.autoCompleteTypeResource;
       if (
         resourceType == undefined &&
@@ -216,10 +232,10 @@ export default {
         .then(response => {
           this.loadResourceData(response);
         })
-        .catch(async resp => {
-          console.log(resp);
-        })
-        .finally();
+        .catch(async () => {})
+        .finally(async () => {
+          this.loadingTable = false;
+        });
     }
   },
   computed: {
