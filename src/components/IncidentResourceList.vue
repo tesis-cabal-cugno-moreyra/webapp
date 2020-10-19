@@ -117,20 +117,14 @@ export default {
   methods: {
     async fetchPage(pageNow) {
       await this.$store
-        .dispatch(
-          "domainConfig/getResource",
-          `/api/v1/resources/?page=${pageNow}`
-        )
+        .dispatch("domainConfig/getResource", pageNow)
         .then(response => {
           this.loadResourceData(response);
         })
         .catch(async resp => {
           console.log(resp);
         })
-        .finally(
-          async () =>
-            await this.$store.dispatch("uiParams/turnOffSpinnerOverlay")
-        );
+        .finally();
 
       this.typeResourceSelectedList = this.domainConfig.incidentAbstractions[1].types[0].resourceTypes;
     },
@@ -146,7 +140,6 @@ export default {
       }
     },
     async proccessInfo() {
-      await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
       let errorPost = "";
       this.selected.forEach(async (element, index) => {
         //tan mal estos datos tengo que poner el id del incidente?????? y poner el id del recurso o el eky
@@ -159,7 +152,11 @@ export default {
         await this.$store
           .dispatch("domainConfig/postResourceIncident", urlPost)
           .then(async () => {
-            await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+            this.$store.commit("uiParams/dispatchAlert", {
+              text: "Se cargo  correctamente: ",
+              color: "success",
+              timeout: 5000
+            });
           })
           .catch(async () => {
             //comparo el indice de el array con la cantidad de elementos para cambiar el mensaje
@@ -179,10 +176,7 @@ export default {
                 ", ";
             }
           })
-          .finally(
-            async () =>
-              await this.$store.dispatch("uiParams/turnOffSpinnerOverlay")
-          );
+          .finally();
         if (errorPost.length > 2) {
           this.$store.commit("uiParams/dispatchAlert", {
             text: "No se pudieron cargar los recursos: " + errorPost,
@@ -211,21 +205,21 @@ export default {
         resourceType = "";
       }
 
+      let searchInfo = {
+        user__first_name: this.searchName,
+        user__last_name: this.searchLastName,
+        type__name: resourceType
+      };
+
       await this.$store
-        .dispatch(
-          "domainConfig/getResource",
-          `/api/v1/resources/?user__first_name=${this.searchName}&user__last_name=${this.searchLastName}&type__name=${resourceType}`
-        )
+        .dispatch("domainConfig/getResource", searchInfo)
         .then(response => {
           this.loadResourceData(response);
         })
         .catch(async resp => {
           console.log(resp);
         })
-        .finally(
-          async () =>
-            await this.$store.dispatch("uiParams/turnOffSpinnerOverlay")
-        );
+        .finally();
     }
   },
   computed: {

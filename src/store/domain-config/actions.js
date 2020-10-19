@@ -93,10 +93,15 @@ export default {
     });
   },
   getResource(context, playload) {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       try {
-        return resolve(await api.get(playload));
+        let urlSerch = "";
+        if (isNaN(playload)) {
+          urlSerch = `/api/v1/resources/?user__first_name=${playload.user__first_name}&user__last_name=${playload.user__last_name}&type__name=${playload.type__name}`;
+        } else {
+          urlSerch = `/api/v1/resources/?page=${playload}`;
+        }
+        return resolve(api.get(urlSerch));
       } catch (e) {
         return reject(e);
       }
