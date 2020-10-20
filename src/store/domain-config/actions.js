@@ -93,15 +93,16 @@ export default {
     });
   },
   getResource(context, playload) {
-    return new Promise((resolve, reject) => {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
       try {
-        let urlSerch = "";
+        let urlSearch = "";
         if (isNaN(playload)) {
-          urlSerch = `/api/v1/resources/?user__first_name=${playload.user__first_name}&user__last_name=${playload.user__last_name}&type__name=${playload.type__name}`;
+          urlSearch = `/api/v1/resources/?user__first_name=${playload.user__first_name}&user__last_name=${playload.user__last_name}&type__name=${playload.type__name}`;
         } else {
-          urlSerch = `/api/v1/resources/?page=${playload}`;
+          urlSearch = `/api/v1/resources/?page=${playload}`;
         }
-        return resolve(api.get(urlSerch));
+        return resolve(await api.get(urlSearch));
       } catch (e) {
         return reject(e);
       }
