@@ -96,12 +96,8 @@ export default {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
-        let urlSearch = "";
-        if (isNaN(playload)) {
-          urlSearch = `/api/v1/resources/?user__first_name=${playload.user__first_name}&user__last_name=${playload.user__last_name}&type__name=${playload.type__name}`;
-        } else {
-          urlSearch = `/api/v1/resources/?page=${playload}`;
-        }
+        let urlSearch = `/api/v1/resources/?user__first_name=${playload.user__first_name}&user__last_name=${playload.user__last_name}&type__name=${playload.type__name}&page=${playload.page}`;
+
         return resolve(await api.get(urlSearch));
       } catch (e) {
         return reject(e);

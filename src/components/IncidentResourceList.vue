@@ -86,6 +86,12 @@ export default {
   name: "incidentResourceList",
   data() {
     return {
+      referenceSearch: {
+        user__first_name: "",
+        user__last_name: "",
+        type__name: "",
+        page: 1
+      },
       loadingTable: false,
       loadingProcessInfo: false,
       isComponentEnable: false,
@@ -112,24 +118,44 @@ export default {
     };
   },
   created() {
-    this.fetchPage(this.page);
+    this.serchResource();
   },
   watch: {
     page() {
-      this.fetchPage(this.page);
+      this.serchResource();
     }
   },
   methods: {
-    async fetchPage(pageNow) {
+    async serchResource() {
       this.loadingTable = true;
+
+      let searchInfo = {
+        user__first_name: this.searchName,
+        user__last_name: this.searchLastName,
+        type__name:
+          this.autoCompleteTypeResource == undefined
+            ? ""
+            : this.autoCompleteTypeResource,
+        page: this.page
+      };
+
+      if (
+        searchInfo.user__first_name != this.referenceSearch.user__first_name ||
+        searchInfo.user__last_name != this.referenceSearch.user__last_name ||
+        searchInfo.type__name != this.referenceSearch.type__name
+      ) {
+        this.page = 1;
+        searchInfo.page = 1;
+      }
       await this.$store
-        .dispatch("domainConfig/getResource", pageNow)
+        .dispatch("domainConfig/getResource", searchInfo)
         .then(response => {
           this.loadResourceData(response);
+          this.referenceSearch = searchInfo;
         })
         .catch(async () => {
           this.$store.commit("uiParams/dispatchAlert", {
-            text: "A ocurrido un error intente mas tarde ",
+            text: "No hay resultados con esas especificaciones",
             color: "primary",
             timeout: 3000
           });
@@ -137,9 +163,9 @@ export default {
         .finally(async () => {
           this.loadingTable = false;
         });
-
       this.typeResourceSelectedList = this.domainConfig.incidentAbstractions[1].types[0].resourceTypes;
     },
+
     loadResourceData(completeData) {
       this.resourceData = completeData.data.results;
       //operaciones y variables para calcular la cantidad de paginas necesarias
@@ -151,6 +177,7 @@ export default {
         this.numberOfPage = countResource;
       }
     },
+
     async proccessInfo() {
       this.loadingProcessInfo = true;
       let errorPost = "";
@@ -206,36 +233,6 @@ export default {
           });
         }
       });
-    },
-    async serchResource() {
-      this.loadingTable = true;
-      let resourceType = this.autoCompleteTypeResource;
-      if (
-        resourceType == undefined &&
-        this.searchName == "" &&
-        this.searchLastName == ""
-      ) {
-        this.page = 1;
-      }
-      if (resourceType == undefined) {
-        resourceType = "";
-      }
-
-      let searchInfo = {
-        user__first_name: this.searchName,
-        user__last_name: this.searchLastName,
-        type__name: resourceType
-      };
-
-      await this.$store
-        .dispatch("domainConfig/getResource", searchInfo)
-        .then(response => {
-          this.loadResourceData(response);
-        })
-        .catch(async () => {})
-        .finally(async () => {
-          this.loadingTable = false;
-        });
     }
   },
   computed: {
