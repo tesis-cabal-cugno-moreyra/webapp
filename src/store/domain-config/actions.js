@@ -81,5 +81,28 @@ export default {
         return reject(e);
       }
     });
+  },
+  postResourceIncident(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlResourceIncident = `/api/v1/incidents/${payload.incidentId}/resources/${payload.incidentTypeId}/`;
+        return resolve(await api.post(urlResourceIncident));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  getResource(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlSearch = `/api/v1/resources/?user__first_name=${payload.user__first_name}&user__last_name=${payload.user__last_name}&type__name=${payload.type__name}&page=${payload.page}`;
+
+        return resolve(await api.get(urlSearch));
+      } catch (e) {
+        return reject(e);
+      }
+    });
   }
 };

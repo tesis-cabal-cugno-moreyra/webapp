@@ -93,7 +93,6 @@
           </v-card>
         </v-dialog>
       </v-row>
-
       <SignInSupervisor></SignInSupervisor>
     </v-main>
   </v-app>
@@ -103,6 +102,7 @@
 import { mapGetters } from "vuex";
 import authServices from "@/services/authServices";
 import SignInSupervisor from "../components/SignInSupervisor.vue";
+
 export default {
   name: "Login",
   components: {
