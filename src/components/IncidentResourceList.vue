@@ -1,8 +1,5 @@
 <template>
   <v-form>
-    <v-btn @click="isComponentEnable = true">
-      Mostrar recursos para incidentes</v-btn
-    >
     <v-card>
       <v-dialog v-model="isComponentEnable" width="600" persistent dark>
         <v-card-title :class="['pa-4', 'mb-2', 'black_selected']">
@@ -147,6 +144,7 @@ export default {
         this.page = 1;
         searchInfo.page = 1;
       }
+
       await this.$store
         .dispatch("domainConfig/getResource", searchInfo)
         .then(response => {
@@ -167,30 +165,36 @@ export default {
     },
 
     loadResourceData(completeData) {
+      //Refactorizar y mandar a store ?
       this.resourceData = completeData.data.results;
-      //operaciones y variables para calcular la cantidad de paginas necesarias
-      let countResource = completeData.data.count / 10;
-      const countAuxResource = completeData.data.count % 10;
-      if (countAuxResource > 0) {
-        this.numberOfPage = Math.floor(countResource) + 1;
-      } else {
-        this.numberOfPage = countResource;
+      let itemsPerPage = process.env.VUE_APP_ITEMS_PER_PAGE;
+      if (!itemsPerPage) {
+        console.error("Variable no declarada en: VUE_APP_ITEMS_PER_PAGE");
       }
+      this.numberOfPage = Math.ceil(completeData.data.count / itemsPerPage);
     },
 
     async proccessInfo() {
+      if (this.selected.length == 0) {
+        this.$store.commit("uiParams/dispatchAlert", {
+          text: "Debe seleccionar al menos un recurso",
+          color: "primary",
+          timeout: 3000
+        });
+        return;
+      }
       this.loadingProcessInfo = true;
       let errorPost = "";
+      console.log(this.selected);
       this.selected.forEach(async (element, index) => {
         //tan mal estos datos tengo que poner el id del incidente?????? y poner el id del recurso o el eky
-        const urlPost =
-          "/api/v1/incidents/" +
-          element.id +
-          "/resources/" +
-          element.type.id +
-          "/";
+        let resourceIncidentData = {
+          incidentId: "emi completame por favor",
+          incidentTypeId: element.type.id
+        };
+
         await this.$store
-          .dispatch("domainConfig/postResourceIncident", urlPost)
+          .dispatch("domainConfig/postResourceIncident", resourceIncidentData)
           .then(async () => {
             this.$store.commit("uiParams/dispatchAlert", {
               text: "Se cargo  correctamente: ",
@@ -199,21 +203,10 @@ export default {
             });
           })
           .catch(async () => {
-            //comparo el indice de el array con la cantidad de elementos para cambiar el mensaje
-            if (index == this.selected.length - 1) {
-              errorPost =
-                errorPost +
-                element.user.first_name +
-                " " +
-                element.user.last_name +
-                " ";
-            } else {
-              errorPost =
-                errorPost +
-                element.user.first_name +
-                " " +
-                element.user.last_name +
-                ", ";
+            //comparo el indice de el array con la cantidad de elementos para finalizar el mensaje
+            errorPost = `${errorPost} ${element.user.first_name} ${element.user.last_name}`;
+            if (index != this.selected.length - 1) {
+              errorPost = `${errorPost}, `;
             }
           })
           .finally(async () => {
