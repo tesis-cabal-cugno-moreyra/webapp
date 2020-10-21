@@ -1,14 +1,6 @@
 <template>
   <div>
     <v-row justify="center">
-      <!--      <v-text-field-->
-      <!--        id="place"-->
-      <!--        v-model="place"-->
-      <!--        label="Lugar"-->
-      <!--        name="place"-->
-      <!--        type="text"-->
-      <!--        class="ma-1 pa-2"-->
-      <!--      ></v-text-field>-->
       <div
         class="v-input theme--dark v-text-field v-text-field--is-booted ma-1 pa-2"
       >
@@ -20,6 +12,7 @@
                 name="place"
                 id="place1"
                 placeholder="Lugar"
+                ref="place1"
                 @place_changed="addMarkerOnSearch"
               >
               </gmap-autocomplete>
@@ -32,9 +25,6 @@
           </div>
         </div>
       </div>
-      <v-btn color="secundary" class="ma-2" dark @click="dialog = false">
-        Buscar
-      </v-btn>
       <v-btn color="primary" class="ma-2" dark @click="dialog = true">
         Ver mapa
       </v-btn>
@@ -47,71 +37,15 @@
       >
         <v-card tile>
           <v-toolbar dark color="primary" style="flex: 0 0 auto;">
-            <v-btn icon dark @click="dialog = false">
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
             <v-toolbar-title>Buscar el lugar del incidente</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-toolbar-items>
               <v-btn dark text @click="dialog = false">
-                Guardar
+                Volver
               </v-btn>
             </v-toolbar-items>
           </v-toolbar>
           <v-card-text>
-            <v-row justify="center">
-              <!--              <v-text-field-->
-              <!--                id="place"-->
-              <!--                v-model="place"-->
-              <!--                label="Lugar"-->
-              <!--                name="place"-->
-              <!--                type="text"-->
-              <!--              ><gmap-autocomplete-->
-              <!--                  placeholder="Ingrese el lugar del incidente aquí"-->
-              <!--                  @place_changed="addMarkerOnSearch"-->
-              <!--              >-->
-              <!--              </gmap-autocomplete></v-text-field>-->
-              <div
-                class="v-input theme--dark v-text-field v-text-field--is-booted ma-3"
-              >
-                <div class="v-input__control">
-                  <div class="v-input__slot">
-                    <div class="v-text-field__slot">
-                      <gmap-autocomplete
-                        class="v-input v-text-field"
-                        name="place"
-                        id="place2"
-                        placeholder="Lugar"
-                        @place_changed="addMarkerOnSearch"
-                      >
-                      </gmap-autocomplete>
-                    </div>
-                  </div>
-                  <div class="v-text-field__details">
-                    <div class="v-messages theme--dark">
-                      <div class="v-messages__wrapper"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <v-btn
-                color="secundary ma-6"
-                class="ma-2"
-                dark
-                @click="dialog = false && saveMarker"
-              >
-                Agregar
-              </v-btn>
-            </v-row>
-            <!--                  <label>-->
-            <!--                    AutoComplete-->
-            <!--                    <gmap-autocomplete-->
-            <!--                      placeholder="Ingrese el lugar del incidente aquí"-->
-            <!--                      @place_changed="addMarkerOnSearch"-->
-            <!--                    >-->
-            <!--                    </gmap-autocomplete>-->
-            <!--                    <button @click="saveMarker">Add</button>-->
-            <!--                  </label>-->
             <gmap-map
               class="map"
               :zoom="15"
@@ -376,6 +310,19 @@ export default {
       this.clickedPlace = event.latLng;
       // SearchedPlace is no useful here
       this.searchedPlace = null;
+
+      let input1 = document.getElementById("place1");
+      input1.value = "Punto seleccionado en el mapa.";
+
+      let eventStrigified = JSON.stringify(event);
+      let place = JSON.parse(eventStrigified);
+
+      let myPlace = {
+        text: "",
+        lat: place.latLng.lat,
+        lng: place.latLng.lng
+      };
+      this.$emit("place", myPlace);
     },
     setDescription(description) {
       this.description = description;
@@ -386,11 +333,18 @@ export default {
       this.centerLongitude = place.geometry.location.lng();
       // ClickedPlace is no useful here
       this.clickedPlace = null;
-      console.log(place);
-      this.$emit("place", place);
+      let myPlace = {
+        text: document.getElementById("place1").value,
+        lat: place.geometry.location.lat(),
+        long: place.geometry.location.lng()
+      };
+      this.$emit("place", myPlace);
     },
     saveMarker() {
       alert(this.searchedPlace);
+    },
+    cualquieraNoSe(cosa) {
+      console.log(cosa);
     }
   }
 };

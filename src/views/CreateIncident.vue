@@ -42,7 +42,11 @@
               style="height: 200px; width: 200px;"
               >¡Crear!</v-btn
             >
-            <v-btn color="black_selected" class="ma-5 pa-3" x-large
+            <v-btn
+              color="black_selected"
+              class="ma-5 pa-3"
+              x-large
+              v-on:click="goHome"
               >Cancelar</v-btn
             >
           </v-container>
@@ -63,7 +67,7 @@ export default {
     return {
       incidentAbstractionSelected: "",
       incidentTypeSelected: "",
-      visibilityList: ["Privado", "Publico"],
+      visibilityList: ["Private", "Public"],
       visibility: "",
       place: null,
       reference: "",
@@ -72,23 +76,51 @@ export default {
     };
   },
   methods: {
-    createIncident() {
+    async createIncident() {
       this.tryToCreateIncident = true;
-      this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
+      await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
+      console.log(this.domainConfig);
+
+      console.log(this.place.lat);
       // TODO: armar módulo de incidente en Vuex para interactuar con la API
-      alert("Creando incidente...");
+      let payload = {
+        domain_name: this.domainConfig.name,
+        incident_type_name: this.incidentTypeSelected,
+        visibility: this.visibility,
+        details: {},
+        location_as_string_reference: this.place.text,
+        location_point: {
+          type: "Point",
+          coordinates: [this.place.lat, this.place.lng]
+        }
+      };
+      await this.$store
+        .dispatch("incident/createIncident", payload)
+        .then(response => {
+          if (response.status === 200) {
+            this.$router.push({ name: "Home" });
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
+
       this.tryToCreateIncident = false;
       this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
     },
     placeChanged(place) {
-      alert(place);
+      alert(JSON.stringify(place));
       this.place = place;
+    },
+    goHome() {
+      this.$router.push({ name: "Home" });
     }
   },
   computed: {
     ...mapGetters({
       incidentConfig: "domainConfig/incidentConfig",
-      incidentAbstractions: "domainConfig/incidentAbstractions"
+      incidentAbstractions: "domainConfig/incidentAbstractions",
+      domainConfig: "domainConfig/domainConfig"
     }),
     incidentTypes() {
       let incidentTypes = [];
