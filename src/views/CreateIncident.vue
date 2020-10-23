@@ -9,21 +9,29 @@
                 v-model="incidentAbstractionSelected"
                 :items="incidentAbstractions"
                 label="Incidente"
+                :error="incidentAbstractionsError"
+                :error-messages="incidentAbstractionsErrorMessage"
               ></v-select>
               <v-select
                 v-model="incidentTypeSelected"
                 :items="incidentTypes"
+                :error="incidentTypesError"
+                :error-messages="incidentTypesErrorMessage"
                 label="Tipo de Incidente"
               ></v-select>
               <v-select
                 v-model="visibility"
                 :items="visibilityList"
+                :error="visibilityError"
+                :error-messages="visibilityErrorMessage"
                 label="Visibilidad"
               ></v-select>
               <map-modal v-on:place="placeChanged"></map-modal>
               <v-text-field
                 id="reference"
                 v-model="reference"
+                :error="referenceError"
+                :error-messages="referenceErrorMessage"
                 label="Referencia"
                 name="reference"
                 type="text"
@@ -50,6 +58,11 @@
               >Cancelar</v-btn
             >
           </v-container>
+          <v-container
+            ><v-alert v-if="placeError" color="error" icon="mdi-alert">
+              {{ this.placeErrorMessage }}</v-alert
+            ></v-container
+          >
         </v-row>
       </v-layout>
     </v-container>
@@ -66,45 +79,57 @@ export default {
   data: function() {
     return {
       incidentAbstractionSelected: "",
+      incidentAbstractionsError: false,
+      incidentAbstractionsErrorMessage: "",
       incidentTypeSelected: "",
-      visibilityList: ["Private", "Public"],
+      incidentTypesError: false,
+      incidentTypesErrorMessage: "",
       visibility: "",
+      visibilityList: ["Privado", "Publico"],
+      visibilityError: false,
+      visibilityErrorMessage: "",
       place: null,
+      placeError: false,
+      placeErrorMessage: "",
       reference: "",
-      errorMessage: "",
+      referenceError: false,
+      referenceErrorMessage: "",
       tryToCreateIncident: false
     };
   },
   methods: {
     async createIncident() {
-      this.tryToCreateIncident = true;
-      await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
-      console.log(this.domainConfig);
+      if (this.inputsFilled()) {
+        this.tryToCreateIncident = true;
+        await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
+        console.log(this.domainConfig);
 
-      console.log(this.place.lat);
-      // TODO: armar módulo de incidente en Vuex para interactuar con la API
-      let payload = {
-        domain_name: this.domainConfig.name,
-        incident_type_name: this.incidentTypeSelected,
-        visibility: this.visibility,
-        details: {},
-        location_as_string_reference: this.place.text,
-        location_point: {
-          type: "Point",
-          coordinates: [this.place.lat, this.place.lng]
-        }
-      };
-      await this.$store
-        .dispatch("incident/createIncident", payload)
-        .then(response => {
-          if (response.status === 200) {
-            this.$router.push({ name: "Home" });
+        console.log(this.place);
+        console.log(this.place.lat);
+        console.log(this.place.lng);
+        // TODO: armar módulo de incidente en Vuex para interactuar con la API
+        let payload = {
+          domain_name: this.domainConfig.name,
+          incident_type_name: this.incidentTypeSelected,
+          visibility: this.visibility,
+          details: { reference: this.reference },
+          location_as_string_reference: this.place.text,
+          location_point: {
+            type: "Point",
+            coordinates: [this.place.lat, this.place.lng]
           }
-        })
-        .catch(e => {
-          console.log(e);
-        });
-
+        };
+        await this.$store
+          .dispatch("incident/createIncident", payload)
+          .then(response => {
+            if (response.status === 200) {
+              this.$router.push({ name: "Home" });
+            }
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      }
       this.tryToCreateIncident = false;
       this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
     },
@@ -114,6 +139,47 @@ export default {
     },
     goHome() {
       this.$router.push({ name: "Home" });
+    },
+    inputsFilled() {
+      /* Try to find at least one input empty. */
+      let errorFound = false;
+      if (
+        this.incidentAbstractionSelected === null ||
+        this.incidentAbstractionSelected === ""
+      ) {
+        errorFound = true;
+        this.incidentAbstractionsError = true;
+        this.incidentAbstractionsErrorMessage =
+          "Debe seleccionar un incidente.";
+      }
+      if (
+        this.incidentTypeSelected === null ||
+        this.incidentTypeSelected === ""
+      ) {
+        errorFound = true;
+        this.incidentTypesError = true;
+        this.incidentTypesErrorMessage =
+          "Debe seleccionar un tipo de incidente.";
+      }
+      if (this.visibility === null || this.visibility === "") {
+        errorFound = true;
+        this.visibilityError = true;
+        this.visibilityErrorMessage = "Debe seleccionar la visibilidad";
+      }
+      if (this.reference === null || this.reference === "") {
+        errorFound = true;
+        this.referenceError = true;
+        this.referenceErrorMessage =
+          "Debe ingresar una referencia, que indentifique el incidente.";
+      }
+      if (this.place === null || this.place === "") {
+        errorFound = true;
+        this.placeError = true;
+        this.placeErrorMessage =
+          "Debe seleccionar un lugar real, buscando en el campo o haciendo click en el mapa.";
+      }
+
+      return !errorFound;
     }
   },
   computed: {

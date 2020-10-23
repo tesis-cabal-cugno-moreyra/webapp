@@ -336,7 +336,7 @@ export default {
       let myPlace = {
         text: document.getElementById("place1").value,
         lat: place.geometry.location.lat(),
-        long: place.geometry.location.lng()
+        lng: place.geometry.location.lng()
       };
       this.$emit("place", myPlace);
     },
