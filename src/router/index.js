@@ -41,11 +41,13 @@ const routes = [
     }
   },
   {
+    // Delete this, when details included into Incident flow
     path: "/incident-detail",
     name: "IncidentDetail",
     component: IncidentDetails,
     meta: {
-      guest: true
+      requires_auth: true,
+      is_admin: true
     }
   },
   {

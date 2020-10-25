@@ -104,5 +104,44 @@ export default {
         return reject(e);
       }
     });
+  },
+  async getIncidentTypeFromLocalDomainConfig(context, payload) {
+    // This should be done better!
+    if (context.getters.domainConfig === {}) {
+      await context.dispatch("getDomainConfig");
+    }
+    await context.dispatch("getDomainConfig");
+
+    const incidentAbstractions =
+      context.getters.domainConfig.incidentAbstractions;
+    let incidentTypeData = {};
+    if (!payload.incidentAbstraction) {
+      console.error("no incidentAbstraction in payload");
+      return incidentTypeData;
+    }
+    if (!payload.incidentType) {
+      console.error("no incidentType in payload");
+      return incidentTypeData;
+    }
+
+    const selectedIncidentAbstraction = incidentAbstractions.filter(
+      incidentAbstraction =>
+        incidentAbstraction.name === payload.incidentAbstraction
+    );
+    if (selectedIncidentAbstraction.length !== 1) {
+      console.error(
+        "selectedIncidentAbstraction nonexistent or duplicated name"
+      );
+    }
+    // Using first element from selectedIncidentAbstraction, as name is unique for all abstractions
+    incidentTypeData = selectedIncidentAbstraction[0].types.filter(
+      incidentType => incidentType.name === payload.incidentType
+    );
+
+    if (incidentTypeData.length !== 1) {
+      console.error("incident Type nonexistent or duplicated name");
+    }
+    // This returns the first element, as type is unique with relation of selected abstraction
+    return incidentTypeData[0];
   }
 };
