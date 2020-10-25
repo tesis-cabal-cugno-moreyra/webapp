@@ -20,9 +20,6 @@ export default {
         this.$router.addRoutes(domainConfigRoutes);
         await this.$router.push({ name: "DomainConfig" });
       });
-    // BORRAR ESTO!!!!
-    this.$router.addRoutes(domainConfigRoutes);
-    await this.$router.push({ name: "DomainConfig" });
   }
 };
 </script>

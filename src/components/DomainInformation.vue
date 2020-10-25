@@ -504,7 +504,7 @@
                   color="grey_selected"
                   text-color="white"
                 >
-                  <v-icon left>label</v-icon>
+                  <v-icon left>mdi-label</v-icon>
                   {{
                     (item.TypeIncident != null
                       ? item.TypeIncident + " - "
@@ -762,6 +762,7 @@ export default {
       formAddSupervisor: true,
       formAddIncident: true,
       formAddTypeIncident: true,
+      typeIncidentIsActive: false,
       formAddResource: true,
       typeIncidentSelectAvalible: false,
       resourceTypeIncidentSelectAvalible: false,
@@ -865,13 +866,7 @@ export default {
               "Debe ingresar al menos un tipo de incidentes";
             this.snackbar = true;
           } else {
-            let isEmptyType = false;
-            this.incidentAbstractionList.forEach(incident => {
-              if (incident.incidentTypes.length > 0) {
-                isEmptyType = true;
-              }
-            });
-            if (isEmptyType) {
+            if (this.typeIncidentIsActive) {
               this.stepNumber = "6";
 
               this.messaggeSnackbar =
@@ -1064,7 +1059,7 @@ export default {
           this.formAddTypeIncident = true;
           break;
         case "6":
-          this.isMapPointAvaliable = false;
+          this.newMapDescription = "";
           this.formDescriptionMapPoint = true;
 
           break;
@@ -1103,6 +1098,7 @@ export default {
             this.textFieldTypeIncident = "";
             this.formAddTypeIncident = true;
             this.dialog = false;
+            this.typeIncidentIsActive = true;
             this.stepNumber = "6";
           } else {
             this.TypeListSelected.splice(this.pointerToDelete, 1);
@@ -1192,11 +1188,15 @@ export default {
         this.snackbar = true;
         return;
       }
-      var incidentIsRepeated = this.incidentAbstractionList.some(
-        e =>
-          e.name.toLowerCase().trim() ==
-          this.textFieldIncident.toLowerCase().trim()
-      );
+      if (
+        this.textFieldIncident !=
+        this.incidentAbstractionList[this.IncidetnIndex].name
+      )
+        var incidentIsRepeated = this.incidentAbstractionList.some(
+          e =>
+            e.name.toLowerCase().trim() ==
+            this.textFieldIncident.toLowerCase().trim()
+        );
       if (incidentIsRepeated) {
         this.messaggeSnackbar = "El incidente ingresado ya existe";
         this.snackbar = true;
@@ -1310,15 +1310,20 @@ export default {
         this.snackbar = true;
         return;
       }
-      var typeIncidentIsRepeated = this.TypeListSelected.some(
-        e =>
-          e.nameIncident.toLowerCase() ===
-          this.textFieldTypeIncident.toLowerCase()
-      );
-      if (typeIncidentIsRepeated) {
-        this.messaggeSnackbar = "El tipo de incidente ingresado ya existe";
-        this.snackbar = true;
-        return;
+      if (
+        this.textFieldTypeIncident !=
+        this.TypeListSelected[this.indexTypeIncident].nameIncident
+      ) {
+        var typeIncidentIsRepeated = this.TypeListSelected.some(
+          e =>
+            e.nameIncident.toLowerCase().trim() ===
+            this.textFieldTypeIncident.toLowerCase().trim()
+        );
+        if (typeIncidentIsRepeated) {
+          this.messaggeSnackbar = "El tipo de incidente ingresado ya existe";
+          this.snackbar = true;
+          return;
+        }
       }
 
       if (!this.detailsSchemaTypeIncident) {
@@ -1356,13 +1361,21 @@ export default {
         this.snackbar = true;
         return;
       }
-      var supervisorIsRepeated = this.supervisorAliasesStringList.some(
-        e => e.name.toLowerCase() == this.textFieldSupervisor.toLowerCase()
-      );
-      if (supervisorIsRepeated) {
-        this.messaggeSnackbar = "El supervisor ingresado ya existe";
-        this.snackbar = true;
-        return;
+      if (
+        this.supervisorAliasesStringList[
+          this.supervisorAliasIndex
+        ].name.trim() != this.textFieldSupervisor.trim()
+      ) {
+        var supervisorIsRepeated = this.supervisorAliasesStringList.some(
+          e =>
+            e.name.toLowerCase().trim() ==
+            this.textFieldSupervisor.toLowerCase().trim()
+        );
+        if (supervisorIsRepeated) {
+          this.messaggeSnackbar = "El supervisor ingresado ya existe";
+          this.snackbar = true;
+          return;
+        }
       }
       this.supervisorAliasesStringList[
         this.supervisorAliasIndex
@@ -1420,8 +1433,8 @@ export default {
 
       var descriptionIsRepeated = this.MapPointViewSelectedList.some(
         e =>
-          e.descriptionPoint.toLowerCase() ==
-          this.newMapDescription.toLowerCase()
+          e.descriptionPoint.toLowerCase().trim() ==
+          this.newMapDescription.toLowerCase().trim()
       );
 
       if (descriptionIsRepeated) {
@@ -1432,14 +1445,14 @@ export default {
       const idUnic = Date.now();
       this.MapPointSelectedList.push({
         id: idUnic,
-        Incident: this.selectIncident.name,
+        Incident: this.selectIncidentStep6.name,
         TypeIncident: this.selectedIncidentType.nameIncident,
         descriptionPoint: this.newMapDescription
       });
 
       this.MapPointViewSelectedList.push({
         id: idUnic,
-        Incident: this.selectIncident.name,
+        Incident: this.selectIncidentStep6.name,
         TypeIncident: this.selectedIncidentType.nameIncident,
         descriptionPoint: this.newMapDescription
       });
@@ -1470,17 +1483,21 @@ export default {
         this.snackbar = true;
         return;
       }
+      if (
+        this.MapPointViewSelectedList[this.indexMapPoint].descriptionPoint !=
+        this.newMapDescription
+      ) {
+        var descriptionIsRepeated = this.MapPointViewSelectedList.some(
+          e =>
+            e.descriptionPoint.toLowerCase().trim() ==
+            this.newMapDescription.toLowerCase().trim()
+        );
 
-      var descriptionIsRepeated = this.MapPointViewSelectedList.some(
-        e =>
-          e.descriptionPoint.toLowerCase() ==
-          this.newMapDescription.toLowerCase()
-      );
-
-      if (descriptionIsRepeated) {
-        this.messaggeSnackbar = "La tarea ingresada ya existe ";
-        this.snackbar = true;
-        return;
+        if (descriptionIsRepeated) {
+          this.messaggeSnackbar = "La tarea ingresada ya existe ";
+          this.snackbar = true;
+          return;
+        }
       }
 
       this.MapPointViewSelectedList[
@@ -1621,17 +1638,21 @@ export default {
         this.snackbar = true;
         return;
       }
+      if (
+        this.resourceSelectedList[this.indexResource].descriptionResource !=
+        this.textFieldResource
+      ) {
+        var descriptionIsRepeated = this.resourceSelectedList.some(
+          e =>
+            e.descriptionResource.toLowerCase().trim() ==
+            this.textFieldResource.toLowerCase().trim()
+        );
 
-      var descriptionIsRepeated = this.resourceSelectedList.some(
-        e =>
-          e.descriptionResource.toLowerCase() ==
-          this.textFieldResource.toLowerCase()
-      );
-
-      if (descriptionIsRepeated) {
-        this.messaggeSnackbar = "El recurso ingresado ya existe ";
-        this.snackbar = true;
-        return;
+        if (descriptionIsRepeated) {
+          this.messaggeSnackbar = "El recurso ingresado ya existe ";
+          this.snackbar = true;
+          return;
+        }
       }
 
       this.resourceSelectedList[
