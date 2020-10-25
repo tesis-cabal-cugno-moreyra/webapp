@@ -76,6 +76,11 @@
             >
           </v-container>
         </v-row>
+        <incident-resource-list
+          :show="showIncidentResourceList"
+          :incidentId="incidentId"
+          v-on:closeModal="closeModal"
+        ></incident-resource-list>
       </v-layout>
     </v-container>
   </v-app>
@@ -84,10 +89,11 @@
 <script>
 import { mapGetters } from "vuex";
 import MapModal from "@/components/MapModal";
+import IncidentResourceList from "@/components/IncidentResourceList";
 
 export default {
   name: "CreateIncident",
-  components: { MapModal },
+  components: { IncidentResourceList, MapModal },
   data: function() {
     return {
       incidentAbstractionSelected: "",
@@ -106,7 +112,9 @@ export default {
       reference: "",
       referenceError: false,
       referenceErrorMessage: "",
-      tryToCreateIncident: false
+      tryToCreateIncident: false,
+      showIncidentResourceList: false,
+      incidentId: 0
     };
   },
   methods: {
@@ -114,11 +122,6 @@ export default {
       if (this.inputsFilled()) {
         this.tryToCreateIncident = true;
         await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
-        console.log(this.domainConfig);
-
-        console.log(this.place);
-        console.log(this.place.lat);
-        console.log(this.place.lng);
         let visibility;
         if (this.visibility === "Privado") {
           visibility = "Private";
@@ -140,8 +143,9 @@ export default {
         await this.$store
           .dispatch("incident/createIncident", payload)
           .then(response => {
-            if (response.status === 200) {
-              this.$router.push({ name: "Home" });
+            if (response.status === 201) {
+              this.showIncidentResourceList = true;
+              this.incidentId = response.data.id;
             }
           })
           .catch(e => {
@@ -182,7 +186,7 @@ export default {
       if (this.visibility === null || this.visibility === "") {
         errorFound = true;
         this.visibilityError = true;
-        this.visibilityErrorMessage = "Debe seleccionar la visibilidad";
+        this.visibilityErrorMessage = "Debe seleccionar la visibilidad.";
       }
       if (this.reference === null || this.reference === "") {
         errorFound = true;
@@ -196,7 +200,6 @@ export default {
         this.placeErrorMessage =
           "Debe seleccionar un lugar real, buscando en el campo o haciendo click en el mapa.";
       }
-
       return !errorFound;
     },
     resetIncidentAbstractionsError() {
@@ -214,6 +217,10 @@ export default {
     resetReferenceError() {
       this.referenceError = false;
       this.referenceErrorMessage = "";
+    },
+    closeModal() {
+      this.showIncidentResourceList = false;
+      this.$router.push({ name: "Home" });
     }
   },
   computed: {
