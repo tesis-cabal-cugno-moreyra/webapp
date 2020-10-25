@@ -332,6 +332,11 @@
                   label="Agregar un nombre al tipo de incidente"
                   autocomplete="off"
                 ></v-text-field>
+                <v-textarea
+                  v-model="detailsSchemaTypeIncident"
+                  label="Agregar schema de detalles del tipo de incidente"
+                  hint="Debe ingresarse un JSON válido, compatible con JSON Schema"
+                ></v-textarea>
                 <v-btn color="success" outlined small type="submit"
                   >Agregar</v-btn
                 >
@@ -354,6 +359,11 @@
                   label="Editar el nombre del tipo incidente"
                   autocomplete="off"
                 ></v-text-field>
+                <v-textarea
+                  v-model="detailsSchemaTypeIncident"
+                  label="Editar schema de detalles del tipo de incidente"
+                  hint="Debe ingresarse un JSON válido, compatible con JSON Schema"
+                ></v-textarea>
                 <v-btn color="warning" outlined small type="submit"
                   >editar</v-btn
                 >
@@ -749,6 +759,7 @@ export default {
       newMapDescription: "",
       textFieldSupervisor: "",
       textFieldTypeIncident: "",
+      detailsSchemaTypeIncident: "",
       textFieldIncident: "",
       textFieldResource: "",
       adminAlias: "",
@@ -948,6 +959,8 @@ export default {
           incidentAbstraction.incidentTypes.forEach(incidentType => {
             const incidentTypeInstance = new IncidentType();
             incidentTypeInstance.name = incidentType.nameIncident;
+            incidentTypeInstance.detailsSchema =
+              incidentType.detailsSchemaIncident;
             const mapPointObjects = [];
             const resourceObjects = [];
 
@@ -977,6 +990,8 @@ export default {
         } else {
           const incidentTypeInstance = new IncidentType();
           incidentTypeInstance.name = incidentAbstractionInstance.name;
+          // Delete comment when incident abstraction is done
+          // incidentTypeInstance.detailsSchema = incidentAbstractionInstance.detailsSchemaDefault;
           const mapPointObjects = [];
           const resourceObjects = [];
 
@@ -1031,6 +1046,7 @@ export default {
           break;
         case "5":
           this.textFieldTypeIncident = "";
+          this.detailsSchemaTypeIncident = "";
           this.formAddTypeIncident = true;
           break;
         case "6":
@@ -1172,26 +1188,45 @@ export default {
         this.snackbar = true;
         return;
       }
+      if (!this.detailsSchemaTypeIncident) {
+        this.messaggeSnackbar =
+          "Debe ingresar un schema de detalles en el tipo de incidente para agregarlo";
+        this.snackbar = true;
+        return;
+      }
+      try {
+        JSON.parse(this.detailsSchemaTypeIncident);
+      } catch (e) {
+        if (e instanceof SyntaxError) {
+          this.messaggeSnackbar = "El schema ingresado no es un JSON válido";
+          this.snackbar = true;
+          return;
+        }
+        console.error(e);
+        return;
+      }
       var typeIncidentIsRepeated = this.TypeListSelected.some(
         e =>
-          e.nameIncident.toLowerCase() ==
+          e.nameIncident.toLowerCase() ===
           this.textFieldTypeIncident.toLowerCase()
       );
       if (typeIncidentIsRepeated) {
-        this.messaggeSnackbar = "El supervisor ingresado ya existe";
+        this.messaggeSnackbar = "El tipo de incidente ingresado ya existe";
         this.snackbar = true;
         return;
       }
 
       this.TypeListSelected.push({
-        nameIncident: this.textFieldTypeIncident
+        nameIncident: this.textFieldTypeIncident,
+        detailsSchemaIncident: this.detailsSchemaTypeIncident
       });
 
       this.textFieldTypeIncident = "";
+      this.detailsSchemaTypeIncident = "";
     },
 
     deleteTypeIncident(index) {
-      this.messaggeDialog = "¿Desea elimninar este tipo de incidente?";
+      this.messaggeDialog = "¿Desea eliminar este tipo de incidente?";
       this.dialog = true;
       this.pointerToDelete = index;
     },
@@ -1201,6 +1236,9 @@ export default {
       this.textFieldTypeIncident = this.TypeListSelected[
         indexTypeIncident
       ].nameIncident;
+      this.detailsSchemaTypeIncident = this.TypeListSelected[
+        indexTypeIncident
+      ].detailsSchemaIncident;
       this.indexTypeIncident = indexTypeIncident;
     },
 
@@ -1213,19 +1251,41 @@ export default {
       }
       var typeIncidentIsRepeated = this.TypeListSelected.some(
         e =>
-          e.nameIncident.toLowerCase() ==
+          e.nameIncident.toLowerCase() ===
           this.textFieldTypeIncident.toLowerCase()
       );
       if (typeIncidentIsRepeated) {
-        this.messaggeSnackbar = "El supervisor ingresado ya existe";
+        this.messaggeSnackbar = "El tipo de incidente ingresado ya existe";
         this.snackbar = true;
+        return;
+      }
+
+      if (!this.detailsSchemaTypeIncident) {
+        this.messaggeSnackbar =
+          "Debe ingresar un schema de detalles en el tipo de incidente para agregarlo";
+        this.snackbar = true;
+        return;
+      }
+      try {
+        JSON.parse(this.detailsSchemaTypeIncident);
+      } catch (e) {
+        if (e instanceof SyntaxError) {
+          this.messaggeSnackbar = "El schema ingresado no es un JSON válido";
+          this.snackbar = true;
+          return;
+        }
+        console.error(e);
         return;
       }
 
       this.TypeListSelected[
         this.indexTypeIncident
       ].nameIncident = this.textFieldTypeIncident;
+      this.TypeListSelected[
+        this.indexTypeIncident
+      ].detailsSchemaIncident = this.detailsSchemaTypeIncident;
       this.textFieldTypeIncident = "";
+      this.detailsSchemaTypeIncident = "";
       this.formAddTypeIncident = true;
     },
 
