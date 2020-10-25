@@ -7,6 +7,7 @@
     </v-overlay>
 
     <router-view />
+    <AlertSnackbar></AlertSnackbar>
   </v-app>
 </template>
 
@@ -15,11 +16,13 @@ import { mapGetters } from "vuex";
 import NavBar from "@/components/NavBar.vue";
 import authServices from "@/services/authServices";
 import { domainConfigRoutes } from "@/router";
+import AlertSnackbar from "@/components/AlertSnackbar.vue";
 
 export default {
   name: "App",
   components: {
-    NavBar
+    NavBar,
+    AlertSnackbar
   },
   beforeCreate() {
     if (authServices.getUser()) {
@@ -29,6 +32,7 @@ export default {
         authServices.getToken()
       );
     }
+    this.$store.dispatch("domainConfig/getDomainConfig");
   },
   async mounted() {
     this.$vuetify.theme.dark = true;
