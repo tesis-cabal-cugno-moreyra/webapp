@@ -165,6 +165,11 @@
                 label="Agregar un nombre de incidente"
                 autocomplete="off"
               ></v-text-field>
+              <v-textarea
+                v-model="detailsSchemaAbstractIncident"
+                label="Agregar schema de detalles general, para el alias de incidente"
+                hint="Debe ingresarse un JSON válido, compatible con JSON Schema"
+              ></v-textarea>
               <v-btn color="success" outlined small type="submit"
                 >Agregar</v-btn
               >
@@ -184,6 +189,11 @@
                 label="Editar un nombre de incidente"
                 autocomplete="off"
               ></v-text-field>
+              <v-textarea
+                v-model="detailsSchemaAbstractIncident"
+                label="Editar schema de detalles general, para el alias de incidente"
+                hint="Debe ingresarse un JSON válido, compatible con JSON Schema"
+              ></v-textarea>
               <v-btn color="warning" outlined small type="submit">Editar</v-btn>
               <v-btn
                 text
@@ -760,6 +770,7 @@ export default {
       textFieldSupervisor: "",
       textFieldTypeIncident: "",
       detailsSchemaTypeIncident: "",
+      detailsSchemaAbstractIncident: "",
       textFieldIncident: "",
       textFieldResource: "",
       adminAlias: "",
@@ -868,6 +879,7 @@ export default {
               this.snackbar = true;
             } else {
               this.textFieldIncident = "";
+              this.detailsSchemaAbstractIncident = "";
               this.stepNumber = "5";
             }
           }
@@ -991,7 +1003,8 @@ export default {
           const incidentTypeInstance = new IncidentType();
           incidentTypeInstance.name = incidentAbstractionInstance.name;
           // Delete comment when incident abstraction is done
-          // incidentTypeInstance.detailsSchema = incidentAbstractionInstance.detailsSchemaDefault;
+          incidentTypeInstance.detailsSchema =
+            incidentAbstraction.detailsGeneralSchema;
           const mapPointObjects = [];
           const resourceObjects = [];
 
@@ -1042,6 +1055,7 @@ export default {
           this.formAddIncident = true;
 
           this.textFieldIncident = "";
+          this.detailsSchemaAbstractIncident = "";
 
           break;
         case "5":
@@ -1138,12 +1152,32 @@ export default {
         this.snackbar = true;
         return;
       }
+      if (!this.detailsSchemaAbstractIncident) {
+        this.messaggeSnackbar =
+          "Debe ingresar un schema de detalles para agregarlo";
+        this.snackbar = true;
+        return;
+      }
+      try {
+        JSON.parse(this.detailsSchemaAbstractIncident);
+      } catch (e) {
+        if (e instanceof SyntaxError) {
+          this.messaggeSnackbar = "El schema ingresado no es un JSON válido";
+          this.snackbar = true;
+          return;
+        }
+        console.error(e);
+        return;
+      }
+
       this.incidentAbstractionList.push({
         id: Date.now(),
         name: this.textFieldIncident.trim(),
+        detailsGeneralSchema: this.detailsSchemaAbstractIncident,
         incidentTypes: []
       });
       this.textFieldIncident = "";
+      this.detailsSchemaAbstractIncident = "";
     },
 
     deleteIncident(id) {
@@ -1168,16 +1202,43 @@ export default {
         this.snackbar = true;
         return;
       }
+
+      if (!this.detailsSchemaAbstractIncident) {
+        this.messaggeSnackbar =
+          "Debe ingresar un schema de detalles para agregarlo";
+        this.snackbar = true;
+        return;
+      }
+      try {
+        JSON.parse(this.detailsSchemaAbstractIncident);
+      } catch (e) {
+        if (e instanceof SyntaxError) {
+          this.messaggeSnackbar = "El schema ingresado no es un JSON válido";
+          this.snackbar = true;
+          return;
+        }
+        console.error(e);
+        return;
+      }
+
       this.incidentAbstractionList[
         this.IncidetnIndex
       ].name = this.textFieldIncident;
+
+      this.incidentAbstractionList[
+        this.IncidetnIndex
+      ].detailsGeneralSchema = this.detailsSchemaAbstractIncident;
       this.textFieldIncident = "";
+      this.detailsSchemaAbstractIncident = "";
       this.formAddIncident = true;
     },
 
     changeFormIncident(IncidetnIndex) {
       this.formAddIncident = false;
       this.textFieldIncident = this.incidentAbstractionList[IncidetnIndex].name;
+      this.detailsSchemaAbstractIncident = this.incidentAbstractionList[
+        IncidetnIndex
+      ].detailsGeneralSchema;
       this.IncidetnIndex = IncidetnIndex;
     },
 
