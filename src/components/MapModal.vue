@@ -341,10 +341,7 @@ export default {
       this.$emit("place", myPlace);
     },
     saveMarker() {
-      alert(this.searchedPlace);
-    },
-    cualquieraNoSe(cosa) {
-      console.log(cosa);
+      console.log(this.searchedPlace);
     }
   }
 };
@@ -353,6 +350,6 @@ export default {
 <style scoped>
 .map {
   width: 100%;
-  height: 85%;
+  height: 100%;
 }
 </style>

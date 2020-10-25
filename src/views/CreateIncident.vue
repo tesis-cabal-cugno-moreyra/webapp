@@ -11,12 +11,14 @@
                 label="Incidente"
                 :error="incidentAbstractionsError"
                 :error-messages="incidentAbstractionsErrorMessage"
+                v-on:change="resetIncidentAbstractionsError"
               ></v-select>
               <v-select
                 v-model="incidentTypeSelected"
                 :items="incidentTypes"
                 :error="incidentTypesError"
                 :error-messages="incidentTypesErrorMessage"
+                v-on:change="resetIncidentTypesError"
                 label="Tipo de Incidente"
               ></v-select>
               <v-select
@@ -24,6 +26,7 @@
                 :items="visibilityList"
                 :error="visibilityError"
                 :error-messages="visibilityErrorMessage"
+                v-on:change="resetVisibilityError"
                 label="Visibilidad"
               ></v-select>
               <map-modal v-on:place="placeChanged"></map-modal>
@@ -32,6 +35,7 @@
                 v-model="reference"
                 :error="referenceError"
                 :error-messages="referenceErrorMessage"
+                v-on:keyup="resetReferenceError"
                 label="Referencia"
                 name="reference"
                 type="text"
@@ -41,15 +45,28 @@
         </v-row>
         <v-row align="center" justify="center">
           <v-container text-center fluid>
-            <v-btn
-              x-large
-              fab
-              color="primary"
-              :loading="tryToCreateIncident"
-              v-on:click="createIncident"
-              style="height: 200px; width: 200px;"
-              >¡Crear!</v-btn
-            >
+            <v-container text-center fluid>
+              <v-btn
+                x-large
+                fab
+                color="primary"
+                :loading="tryToCreateIncident"
+                v-on:click="createIncident"
+                style="height: 200px; width: 200px;"
+                >¡Crear!</v-btn
+              >
+              <v-row align="center" justify="center">
+                <v-alert
+                  v-if="placeError"
+                  color="error"
+                  icon="mdi-alert"
+                  max-width="350px"
+                  class="pa-2 ma-2"
+                >
+                  {{ this.placeErrorMessage }}</v-alert
+                >
+              </v-row>
+            </v-container>
             <v-btn
               color="black_selected"
               class="ma-5 pa-3"
@@ -58,11 +75,6 @@
               >Cancelar</v-btn
             >
           </v-container>
-          <v-container
-            ><v-alert v-if="placeError" color="error" icon="mdi-alert">
-              {{ this.placeErrorMessage }}</v-alert
-            ></v-container
-          >
         </v-row>
       </v-layout>
     </v-container>
@@ -85,7 +97,7 @@ export default {
       incidentTypesError: false,
       incidentTypesErrorMessage: "",
       visibility: "",
-      visibilityList: ["Privado", "Publico"],
+      visibilityList: ["Privado", "Público"],
       visibilityError: false,
       visibilityErrorMessage: "",
       place: null,
@@ -107,11 +119,17 @@ export default {
         console.log(this.place);
         console.log(this.place.lat);
         console.log(this.place.lng);
+        let visibility;
+        if (this.visibility === "Privado") {
+          visibility = "Private";
+        } else if (this.visibility === "Público") {
+          visibility = "Public";
+        }
         // TODO: armar módulo de incidente en Vuex para interactuar con la API
         let payload = {
           domain_name: this.domainConfig.name,
           incident_type_name: this.incidentTypeSelected,
-          visibility: this.visibility,
+          visibility: visibility,
           details: { reference: this.reference },
           location_as_string_reference: this.place.text,
           location_point: {
@@ -134,7 +152,7 @@ export default {
       this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
     },
     placeChanged(place) {
-      alert(JSON.stringify(place));
+      this.placeError = false;
       this.place = place;
     },
     goHome() {
@@ -180,6 +198,22 @@ export default {
       }
 
       return !errorFound;
+    },
+    resetIncidentAbstractionsError() {
+      this.incidentAbstractionsError = false;
+      this.incidentAbstractionsErrorMessage = "";
+    },
+    resetIncidentTypesError() {
+      this.incidentTypesError = false;
+      this.incidentTypesErrorMessage = "";
+    },
+    resetVisibilityError() {
+      this.visibilityError = false;
+      this.visibilityErrorMessage = "";
+    },
+    resetReferenceError() {
+      this.referenceError = false;
+      this.referenceErrorMessage = "";
     }
   },
   computed: {
