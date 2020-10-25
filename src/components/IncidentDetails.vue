@@ -88,7 +88,7 @@ export default {
         return;
       }
       const payload = {
-        incident_id: "",
+        incident_id: "", // Replace once workflow is defined. Maybe, this could be a prop?
         details: this.formData
       };
       await api
