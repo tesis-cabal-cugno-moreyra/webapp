@@ -42,10 +42,6 @@ export default {
     openLogoutModal() {
       this.logoutModal = true;
     }
-    // logout() {
-    //   this.$store.dispatch("restAuth/logout");
-    //   router.push({ name: "Login" });
-    // }
   },
   beforeCreate() {
     if (authServices.getUser()) {
