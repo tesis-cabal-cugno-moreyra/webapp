@@ -1,5 +1,12 @@
 export default {
   displaySpinnerOverlay: false,
   errorDetected: false,
-  showNavBar: true
+  showNavBar: true,
+  showSignInSupervisor: false,
+  snackbar: {
+    visible: false,
+    color: "primary",
+    text: null,
+    timeout: 2000
+  }
 };
