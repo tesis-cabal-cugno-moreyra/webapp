@@ -4,6 +4,7 @@ import Home from "../views/Home.vue";
 import DomainInformation from "../components/DomainInformation.vue";
 import Login from "../views/Login.vue";
 import Error from "../views/Error.vue";
+import CreateIncident from "../views/CreateIncident.vue";
 import DomainAccessCode from "@/views/DomainAccessCode";
 import authServices from "@/services/authServices";
 import IncidentDetails from "@/components/IncidentDetails";
@@ -56,6 +57,16 @@ const routes = [
     component: Error,
     meta: {
       guest: true
+    }
+  },
+  {
+    path: "/create-incident",
+    name: "CreateIncident",
+    component: CreateIncident,
+    meta: {
+      requires_auth: true,
+      is_admin: true,
+      is_supervisor: true
     }
   }
 ];

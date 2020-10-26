@@ -29,5 +29,21 @@ export default {
       supervisorAliases: supervisorAliases,
       resourcesAliases: resourceAliases
     };
+  },
+  getIncidentAbstractions(domainConfig) {
+    let incidentsArray = [];
+    domainConfig.incidentAbstractions.forEach(incidentAbstraction => {
+      let incidentTypes = [];
+      incidentAbstraction.types.forEach(incidentType => {
+        incidentTypes.push(incidentType.name);
+      });
+      let incidentAbstractionAndTypes = {
+        incidentAbstraction: incidentAbstraction.name,
+        incidentTypes: incidentTypes
+      };
+      incidentsArray.push(incidentAbstractionAndTypes);
+      // incidentAbstractions.push(incidentAbstraction.value: incidentTypes});
+    });
+    return incidentsArray;
   }
 };

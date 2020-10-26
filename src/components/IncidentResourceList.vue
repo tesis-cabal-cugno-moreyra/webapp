@@ -1,7 +1,7 @@
 <template>
   <v-form>
     <v-card>
-      <v-dialog v-model="isComponentEnable" width="600" persistent dark>
+      <v-dialog v-model="show" width="600" persistent dark>
         <v-card-title :class="['pa-4', 'mb-2', 'black_selected']">
           Recursos para relacionar
           <v-spacer></v-spacer>
@@ -68,7 +68,7 @@
           >
           <v-btn
             :class="['pa-0', 'mb-2', 'mr-4', 'primary', 'float-right']"
-            @click="isComponentEnable = false"
+            @click="closeModal"
             >Cerrar</v-btn
           >
         </v-card-actions>
@@ -81,6 +81,7 @@
 import { mapGetters } from "vuex";
 export default {
   name: "incidentResourceList",
+  props: ["show", "incidentId"],
   data() {
     return {
       referenceSearch: {
@@ -123,6 +124,9 @@ export default {
     }
   },
   methods: {
+    closeModal() {
+      this.$emit("closeModal", true);
+    },
     async searchResource() {
       this.loadingTable = true;
 
@@ -172,7 +176,7 @@ export default {
     },
 
     async proccessInfo() {
-      if (this.selected.length == 0) {
+      if (this.selected.length === 0) {
         this.$store.commit("uiParams/dispatchAlert", {
           text: "Debe seleccionar al menos un recurso",
           color: "primary",
@@ -182,13 +186,10 @@ export default {
       }
       this.loadingProcessInfo = true;
       let errorPost = "";
-      console.log(this.selected);
-      for (const element of this.selected) {
-        let index = this.selected.indexOf(element);
-        //tan mal estos datos tengo que poner el id del incidente?????? y poner el id del recurso o el eky
+      this.selected.forEach(async (element, index) => {
         let resourceIncidentData = {
-          incidentId: "emi completame por favor",
-          incidentTypeId: element.type.id
+          incidentId: this.incidentId,
+          incidentTypeId: element.id
         };
 
         await this.$store
@@ -223,7 +224,7 @@ export default {
             timeout: 2000
           });
         }
-      }
+      });
     }
   },
   computed: {
