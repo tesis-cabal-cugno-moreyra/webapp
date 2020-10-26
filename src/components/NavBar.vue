@@ -68,13 +68,7 @@
 
       <v-toolbar-title>Sicoin</v-toolbar-title>
       <v-spacer></v-spacer>
-
-      <!--  <v-btn class="success" @click="accountDialog = 'true'">Ingresar</v-btn>-->
     </v-app-bar>
-    <LogoutModal
-      v-if="logoutModal"
-      v-on:close-modal="closeLogoutModal"
-    ></LogoutModal>
   </v-container>
 </template>
 
@@ -92,15 +86,13 @@ export default {
       logoutModal: false
     };
   },
+
   created() {
     this.user = authServices.getUser();
   },
   methods: {
-    closeLogoutModal() {
-      this.logoutModal = false;
-    },
     openLogoutModal: function() {
-      this.logoutModal = true;
+      this.$emit("open-logout-modal");
     },
     goHome() {
       this.$router.push({ name: "Home" });

@@ -1,6 +1,6 @@
 <template>
   <v-app id="App">
-    <NavBar v-if="showNavBar"></NavBar>
+    <NavBar v-if="showNavBar" v-on:open-logout-modal="openLogoutModal"></NavBar>
 
     <v-overlay v-if="isLoading">
       <v-progress-circular indeterminate size="64"></v-progress-circular>
@@ -8,6 +8,10 @@
 
     <router-view />
     <AlertSnackbar></AlertSnackbar>
+    <LogoutModal
+      :dialog="logoutModal"
+      v-on:close-modal="closeLogoutModal"
+    ></LogoutModal>
   </v-app>
 </template>
 
@@ -17,12 +21,31 @@ import NavBar from "@/components/NavBar.vue";
 import authServices from "@/services/authServices";
 import { domainConfigRoutes } from "@/router";
 import AlertSnackbar from "@/components/AlertSnackbar.vue";
+import LogoutModal from "@/components/LogoutModal";
 
 export default {
   name: "App",
   components: {
     NavBar,
-    AlertSnackbar
+    AlertSnackbar,
+    LogoutModal
+  },
+  data() {
+    return {
+      logoutModal: false
+    };
+  },
+  methods: {
+    closeLogoutModal() {
+      this.logoutModal = false;
+    },
+    openLogoutModal() {
+      this.logoutModal = true;
+    }
+    // logout() {
+    //   this.$store.dispatch("restAuth/logout");
+    //   router.push({ name: "Login" });
+    // }
   },
   beforeCreate() {
     if (authServices.getUser()) {
