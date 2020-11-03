@@ -6,6 +6,7 @@ import Login from "../views/Login.vue";
 import Error from "../views/Error.vue";
 import DomainAccessCode from "@/views/DomainAccessCode";
 import authServices from "@/services/authServices";
+import UserManager from "@/views/UserManager";
 
 Vue.use(VueRouter);
 
@@ -34,6 +35,15 @@ const routes = [
     path: "/domain-access-code",
     name: "DomainAccessCode",
     component: DomainAccessCode,
+    meta: {
+      requires_auth: true,
+      is_admin: true
+    }
+  },
+  {
+    path: "/user-manager",
+    name: "UserManager",
+    component: UserManager,
     meta: {
       requires_auth: true,
       is_admin: true
