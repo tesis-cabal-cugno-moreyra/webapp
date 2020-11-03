@@ -5,7 +5,7 @@
         <v-row align="center" justify="center">
           <v-col cols="12" sm="8" md="4">
             <v-card class="elevation-12" color="black_selected">
-              <v-toolbar color="red_selected" dark flat>
+              <v-toolbar color="primary" dark flat>
                 <v-toolbar-title>Iniciar sesión</v-toolbar-title>
                 <v-spacer></v-spacer>
               </v-toolbar>
@@ -41,16 +41,59 @@
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn
-                  color="red_selected"
+                  color="primary"
                   :loading="tryToLogin"
                   v-on:click="loginWithJWT"
                   >Ingresar</v-btn
+                >
+                <v-btn
+                  color="primary"
+                  :loading="tryToLogin"
+                  v-on:click="confirmDomain = true"
+                  >Registrarse</v-btn
                 >
               </v-card-actions>
             </v-card>
           </v-col>
         </v-row>
       </v-container>
+
+      <v-row justify="center">
+        <v-dialog v-model="confirmDomain" persistent max-width="330">
+          <v-card>
+            <v-card-title>
+              Codigo de acceso al dominio
+            </v-card-title>
+            <v-card-text>
+              <v-text-field
+                v-model="requiredCode"
+                label=" Ingrese el codigo *"
+                required
+              >
+              </v-text-field>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                :loading="tryToLogin"
+                color="primary"
+                text
+                v-on:click="SendConfirm(requiredCode)"
+              >
+                Enviar
+              </v-btn>
+              <v-btn
+                color="primary"
+                text
+                v-on:click="(confirmDomain = false), (requiredCode = '')"
+              >
+                Cancelar
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-row>
+      <SignInSupervisor></SignInSupervisor>
     </v-main>
   </v-app>
 </template>
@@ -58,16 +101,22 @@
 <script>
 import { mapGetters } from "vuex";
 import authServices from "@/services/authServices";
+import SignInSupervisor from "../components/SignInSupervisor.vue";
 
 export default {
   name: "Login",
+  components: {
+    SignInSupervisor
+  },
   data: function() {
     return {
       username: "",
       password: "",
       tryToLogin: false,
       loginError: false,
-      errorMessage: ""
+      errorMessage: "",
+      confirmDomain: false,
+      requiredCode: ""
     };
   },
   methods: {
@@ -114,11 +163,58 @@ export default {
     },
     resetErrors: function() {
       this.loginError = false;
+    },
+
+    async SendConfirm(requiredCode) {
+      this.tryToLogin = true;
+      await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
+
+      if (requiredCode.trim() == "") {
+        this.$store.commit("uiParams/dispatchAlert", {
+          text: "Ingrese un codigo",
+          color: "primary"
+        });
+        await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+        this.tryToLogin = false;
+        return;
+      }
+
+      await this.$store
+        .dispatch("domainConfig/checkDomainAccessCode", {
+          domain_code: requiredCode
+        })
+        .then(async () => {
+          this.tryToLogin = false;
+          await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+
+          await this.$store.commit("domainConfig/addDomainCode", requiredCode);
+
+          this.$store.commit(
+            "uiParams/changeSignInSupervisorState",
+            !this.showSignInSupervisor
+          );
+
+          this.confirmDomain = false;
+          this.requiredCode = "";
+        })
+        .catch(async () => {
+          this.tryToLogin = false;
+          this.$store.commit("uiParams/dispatchAlert", {
+            text: "Codigo incorrecto",
+            color: "primary"
+          });
+        })
+        .finally(
+          async () =>
+            await this.$store.dispatch("uiParams/turnOffSpinnerOverlay"),
+          (this.tryToLogin = false)
+        );
     }
   },
   computed: {
     ...mapGetters({
-      token: "restAuth/accessToken"
+      token: "restAuth/accessToken",
+      showSignInSupervisor: "uiParams/showSignInSupervisor"
     })
   }
 };
