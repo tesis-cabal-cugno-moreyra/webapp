@@ -134,5 +134,16 @@ export default {
         return reject(e);
       }
     });
+  },
+  postChangeStatus(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlApi = `/api/v1/users/${payload.user_id}/${payload.new_state}/`;
+        return resolve(await api.post(urlApi));
+      } catch (e) {
+        return reject(e);
+      }
+    });
   }
 };

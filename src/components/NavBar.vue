@@ -40,12 +40,21 @@
         >
       </v-list-item>
 
-      <v-list-item link v-on:click="goUserManager">
+      <v-list-item link v-on:click="goSupervisorManager">
         <v-list-item-icon>
           <v-icon color="grey darken-1">mdi-account-check</v-icon>
         </v-list-item-icon>
         <v-list-item-title class="grey--text text--darken-1"
           >Administrar usuarios</v-list-item-title
+        >
+      </v-list-item>
+
+      <v-list-item link v-on:click="goResourceManager">
+        <v-list-item-icon>
+          <v-icon color="grey darken-1">mdi-account-check</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title class="grey--text text--darken-1"
+          >Administrar recursos</v-list-item-title
         >
       </v-list-item>
 
@@ -109,8 +118,11 @@ export default {
     goDomainAccessCode() {
       this.$router.push({ name: "DomainAccessCode" });
     },
-    goUserManager() {
-      this.$router.push({ name: "UserManager" });
+    goSupervisorManager() {
+      this.$router.push({ name: "SupervisorManager" });
+    },
+    goResourceManager() {
+      this.$router.push({ name: "ResourceManager" });
     }
   }
 };

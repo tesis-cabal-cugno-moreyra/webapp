@@ -7,7 +7,8 @@ import Error from "../views/Error.vue";
 import CreateIncident from "../views/CreateIncident.vue";
 import DomainAccessCode from "@/views/DomainAccessCode";
 import authServices from "@/services/authServices";
-import UserManager from "@/views/UserManager";
+import SupervisorManager from "@/views/SupervisorManager";
+import ResourceManager from "@/views/ResourceManager";
 
 Vue.use(VueRouter);
 
@@ -42,9 +43,18 @@ const routes = [
     }
   },
   {
-    path: "/user-manager",
-    name: "UserManager",
-    component: UserManager,
+    path: "/resource-manager",
+    name: "ResourceManager",
+    component: ResourceManager,
+    meta: {
+      requires_auth: true,
+      is_admin: true
+    }
+  },
+  {
+    path: "/supervisor-manager",
+    name: "SupervisorManager",
+    component: SupervisorManager,
     meta: {
       requires_auth: true,
       is_admin: true
