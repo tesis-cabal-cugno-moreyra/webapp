@@ -40,24 +40,40 @@
         >
       </v-list-item>
 
-      <v-list-item link v-on:click="goSupervisorManager">
-        <v-list-item-icon>
-          <v-icon color="grey darken-1">mdi-account-check</v-icon>
-        </v-list-item-icon>
-        <v-list-item-title class="grey--text text--darken-1"
-          >Administrar usuarios</v-list-item-title
-        >
-      </v-list-item>
+      <v-list-group no-action sub-group>
+        <template v-slot:activator>
+          <v-list-item-content>
+            <v-list-item-title>Administrar cuentas</v-list-item-title>
+          </v-list-item-content>
+        </template>
 
-      <v-list-item link v-on:click="goResourceManager">
-        <v-list-item-icon>
-          <v-icon color="grey darken-1">mdi-account-check</v-icon>
-        </v-list-item-icon>
-        <v-list-item-title class="grey--text text--darken-1"
-          >Administrar recursos</v-list-item-title
-        >
-      </v-list-item>
+        <v-list-item link v-on:click="goSupervisorManager">
+          <v-list-item-icon>
+            <v-icon color="grey darken-1">mdi-account-check</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title class="grey--text text--darken-1"
+            >Supervisores</v-list-item-title
+          >
+        </v-list-item>
 
+        <v-list-item link v-on:click="goResourceManager">
+          <v-list-item-icon>
+            <v-icon color="grey darken-1">mdi-account-check</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title class="grey--text text--darken-1"
+            >Recursos</v-list-item-title
+          >
+        </v-list-item>
+
+        <v-list-item link v-on:click="goAdminManager">
+          <v-list-item-icon>
+            <v-icon color="grey darken-1">mdi-account-check</v-icon>
+          </v-list-item-icon>
+          <v-list-item-title class="grey--text text--darken-1"
+            >Administradores</v-list-item-title
+          >
+        </v-list-item>
+      </v-list-group>
       <v-switch
         class="ml-4"
         v-model="$vuetify.theme.dark"
@@ -123,6 +139,9 @@ export default {
     },
     goResourceManager() {
       this.$router.push({ name: "ResourceManager" });
+    },
+    goAdminManager() {
+      this.$router.push({ name: "AdminManager" });
     }
   }
 };

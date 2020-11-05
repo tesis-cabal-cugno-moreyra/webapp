@@ -9,6 +9,7 @@ import DomainAccessCode from "@/views/DomainAccessCode";
 import authServices from "@/services/authServices";
 import SupervisorManager from "@/views/SupervisorManager";
 import ResourceManager from "@/views/ResourceManager";
+import AdminManager from "@/views/AdminManager";
 
 Vue.use(VueRouter);
 
@@ -46,6 +47,15 @@ const routes = [
     path: "/resource-manager",
     name: "ResourceManager",
     component: ResourceManager,
+    meta: {
+      requires_auth: true,
+      is_admin: true
+    }
+  },
+  {
+    path: "/admin-manager",
+    name: "AdminManager",
+    component: AdminManager,
     meta: {
       requires_auth: true,
       is_admin: true

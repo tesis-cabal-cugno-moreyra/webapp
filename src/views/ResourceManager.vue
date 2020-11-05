@@ -1,137 +1,150 @@
 <template>
-  <v-container fill-height fill-width>
-    <v-layout align-center>
-      <v-card>
-        <v-card-title :class="['pa-5', 'mt-5', 'black_selected']">
-          <v-row>
-            <v-col>
+  <v-app class="pa-md-2 mx-lg-auto">
+    <v-container fill-height fill-width text-center>
+      <v-layout align="center" justify="center">
+        <v-card>
+          <v-card-title :class="['pa-3', 'mt-5', 'black_selected']">
+            <v-col cols="12">
               {{
                 `${
                   isUserActiveFilter
-                    ? "Usuarios activos "
-                    : "Usuarios no activos"
+                    ? "Usuarios de recursos activos "
+                    : "Usuarios de recursos no activos"
                 }`
               }}
             </v-col>
-          </v-row>
+          </v-card-title>
+          <v-card-title :class="['pa-2', 'black_selected']">
+            <v-row align="center" justify="center">
+              <v-col cols="6">
+                <v-text-field
+                  v-model="searchName"
+                  append-icon="mdi-magnify"
+                  label="Enter para buscar por nombre"
+                  v-on:keyup.enter="searchResource()"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="6">
+                <v-text-field
+                  v-model="searchLastName"
+                  append-icon="mdi-magnify"
+                  label="Enter para buscar por apellido"
+                  v-on:keyup.enter="searchResource()"
+                ></v-text-field>
+              </v-col>
 
-          <v-spacer></v-spacer>
-          <v-spacer></v-spacer>
-          <v-row>
-            <v-col cols="6">
-              <v-text-field
-                v-model="searchName"
-                append-icon="mdi-magnify"
-                label="Enter para buscar por nombre"
-                v-on:keyup.enter="serchResource()"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="6">
-              <v-text-field
-                v-model="searchLastName"
-                append-icon="mdi-magnify"
-                label="Enter para buscar por apellido"
-                v-on:keyup.enter="serchResource()"
-              ></v-text-field>
-            </v-col>
+              <v-col cols="6">
+                <v-autocomplete
+                  v-model="autoCompleteTypeResource"
+                  :items="typeResourceSelectedList"
+                  item-text="name"
+                  clearable
+                  label="Tipo de recurso"
+                  @change="searchResource()"
+                ></v-autocomplete>
+              </v-col>
 
-            <v-col cols="6">
-              <v-autocomplete
-                v-model="autoCompleteTypeResource"
-                :items="typeResourceSelectedList"
-                item-text="name"
-                clearable
-                label="Tipo de recurso"
-                @change="serchResource()"
-              ></v-autocomplete>
-            </v-col>
+              <v-col cols="6">
+                <v-switch
+                  v-model="isUserActiveFilter"
+                  :label="
+                    `${
+                      isUserActiveFilter
+                        ? 'Usuarios activos'
+                        : 'Usuarios no activos'
+                    }`
+                  "
+                  class="pa-3"
+                  @change="searchResource()"
+                ></v-switch>
+              </v-col>
+            </v-row>
+          </v-card-title>
 
-            <v-col cols="6">
-              <v-switch
-                v-model="isUserActiveFilter"
-                :label="
-                  `${
-                    isUserActiveFilter
-                      ? 'Usuarios activos'
-                      : 'Usuarios no activos'
-                  }`
-                "
-                class="pa-3"
-                @change="serchResource()"
-              ></v-switch>
-            </v-col>
-          </v-row>
-        </v-card-title>
-
-        <v-card-text :class="[' black_selected', 'pa-1']">
-          <v-data-table
-            :loading="loadingTable"
-            loading-text="Cargando... Espere por favor"
-            :headers="headersResource"
-            :items="userResourceData"
-            item-key="id"
-            :class="['pb-1']"
-            hide-default-footer
-          >
-            <template v-slot:top>
-              <v-dialog v-model="dialogChangeStatus" max-width="500px">
-                <v-card>
-                  <v-card-title class="headline"
-                    >¿Desea
-                    {{ `${isUserActiveFilter ? "desactivar" : "activar"}` }} el
-                    siguiente usuario?</v-card-title
-                  >
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                      color="primary"
-                      outlined
-                      @click="changeStateResource"
-                      :class="['mr-5']"
-                      >Acepto</v-btn
+          <v-card-text :class="[' black_selected', 'pa-1']">
+            <v-data-table
+              :loading="loadingTable"
+              loading-text="Cargando... Espere por favor"
+              :headers="headersResource"
+              :items="userResourceData"
+              text-center
+              item-key="id"
+              :class="['pb-1']"
+              hide-default-footer
+            >
+              <template v-slot:top>
+                <v-dialog v-model="dialogChangeStatus" max-width="500px">
+                  <v-card>
+                    <v-card-title class="headline"
+                      >¿Desea
+                      {{ `${isUserActiveFilter ? "desactivar" : "activar"}` }}
+                      el siguiente usuario?</v-card-title
                     >
-                    <v-btn
-                      color="primary"
-                      outlined
-                      @click="dialogChangeStatus = false"
-                      >Cancelar</v-btn
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        color="primary"
+                        outlined
+                        @click="changeStateResource"
+                        :class="['mr-5']"
+                        >Acepto</v-btn
+                      >
+                      <v-btn
+                        color="primary"
+                        outlined
+                        @click="dialogChangeStatus = false"
+                        >Cancelar</v-btn
+                      >
+                      <v-spacer></v-spacer>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+              </template>
+              <template v-slot:item.actions="{ item }">
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      v-if="!isUserActiveFilter"
+                      v-bind="attrs"
+                      v-on="on"
+                      small
+                      color="success"
+                      @click="openDialog(item)"
                     >
-                    <v-spacer></v-spacer>
-                  </v-card-actions>
-                </v-card>
-              </v-dialog>
-            </template>
-            <!--Recursos es aqui!-->
-            <template v-slot:item.actions="{ item }">
-              <v-row v-if="!isUserActiveFilter">
-                <v-icon
-                  small
-                  color="success"
-                  class="mr-2"
-                  @click="openDialog(item)"
-                >
-                  mdi-account-plus
-                </v-icon>
-                <aside>activar</aside></v-row
-              >
-              <v-row v-if="isUserActiveFilter">
-                <v-icon color="primary" small @click="openDialog(item)">
-                  mdi-account-off
-                </v-icon>
-                <aside>desactivar</aside></v-row
-              >
-            </template>
-          </v-data-table>
-          <v-pagination
-            v-model="page"
-            class="my-4"
-            :total-visible="10"
-            :length="numberOfPage"
-          ></v-pagination>
-        </v-card-text>
-      </v-card>
-    </v-layout>
-  </v-container>
+                      mdi-account-plus
+                    </v-icon>
+                  </template>
+                  <span>Activar usuario</span>
+                </v-tooltip>
+
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      v-if="isUserActiveFilter"
+                      v-bind="attrs"
+                      v-on="on"
+                      small
+                      color="primary"
+                      @click="openDialog(item)"
+                    >
+                      mdi-account-off
+                    </v-icon>
+                  </template>
+                  <span>Desactivar usuario</span>
+                </v-tooltip>
+              </template>
+            </v-data-table>
+            <v-pagination
+              v-model="page"
+              class="my-4"
+              :total-visible="10"
+              :length="numberOfPage"
+            ></v-pagination>
+          </v-card-text>
+        </v-card>
+      </v-layout>
+    </v-container>
+  </v-app>
 </template>
 
 <script>
@@ -180,17 +193,15 @@ export default {
     };
   },
   created() {
-    this.serchResource();
+    this.searchResource();
   },
-  /*  watch: {
-      dialogChangeStatus (val) {
-        val || this.close()
-      },}
-
-  ,*/
+  watch: {
+    page() {
+      this.searchResource();
+    }
+  },
   methods: {
-    // Resource methods
-    async serchResource() {
+    async searchResource() {
       await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
       this.loadingTable = true;
 
@@ -222,14 +233,18 @@ export default {
           this.referenceSearch = searchInfo;
         })
         .catch(async () => {
-          await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+          if (searchInfo.page != 1) {
+            this.page = this.page - 1;
+            this.searchResource();
+          } else {
+            this.$store.commit("uiParams/dispatchAlert", {
+              text: "No hay resultados con esas especificaciones",
+              color: "primary",
+              timeout: 4000
+            });
+          }
           this.loadingTable = false;
-
-          this.$store.commit("uiParams/dispatchAlert", {
-            text: "No hay resultados con esas especificaciones",
-            color: "primary",
-            timeout: 3000
-          });
+          await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
         })
         .finally(async () => {
           await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
@@ -251,7 +266,6 @@ export default {
     openDialog(resourceSelected) {
       this.idResource = resourceSelected.user.id;
       this.dialogChangeStatus = true;
-      console.log(resourceSelected);
     },
     async changeStateResource() {
       this.dialogChangeStatus = false;
@@ -265,11 +279,11 @@ export default {
       await this.$store
         .dispatch("domainConfig/postChangeStatus", userInfo)
         .then(async () => {
-          this.serchResource();
+          this.searchResource();
           this.$store.commit("uiParams/dispatchAlert", {
             text: "Usuario " + userState + " correctamente",
             color: "success",
-            timeout: 3000
+            timeout: 4000
           });
         })
         .catch(async () => {
@@ -278,100 +292,13 @@ export default {
           this.$store.commit("uiParams/dispatchAlert", {
             text: "No se pudo realizar la acción intente luego",
             color: "primary",
-            timeout: 3000
+            timeout: 4000
           });
         })
         .finally(async () => {
           await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
         });
     }
-    /* // supervisor methods
-    async serchSupervisor() {
-     this.dialogChangeStatus = true;     
-
-
-      let searchInfo = {
-        user__first_name: this.searchName,
-        user__last_name: this.searchLastName,
-        alias__alias:
-          this.autoCompleteTypeSupervisor == undefined
-            ? ""
-            : this.autoCompleteTypeSupervisor,
-        page: this.page,
-        user__is_active: this.isUserActiveFilter
-      };
-
-      if (
-        searchInfo.user__first_name != this.referenceSearch.user__first_name ||
-        searchInfo.user__last_name != this.referenceSearch.user__last_name ||
-        searchInfo.alias__alias != this.referenceSearch.alias__alias ||
-        searchInfo.user__is_active != this.referenceSearch.user__is_active
-      ) {
-        this.page = 1;
-        searchInfo.page = 1;
-      }
-
-      await this.$store
-        .dispatch("domainConfig/getSupervisor", searchInfo)
-        .then(response => {
-          this.loaduserResourceData(response);
-          this.referenceSearch = searchInfo;
-        })
-        .catch(async resp => {
-          console.log(resp);
-          this.$store.commit("uiParams/dispatchAlert", {
-            text: "No hay resultados con esas especificaciones",
-            color: "primary",
-            timeout: 3000
-          });
-        })
-        .finally(async () => {
-          this.loadingTable = false;
-        });
-      this.typeSupervisorSelectedList = this.domainConfig.supervisorAliases;
-    },
-    //Admin Methods
-    async serchAdmin() {
-      this.resourceTable = false;
-      this.supervisorTable = false;
-      this.adminTable = true;
-
-      this.loadingTable = true;
-
-      let searchInfo = {
-        user__first_name: this.searchName,
-        user__last_name: this.searchLastName,
-        page: this.page,
-        user__is_active: this.isUserActiveFilter
-      };
-
-      if (
-        searchInfo.user__first_name != this.referenceSearch.user__first_name ||
-        searchInfo.user__last_name != this.referenceSearch.user__last_name ||
-        searchInfo.user__is_active != this.referenceSearch.user__is_active
-      ) {
-        this.page = 1;
-        searchInfo.page = 1;
-      }
-
-      await this.$store
-        .dispatch("domainConfig/getAdmin", searchInfo)
-        .then(response => {
-          this.loaduserResourceData(response);
-          this.referenceSearch = searchInfo;
-        })
-        .catch(async () => {
-          this.$store.commit("uiParams/dispatchAlert", {
-            text: "No hay resultados con esas especificaciones",
-            color: "primary",
-            timeout: 3000
-          });
-        })
-        .finally(async () => {
-          this.loadingTable = false;
-        });
-    },*/
-    // common methods
   },
   computed: {
     ...mapGetters({

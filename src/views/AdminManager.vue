@@ -8,8 +8,8 @@
               {{
                 `${
                   isUserActiveFilter
-                    ? "Usuarios de supervisores activos "
-                    : "Usuarios de supervisores no activos"
+                    ? "Usuarios de administradores activos "
+                    : "Usuarios de administradores no activos"
                 }`
               }}
             </v-col>
@@ -21,7 +21,7 @@
                   v-model="searchName"
                   append-icon="mdi-magnify"
                   label="Enter para buscar por nombre"
-                  v-on:keyup.enter="serchSupervisor()"
+                  v-on:keyup.enter="searchAdmin()"
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
@@ -29,33 +29,22 @@
                   v-model="searchLastName"
                   append-icon="mdi-magnify"
                   label="Enter para buscar por apellido"
-                  v-on:keyup.enter="serchSupervisor()"
+                  v-on:keyup.enter="searchAdmin()"
                 ></v-text-field>
               </v-col>
 
-              <v-col cols="6">
-                <v-autocomplete
-                  v-model="autoCompleteTypeSupervisor"
-                  :items="typeSupervisorSelectedList"
-                  item-text="name"
-                  clearable
-                  label="Tipo de supervisor"
-                  @change="serchSupervisor()"
-                ></v-autocomplete>
-              </v-col>
-
-              <v-col cols="6">
+              <v-col cols="12" align="left">
                 <v-switch
                   v-model="isUserActiveFilter"
                   :label="
                     `${
                       isUserActiveFilter
-                        ? 'Usuarios activos'
-                        : 'Usuarios no activos'
+                        ? ' Usuarios activos'
+                        : ' Usuarios no activos'
                     }`
                   "
                   class="pa-3"
-                  @change="serchSupervisor()"
+                  @change="searchAdmin()"
                 ></v-switch>
               </v-col>
             </v-row>
@@ -65,8 +54,8 @@
             <v-data-table
               :loading="loadingTable"
               loading-text="Cargando... Espere por favor"
-              :headers="headersSupervisor"
-              :items="userSupervisorData"
+              :headers="headersAdmin"
+              :items="userAdminData"
               text-center
               item-key="id"
               :class="['pb-1']"
@@ -85,7 +74,7 @@
                       <v-btn
                         color="primary"
                         outlined
-                        @click="changeStateSupervisor"
+                        @click="changeStateAdmin"
                         :class="['mr-5']"
                         >Acepto</v-btn
                       >
@@ -150,15 +139,15 @@
 <script>
 import { mapGetters } from "vuex";
 export default {
-  name: "SupervisorManager",
+  name: "AdminManager",
   data() {
     return {
       searchName: "",
       searchLastName: "",
-      autoCompleteTypeSupervisor: "",
-      idSupervisor: "",
+      autoCompleteTypeAdmin: "",
+      idAdmin: "",
       dialogChangeStatus: false,
-      supervisorTable: true,
+      adminTable: true,
       loadingTable: false,
       isComponentEnable: false,
       isUserActiveFilter: false,
@@ -172,7 +161,7 @@ export default {
         user__is_active: false,
         page: 1
       },
-      headersSupervisor: [
+      headersAdmin: [
         {
           text: "Nombre",
           align: "start",
@@ -181,41 +170,26 @@ export default {
         },
         { text: "Apellido", sortable: false, value: "user.last_name" },
         {
-          text: "Tipos de supervisores",
-          sortable: false,
-          value: "alias.alias"
-        },
-        {
           text: "Cambiar el estado",
           value: "actions", //--'user.is_active',
           sortable: false
         }
       ],
-      userSupervisorData: [],
-      typeSupervisorSelectedList: []
+      userAdminData: []
     };
   },
   created() {
-    this.serchSupervisor();
-  },
-  watch: {
-    page() {
-      this.serchSupervisor();
-    }
+    this.searchAdmin();
   },
   methods: {
-    // Supervisor methods
-    async serchSupervisor() {
+    // Admin methods
+    async searchAdmin() {
       await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
       this.loadingTable = true;
 
       let searchInfo = {
         user__first_name: this.searchName,
         user__last_name: this.searchLastName,
-        alias__alias:
-          this.autoCompleteTypeSupervisor == undefined
-            ? ""
-            : this.autoCompleteTypeSupervisor,
         user__is_active: this.isUserActiveFilter,
         page: this.page
       };
@@ -223,23 +197,22 @@ export default {
       if (
         searchInfo.user__first_name != this.referenceSearch.user__first_name ||
         searchInfo.user__last_name != this.referenceSearch.user__last_name ||
-        searchInfo.user__is_active != this.referenceSearch.user__is_active ||
-        searchInfo.alias__alias != this.referenceSearch.alias__alias
+        searchInfo.user__is_active != this.referenceSearch.user__is_active
       ) {
         this.page = 1;
         searchInfo.page = 1;
       }
 
       await this.$store
-        .dispatch("domainConfig/getSupervisor", searchInfo)
+        .dispatch("domainConfig/getAdmin", searchInfo)
         .then(response => {
-          this.loaduserSupervisorData(response);
+          this.loaduserAdminData(response);
           this.referenceSearch = searchInfo;
         })
         .catch(async () => {
           if (searchInfo.page != 1) {
             this.page = this.page - 1;
-            this.serchSupervisor();
+            this.AdminResource();
           } else {
             this.$store.commit("uiParams/dispatchAlert", {
               text: "No hay resultados con esas especificaciones",
@@ -254,11 +227,10 @@ export default {
           await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
           this.loadingTable = false;
         });
-      this.typeSupervisorSelectedList = this.domainConfig.supervisorAliases;
     },
 
-    loaduserSupervisorData(completeData) {
-      this.userSupervisorData = completeData.data.results;
+    loaduserAdminData(completeData) {
+      this.userAdminData = completeData.data.results;
 
       let itemsPerPage = process.env.VUE_APP_ITEMS_PER_PAGE;
       if (!itemsPerPage) {
@@ -267,23 +239,40 @@ export default {
 
       this.numberOfPage = Math.ceil(completeData.data.count / itemsPerPage);
     },
-    openDialog(supervisorSelected) {
-      this.idSupervisor = supervisorSelected.user.id;
+
+    openDialog(adminSelected) {
+      this.idAdmin = adminSelected.user.id;
       this.dialogChangeStatus = true;
     },
-    async changeStateSupervisor() {
+
+    async changeStateAdmin() {
       this.dialogChangeStatus = false;
 
+      if (
+        this.isUserActiveFilter &&
+        this.userAdminData.length == 1 &&
+        this.referenceSearch.user__first_name == "" &&
+        this.referenceSearch.user__last_name == ""
+      ) {
+        this.$store.commit("uiParams/dispatchAlert", {
+          text:
+            "No puede desactivar este usuario ya que es el unico admin activo",
+          color: "primary",
+          timeout: 4000
+        });
+
+        return;
+      }
       await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
       let userInfo = {
-        user_id: this.idSupervisor,
+        user_id: this.idAdmin,
         new_state: this.isUserActiveFilter ? "deactivate" : "activate"
       };
       const userState = this.isUserActiveFilter ? "desactivado" : "activado";
       await this.$store
         .dispatch("domainConfig/postChangeStatus", userInfo)
         .then(async () => {
-          this.serchSupervisor();
+          this.searchAdmin();
           this.$store.commit("uiParams/dispatchAlert", {
             text: "Usuario " + userState + " correctamente",
             color: "success",
