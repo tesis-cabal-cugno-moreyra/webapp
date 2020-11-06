@@ -169,7 +169,6 @@ export default {
     },
 
     loadResourceData(completeData) {
-      //Refactorizar y mandar a store ?
       this.resourceData = completeData.data.results;
       let itemsPerPage = process.env.VUE_APP_ITEMS_PER_PAGE;
       if (!itemsPerPage) {
@@ -190,8 +189,6 @@ export default {
       this.loadingProcessInfo = true;
       let errorPost = "";
       this.selected.forEach(async (element, index) => {
-        /* tan mal estos datos tengo que poner el id del incidente??????
-        y poner el id del recurso o el eky */
         let resourceIncidentData = {
           incidentId: this.incidentId,
           incidentTypeId: element.id
