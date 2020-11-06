@@ -128,7 +128,6 @@ export default {
         } else if (this.visibility === "Público") {
           visibility = "Public";
         }
-        // TODO: armar módulo de incidente en Vuex para interactuar con la API
         let payload = {
           domain_name: this.domainConfig.name,
           incident_type_name: this.incidentTypeSelected,
