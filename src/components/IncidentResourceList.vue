@@ -11,7 +11,7 @@
                 v-model="searchName"
                 append-icon="mdi-magnify"
                 label="Enter para buscar por nombre"
-                v-on:keyup.enter="serchResource()"
+                v-on:keyup.enter="searchResource()"
               ></v-text-field>
             </v-col>
             <v-col cols="6">
@@ -19,7 +19,7 @@
                 v-model="searchLastName"
                 append-icon="mdi-magnify"
                 label="Enter para buscar por apellido"
-                v-on:keyup.enter="serchResource()"
+                v-on:keyup.enter="searchResource()"
               ></v-text-field>
             </v-col>
 
@@ -30,7 +30,7 @@
                 item-text="name"
                 clearable
                 label="Tipo de recurso"
-                @change="serchResource()"
+                @change="searchResource()"
               ></v-autocomplete>
             </v-col>
           </v-row>
@@ -116,34 +116,31 @@ export default {
     };
   },
   created() {
-    this.serchResource();
+    this.searchResource();
   },
   watch: {
     page() {
-      this.serchResource();
+      this.searchResource();
     }
   },
   methods: {
     closeModal() {
       this.$emit("closeModal", true);
     },
-    async serchResource() {
+    async searchResource() {
       this.loadingTable = true;
 
       let searchInfo = {
         user__first_name: this.searchName,
         user__last_name: this.searchLastName,
-        type__name:
-          this.autoCompleteTypeResource == undefined
-            ? ""
-            : this.autoCompleteTypeResource,
+        type__name: this.autoCompleteTypeResource ?? "",
         page: this.page
       };
 
       if (
-        searchInfo.user__first_name != this.referenceSearch.user__first_name ||
-        searchInfo.user__last_name != this.referenceSearch.user__last_name ||
-        searchInfo.type__name != this.referenceSearch.type__name
+        searchInfo.user__first_name !== this.referenceSearch.user__first_name ||
+        searchInfo.user__last_name !== this.referenceSearch.user__last_name ||
+        searchInfo.type__name !== this.referenceSearch.type__name
       ) {
         this.page = 1;
         searchInfo.page = 1;
@@ -198,7 +195,7 @@ export default {
           .dispatch("domainConfig/postResourceIncident", resourceIncidentData)
           .then(async () => {
             this.$store.commit("uiParams/dispatchAlert", {
-              text: "Se cargo  correctamente: ",
+              text: "Se cargó correctamente: ",
               color: "success",
               timeout: 5000
             });
@@ -206,7 +203,7 @@ export default {
           .catch(async () => {
             //comparo el indice de el array con la cantidad de elementos para finalizar el mensaje
             errorPost = `${errorPost} ${element.user.first_name} ${element.user.last_name}`;
-            if (index != this.selected.length - 1) {
+            if (index !== this.selected.length - 1) {
               errorPost = `${errorPost}, `;
             }
           })
@@ -221,7 +218,7 @@ export default {
           });
         } else {
           this.$store.commit("uiParams/dispatchAlert", {
-            text: "se cargaron corecamente todos los recursos",
+            text: "Se cargaron correctamente todos los recursos",
             color: "success",
             timeout: 2000
           });

@@ -14,16 +14,18 @@ export class MapPointDescription {
   }
 }
 export class IncidentType {
-  constructor(name, descriptions, resourceTypes) {
+  constructor(name, descriptions, resourceTypes, detailsSchema) {
     this.name = name;
     this.descriptions = descriptions;
     this.resourceTypes = resourceTypes;
+    this.detailsSchema = detailsSchema;
   }
 }
 export class IncidentAbstraction {
-  constructor(name, types) {
+  constructor(name, types, detailsSchemaDefault) {
     this.name = name;
     this.types = types;
+    this.detailsSchemaDefault = detailsSchemaDefault;
   }
 }
 export class Domain {
