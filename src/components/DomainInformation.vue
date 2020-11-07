@@ -165,6 +165,11 @@
                 label="Agregar un nombre de incidente"
                 autocomplete="off"
               ></v-text-field>
+              <v-textarea
+                v-model="detailsSchemaAbstractIncident"
+                label="Agregar schema de detalles general, para el alias de incidente"
+                hint="Debe ingresarse un JSON válido, compatible con JSON Schema"
+              ></v-textarea>
               <v-btn color="success" outlined small type="submit"
                 >Agregar</v-btn
               >
@@ -184,6 +189,11 @@
                 label="Editar un nombre de incidente"
                 autocomplete="off"
               ></v-text-field>
+              <v-textarea
+                v-model="detailsSchemaAbstractIncident"
+                label="Editar schema de detalles general, para el alias de incidente"
+                hint="Debe ingresarse un JSON válido, compatible con JSON Schema"
+              ></v-textarea>
               <v-btn color="warning" outlined small type="submit">Editar</v-btn>
               <v-btn
                 text
@@ -332,6 +342,11 @@
                   label="Agregar un nombre al tipo de incidente"
                   autocomplete="off"
                 ></v-text-field>
+                <v-textarea
+                  v-model="detailsSchemaTypeIncident"
+                  label="Agregar schema de detalles del tipo de incidente"
+                  hint="Debe ingresarse un JSON válido, compatible con JSON Schema"
+                ></v-textarea>
                 <v-btn color="success" outlined small type="submit"
                   >Agregar</v-btn
                 >
@@ -354,6 +369,11 @@
                   label="Editar el nombre del tipo incidente"
                   autocomplete="off"
                 ></v-text-field>
+                <v-textarea
+                  v-model="detailsSchemaTypeIncident"
+                  label="Editar schema de detalles del tipo de incidente"
+                  hint="Debe ingresarse un JSON válido, compatible con JSON Schema"
+                ></v-textarea>
                 <v-btn color="warning" outlined small type="submit"
                   >editar</v-btn
                 >
@@ -484,7 +504,7 @@
                   color="grey_selected"
                   text-color="white"
                 >
-                  <v-icon left>label</v-icon>
+                  <v-icon left>mdi-label</v-icon>
                   {{
                     (item.TypeIncident != null
                       ? item.TypeIncident + " - "
@@ -742,6 +762,7 @@ export default {
       formAddSupervisor: true,
       formAddIncident: true,
       formAddTypeIncident: true,
+      typeIncidentIsActive: false,
       formAddResource: true,
       typeIncidentSelectAvalible: false,
       resourceTypeIncidentSelectAvalible: false,
@@ -749,6 +770,8 @@ export default {
       newMapDescription: "",
       textFieldSupervisor: "",
       textFieldTypeIncident: "",
+      detailsSchemaTypeIncident: "",
+      detailsSchemaAbstractIncident: "",
       textFieldIncident: "",
       textFieldResource: "",
       adminAlias: "",
@@ -843,13 +866,7 @@ export default {
               "Debe ingresar al menos un tipo de incidentes";
             this.snackbar = true;
           } else {
-            let isEmptyType = false;
-            this.incidentAbstractionList.forEach(incident => {
-              if (incident.incidentTypes.length > 0) {
-                isEmptyType = true;
-              }
-            });
-            if (isEmptyType) {
+            if (this.typeIncidentIsActive) {
               this.stepNumber = "6";
 
               this.messaggeSnackbar =
@@ -857,6 +874,7 @@ export default {
               this.snackbar = true;
             } else {
               this.textFieldIncident = "";
+              this.detailsSchemaAbstractIncident = "";
               this.stepNumber = "5";
             }
           }
@@ -948,6 +966,8 @@ export default {
           incidentAbstraction.incidentTypes.forEach(incidentType => {
             const incidentTypeInstance = new IncidentType();
             incidentTypeInstance.name = incidentType.nameIncident;
+            incidentTypeInstance.detailsSchema =
+              incidentType.detailsSchemaIncident;
             const mapPointObjects = [];
             const resourceObjects = [];
 
@@ -977,6 +997,9 @@ export default {
         } else {
           const incidentTypeInstance = new IncidentType();
           incidentTypeInstance.name = incidentAbstractionInstance.name;
+          // Delete comment when incident abstraction is done
+          incidentTypeInstance.detailsSchema =
+            incidentAbstraction.detailsGeneralSchema;
           const mapPointObjects = [];
           const resourceObjects = [];
 
@@ -1027,14 +1050,16 @@ export default {
           this.formAddIncident = true;
 
           this.textFieldIncident = "";
+          this.detailsSchemaAbstractIncident = "";
 
           break;
         case "5":
           this.textFieldTypeIncident = "";
+          this.detailsSchemaTypeIncident = "";
           this.formAddTypeIncident = true;
           break;
         case "6":
-          this.isMapPointAvaliable = false;
+          this.newMapDescription = "";
           this.formDescriptionMapPoint = true;
 
           break;
@@ -1073,6 +1098,7 @@ export default {
             this.textFieldTypeIncident = "";
             this.formAddTypeIncident = true;
             this.dialog = false;
+            this.typeIncidentIsActive = true;
             this.stepNumber = "6";
           } else {
             this.TypeListSelected.splice(this.pointerToDelete, 1);
@@ -1122,12 +1148,32 @@ export default {
         this.snackbar = true;
         return;
       }
+      if (!this.detailsSchemaAbstractIncident) {
+        this.messaggeSnackbar =
+          "Debe ingresar un schema de detalles para agregarlo";
+        this.snackbar = true;
+        return;
+      }
+      try {
+        JSON.parse(this.detailsSchemaAbstractIncident);
+      } catch (e) {
+        if (e instanceof SyntaxError) {
+          this.messaggeSnackbar = "El schema ingresado no es un JSON válido";
+          this.snackbar = true;
+          return;
+        }
+        console.error(e);
+        return;
+      }
+
       this.incidentAbstractionList.push({
         id: Date.now(),
         name: this.textFieldIncident.trim(),
+        detailsGeneralSchema: this.detailsSchemaAbstractIncident,
         incidentTypes: []
       });
       this.textFieldIncident = "";
+      this.detailsSchemaAbstractIncident = "";
     },
 
     deleteIncident(id) {
@@ -1142,26 +1188,57 @@ export default {
         this.snackbar = true;
         return;
       }
-      var incidentIsRepeated = this.incidentAbstractionList.some(
-        e =>
-          e.name.toLowerCase().trim() ==
-          this.textFieldIncident.toLowerCase().trim()
-      );
+      if (
+        this.textFieldIncident !=
+        this.incidentAbstractionList[this.IncidetnIndex].name
+      )
+        var incidentIsRepeated = this.incidentAbstractionList.some(
+          e =>
+            e.name.toLowerCase().trim() ==
+            this.textFieldIncident.toLowerCase().trim()
+        );
       if (incidentIsRepeated) {
         this.messaggeSnackbar = "El incidente ingresado ya existe";
         this.snackbar = true;
         return;
       }
+
+      if (!this.detailsSchemaAbstractIncident) {
+        this.messaggeSnackbar =
+          "Debe ingresar un schema de detalles para agregarlo";
+        this.snackbar = true;
+        return;
+      }
+      try {
+        JSON.parse(this.detailsSchemaAbstractIncident);
+      } catch (e) {
+        if (e instanceof SyntaxError) {
+          this.messaggeSnackbar = "El schema ingresado no es un JSON válido";
+          this.snackbar = true;
+          return;
+        }
+        console.error(e);
+        return;
+      }
+
       this.incidentAbstractionList[
         this.IncidetnIndex
       ].name = this.textFieldIncident;
+
+      this.incidentAbstractionList[
+        this.IncidetnIndex
+      ].detailsGeneralSchema = this.detailsSchemaAbstractIncident;
       this.textFieldIncident = "";
+      this.detailsSchemaAbstractIncident = "";
       this.formAddIncident = true;
     },
 
     changeFormIncident(IncidetnIndex) {
       this.formAddIncident = false;
       this.textFieldIncident = this.incidentAbstractionList[IncidetnIndex].name;
+      this.detailsSchemaAbstractIncident = this.incidentAbstractionList[
+        IncidetnIndex
+      ].detailsGeneralSchema;
       this.IncidetnIndex = IncidetnIndex;
     },
 
@@ -1172,26 +1249,45 @@ export default {
         this.snackbar = true;
         return;
       }
+      if (!this.detailsSchemaTypeIncident) {
+        this.messaggeSnackbar =
+          "Debe ingresar un schema de detalles en el tipo de incidente para agregarlo";
+        this.snackbar = true;
+        return;
+      }
+      try {
+        JSON.parse(this.detailsSchemaTypeIncident);
+      } catch (e) {
+        if (e instanceof SyntaxError) {
+          this.messaggeSnackbar = "El schema ingresado no es un JSON válido";
+          this.snackbar = true;
+          return;
+        }
+        console.error(e);
+        return;
+      }
       var typeIncidentIsRepeated = this.TypeListSelected.some(
         e =>
-          e.nameIncident.toLowerCase() ==
+          e.nameIncident.toLowerCase() ===
           this.textFieldTypeIncident.toLowerCase()
       );
       if (typeIncidentIsRepeated) {
-        this.messaggeSnackbar = "El supervisor ingresado ya existe";
+        this.messaggeSnackbar = "El tipo de incidente ingresado ya existe";
         this.snackbar = true;
         return;
       }
 
       this.TypeListSelected.push({
-        nameIncident: this.textFieldTypeIncident
+        nameIncident: this.textFieldTypeIncident,
+        detailsSchemaIncident: this.detailsSchemaTypeIncident
       });
 
       this.textFieldTypeIncident = "";
+      this.detailsSchemaTypeIncident = "";
     },
 
     deleteTypeIncident(index) {
-      this.messaggeDialog = "¿Desea elimninar este tipo de incidente?";
+      this.messaggeDialog = "¿Desea eliminar este tipo de incidente?";
       this.dialog = true;
       this.pointerToDelete = index;
     },
@@ -1201,6 +1297,9 @@ export default {
       this.textFieldTypeIncident = this.TypeListSelected[
         indexTypeIncident
       ].nameIncident;
+      this.detailsSchemaTypeIncident = this.TypeListSelected[
+        indexTypeIncident
+      ].detailsSchemaIncident;
       this.indexTypeIncident = indexTypeIncident;
     },
 
@@ -1211,21 +1310,48 @@ export default {
         this.snackbar = true;
         return;
       }
-      var typeIncidentIsRepeated = this.TypeListSelected.some(
-        e =>
-          e.nameIncident.toLowerCase() ==
-          this.textFieldTypeIncident.toLowerCase()
-      );
-      if (typeIncidentIsRepeated) {
-        this.messaggeSnackbar = "El supervisor ingresado ya existe";
+      if (
+        this.textFieldTypeIncident !=
+        this.TypeListSelected[this.indexTypeIncident].nameIncident
+      ) {
+        var typeIncidentIsRepeated = this.TypeListSelected.some(
+          e =>
+            e.nameIncident.toLowerCase().trim() ===
+            this.textFieldTypeIncident.toLowerCase().trim()
+        );
+        if (typeIncidentIsRepeated) {
+          this.messaggeSnackbar = "El tipo de incidente ingresado ya existe";
+          this.snackbar = true;
+          return;
+        }
+      }
+
+      if (!this.detailsSchemaTypeIncident) {
+        this.messaggeSnackbar =
+          "Debe ingresar un schema de detalles en el tipo de incidente para agregarlo";
         this.snackbar = true;
+        return;
+      }
+      try {
+        JSON.parse(this.detailsSchemaTypeIncident);
+      } catch (e) {
+        if (e instanceof SyntaxError) {
+          this.messaggeSnackbar = "El schema ingresado no es un JSON válido";
+          this.snackbar = true;
+          return;
+        }
+        console.error(e);
         return;
       }
 
       this.TypeListSelected[
         this.indexTypeIncident
       ].nameIncident = this.textFieldTypeIncident;
+      this.TypeListSelected[
+        this.indexTypeIncident
+      ].detailsSchemaIncident = this.detailsSchemaTypeIncident;
       this.textFieldTypeIncident = "";
+      this.detailsSchemaTypeIncident = "";
       this.formAddTypeIncident = true;
     },
 
@@ -1235,13 +1361,21 @@ export default {
         this.snackbar = true;
         return;
       }
-      var supervisorIsRepeated = this.supervisorAliasesStringList.some(
-        e => e.name.toLowerCase() == this.textFieldSupervisor.toLowerCase()
-      );
-      if (supervisorIsRepeated) {
-        this.messaggeSnackbar = "El supervisor ingresado ya existe";
-        this.snackbar = true;
-        return;
+      if (
+        this.supervisorAliasesStringList[
+          this.supervisorAliasIndex
+        ].name.trim() != this.textFieldSupervisor.trim()
+      ) {
+        var supervisorIsRepeated = this.supervisorAliasesStringList.some(
+          e =>
+            e.name.toLowerCase().trim() ==
+            this.textFieldSupervisor.toLowerCase().trim()
+        );
+        if (supervisorIsRepeated) {
+          this.messaggeSnackbar = "El supervisor ingresado ya existe";
+          this.snackbar = true;
+          return;
+        }
       }
       this.supervisorAliasesStringList[
         this.supervisorAliasIndex
@@ -1299,8 +1433,8 @@ export default {
 
       var descriptionIsRepeated = this.MapPointViewSelectedList.some(
         e =>
-          e.descriptionPoint.toLowerCase() ==
-          this.newMapDescription.toLowerCase()
+          e.descriptionPoint.toLowerCase().trim() ==
+          this.newMapDescription.toLowerCase().trim()
       );
 
       if (descriptionIsRepeated) {
@@ -1311,14 +1445,14 @@ export default {
       const idUnic = Date.now();
       this.MapPointSelectedList.push({
         id: idUnic,
-        Incident: this.selectIncident.name,
+        Incident: this.selectIncidentStep6.name,
         TypeIncident: this.selectedIncidentType.nameIncident,
         descriptionPoint: this.newMapDescription
       });
 
       this.MapPointViewSelectedList.push({
         id: idUnic,
-        Incident: this.selectIncident.name,
+        Incident: this.selectIncidentStep6.name,
         TypeIncident: this.selectedIncidentType.nameIncident,
         descriptionPoint: this.newMapDescription
       });
@@ -1349,17 +1483,21 @@ export default {
         this.snackbar = true;
         return;
       }
+      if (
+        this.MapPointViewSelectedList[this.indexMapPoint].descriptionPoint !=
+        this.newMapDescription
+      ) {
+        var descriptionIsRepeated = this.MapPointViewSelectedList.some(
+          e =>
+            e.descriptionPoint.toLowerCase().trim() ==
+            this.newMapDescription.toLowerCase().trim()
+        );
 
-      var descriptionIsRepeated = this.MapPointViewSelectedList.some(
-        e =>
-          e.descriptionPoint.toLowerCase() ==
-          this.newMapDescription.toLowerCase()
-      );
-
-      if (descriptionIsRepeated) {
-        this.messaggeSnackbar = "La tarea ingresada ya existe ";
-        this.snackbar = true;
-        return;
+        if (descriptionIsRepeated) {
+          this.messaggeSnackbar = "La tarea ingresada ya existe ";
+          this.snackbar = true;
+          return;
+        }
       }
 
       this.MapPointViewSelectedList[
@@ -1500,17 +1638,21 @@ export default {
         this.snackbar = true;
         return;
       }
+      if (
+        this.resourceSelectedList[this.indexResource].descriptionResource !=
+        this.textFieldResource
+      ) {
+        var descriptionIsRepeated = this.resourceSelectedList.some(
+          e =>
+            e.descriptionResource.toLowerCase().trim() ==
+            this.textFieldResource.toLowerCase().trim()
+        );
 
-      var descriptionIsRepeated = this.resourceSelectedList.some(
-        e =>
-          e.descriptionResource.toLowerCase() ==
-          this.textFieldResource.toLowerCase()
-      );
-
-      if (descriptionIsRepeated) {
-        this.messaggeSnackbar = "El recurso ingresado ya existe ";
-        this.snackbar = true;
-        return;
+        if (descriptionIsRepeated) {
+          this.messaggeSnackbar = "El recurso ingresado ya existe ";
+          this.snackbar = true;
+          return;
+        }
       }
 
       this.resourceSelectedList[
