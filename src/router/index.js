@@ -7,6 +7,7 @@ import Error from "../views/Error.vue";
 import CreateIncident from "../views/CreateIncident.vue";
 import DomainAccessCode from "@/views/DomainAccessCode";
 import authServices from "@/services/authServices";
+import IncidentDetails from "@/components/IncidentDetails";
 
 Vue.use(VueRouter);
 
@@ -35,6 +36,16 @@ const routes = [
     path: "/domain-access-code",
     name: "DomainAccessCode",
     component: DomainAccessCode,
+    meta: {
+      requires_auth: true,
+      is_admin: true
+    }
+  },
+  {
+    // Delete this, when details included into Incident flow
+    path: "/incident-detail",
+    name: "IncidentDetail",
+    component: IncidentDetails,
     meta: {
       requires_auth: true,
       is_admin: true
