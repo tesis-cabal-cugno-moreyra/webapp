@@ -10,6 +10,7 @@ import authServices from "@/services/authServices";
 import SupervisorManager from "@/views/SupervisorManager";
 import ResourceManager from "@/views/ResourceManager";
 import AdminManager from "@/views/AdminManager";
+import IncidentDetails from "@/components/IncidentDetails";
 
 Vue.use(VueRouter);
 
@@ -65,6 +66,16 @@ const routes = [
     path: "/supervisor-manager",
     name: "SupervisorManager",
     component: SupervisorManager,
+    meta: {
+      requires_auth: true,
+      is_admin: true
+    }
+  },
+  {
+    // Delete this, when details included into Incident flow
+    path: "/incident-detail",
+    name: "IncidentDetail",
+    component: IncidentDetails,
     meta: {
       requires_auth: true,
       is_admin: true
