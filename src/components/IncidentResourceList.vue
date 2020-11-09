@@ -88,6 +88,7 @@ export default {
         user__first_name: "",
         user__last_name: "",
         type__name: "",
+        user__is_active: true,
         page: 1
       },
       loadingTable: false,
@@ -133,7 +134,11 @@ export default {
       let searchInfo = {
         user__first_name: this.searchName,
         user__last_name: this.searchLastName,
-        type__name: this.autoCompleteTypeResource ?? "",
+        type__name:
+          this.autoCompleteTypeResource == undefined
+            ? ""
+            : this.autoCompleteTypeResource,
+        user__is_active: true,
         page: this.page
       };
 
@@ -150,6 +155,7 @@ export default {
         .dispatch("domainConfig/getResource", searchInfo)
         .then(response => {
           this.loadResourceData(response);
+          console.log(response);
           this.referenceSearch = searchInfo;
         })
         .catch(async () => {

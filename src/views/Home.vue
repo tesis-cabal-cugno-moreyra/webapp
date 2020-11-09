@@ -18,7 +18,14 @@
                 </v-btn>
               </v-col>
               <v-col cols="2" sm="12" md="12">
-                <v-btn rounded color="primary" dark x-large class="ma-5 pa-5">
+                <v-btn
+                  rounded
+                  color="primary"
+                  dark
+                  x-large
+                  class="ma-5 pa-5"
+                  v-on:click="seeIncident"
+                >
                   Ver Incidentes
                 </v-btn>
               </v-col>
@@ -53,6 +60,9 @@ export default {
   methods: {
     createIncident: function() {
       this.$router.push({ name: "CreateIncident" });
+    },
+    seeIncident: function() {
+      this.$router.push({ name: "incidentsView" });
     }
   }
 };
