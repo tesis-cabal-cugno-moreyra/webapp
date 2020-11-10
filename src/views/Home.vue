@@ -5,7 +5,7 @@
         <v-row align="center" justify="center">
           <v-container text-center>
             <v-row align="center" justify="center">
-              <v-col cols="2" sm="12" md="12">
+              <v-col cols="1" xs="12" sm="12" md="3">
                 <v-btn
                   rounded
                   color="primary"
@@ -17,19 +17,34 @@
                   Crear Incidente
                 </v-btn>
               </v-col>
-              <v-col cols="2" sm="12" md="12">
+            </v-row>
+            <v-row align="center" justify="center">
+              <v-col cols="1" xs="12" sm="12" md="3">
                 <v-btn rounded color="primary" dark x-large class="ma-5 pa-5">
                   Ver Incidentes
                 </v-btn>
               </v-col>
             </v-row>
             <v-row align="center" justify="center">
-              <v-col cols="2" sm="12" md="12">
+              <v-col cols="1" xs="12" sm="12" md="3">
                 <v-btn rounded color="primary" dark x-large class="ma-5 pa-5">
                   Ver Recursos
                 </v-btn>
               </v-col>
-              <v-col cols="1" sm="8" md="3"> </v-col>
+            </v-row>
+            <v-row align="center" justify="center">
+              <v-col cols="1" xs="12" sm="12" md="3"
+                ><v-btn
+                  rounded
+                  color="primary"
+                  dark
+                  x-large
+                  class="ma-5 pa-5"
+                  v-on:click="goToMap"
+                >
+                  Ver Mapa
+                </v-btn>
+              </v-col>
             </v-row>
           </v-container>
         </v-row>
@@ -53,6 +68,10 @@ export default {
   methods: {
     createIncident: function() {
       this.$router.push({ name: "CreateIncident" });
+    },
+    goToMap() {
+      // this.$router.push({ name: "Map" });
+      console.log("You must uncomment router push on Home.vue view!");
     }
   }
 };
