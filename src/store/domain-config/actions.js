@@ -103,9 +103,44 @@ export default {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
-        let urlSearch = `/api/v1/resources/?user__first_name=${payload.user__first_name}&user__last_name=${payload.user__last_name}&type__name=${payload.type__name}&user__is_active=true&page=${payload.page}`;
+        let urlSearch = `/api/v1/resources/?user__first_name=${payload.user__first_name}&user__last_name=${payload.user__last_name}&type__name=${payload.type__name}&user__is_active=${payload.user__is_active}&page=${payload.page}`;
 
         return resolve(await api.get(urlSearch));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  getSupervisor(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlSearch = `/api/v1/supervisors/?user__first_name=${payload.user__first_name}&user__last_name=${payload.user__last_name}&alias__alias=${payload.alias__alias}&user__is_active=${payload.user__is_active}&page=${payload.page}`;
+
+        return resolve(await api.get(urlSearch));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  getAdmin(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlSearch = `/api/v1/admins/?user__first_name=${payload.user__first_name}&user__last_name=${payload.user__last_name}&user__is_active=${payload.user__is_active}&page=${payload.page}`;
+
+        return resolve(await api.get(urlSearch));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  postChangeStatus(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlApi = `/api/v1/users/${payload.user_id}/${payload.new_state}/`;
+        return resolve(await api.post(urlApi));
       } catch (e) {
         return reject(e);
       }

@@ -7,6 +7,9 @@ import Error from "../views/Error.vue";
 import CreateIncident from "../views/CreateIncident.vue";
 import DomainAccessCode from "@/views/DomainAccessCode";
 import authServices from "@/services/authServices";
+import SupervisorManager from "@/views/SupervisorManager";
+import ResourceManager from "@/views/ResourceManager";
+import AdminManager from "@/views/AdminManager";
 import IncidentDetails from "@/components/IncidentDetails";
 
 Vue.use(VueRouter);
@@ -36,6 +39,33 @@ const routes = [
     path: "/domain-access-code",
     name: "DomainAccessCode",
     component: DomainAccessCode,
+    meta: {
+      requires_auth: true,
+      is_admin: true
+    }
+  },
+  {
+    path: "/resource-manager",
+    name: "ResourceManager",
+    component: ResourceManager,
+    meta: {
+      requires_auth: true,
+      is_admin: true
+    }
+  },
+  {
+    path: "/admin-manager",
+    name: "AdminManager",
+    component: AdminManager,
+    meta: {
+      requires_auth: true,
+      is_admin: true
+    }
+  },
+  {
+    path: "/supervisor-manager",
+    name: "SupervisorManager",
+    component: SupervisorManager,
     meta: {
       requires_auth: true,
       is_admin: true
