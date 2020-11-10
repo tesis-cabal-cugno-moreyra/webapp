@@ -144,12 +144,9 @@ export default {
     return {
       searchName: "",
       searchLastName: "",
-      autoCompleteTypeAdmin: "",
       idAdmin: "",
       dialogChangeStatus: false,
-      adminTable: true,
       loadingTable: false,
-      isComponentEnable: false,
       isUserActiveFilter: false,
       page: 1,
       numberOfPage: 1,
@@ -171,7 +168,7 @@ export default {
         { text: "Apellido", sortable: false, value: "user.last_name" },
         {
           text: "Cambiar el estado",
-          value: "actions", //--'user.is_active',
+          value: "actions",
           sortable: false
         }
       ],
@@ -182,7 +179,6 @@ export default {
     this.searchAdmin();
   },
   methods: {
-    // Admin methods
     async searchAdmin() {
       await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
       this.loadingTable = true;

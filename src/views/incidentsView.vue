@@ -4,15 +4,18 @@
       <v-layout align="center" justify="center">
         <v-card>
           <v-card-title :class="['pa-3', 'mt-5', 'black_selected']">
-            <v-col cols="12">
-              {{
-                `${
-                  isIncidentActiveFilter
-                    ? "Incidentes activos "
-                    : "Incidentes no activos"
-                }`
-              }}
+            <v-col cols="8">
+              {{ `${"Incidentes " + incidentStatusSelected + "s"}` }}
             </v-col>
+            <v-btn
+              color="primary"
+              dark
+              x-large
+              class="mb-2 pa-5"
+              v-on:click="createIncident"
+            >
+              Crear Incidente
+            </v-btn>
           </v-card-title>
           <v-card-title :class="['pa-2', 'black_selected']">
             <v-row align="center" justify="center">
@@ -22,54 +25,34 @@
                   :items="typeIncidentTypeList"
                   item-text="name"
                   clearable
-                  label="Tipo de recurso"
+                  label="Tipos de incidentes"
                   @change="searchIncident()"
                 ></v-autocomplete>
               </v-col>
-              <!-- <v-col cols="6">
-                <v-text-field
-                    v-model="searchDataStatus"
-                    append-icon="mdi-magnify"
-                    label="Enter para buscar por apellido"
-                    v-on:keyup.enter="searchIncident()"
-                ></v-text-field>
-              </v-col>-->
-
               <v-col cols="6">
                 <v-select
                   v-model="incidentStatusSelected"
                   :items="incidentStatus"
                   v-on:change="searchIncident()"
                   label="Estado del incidente"
+                >
+                </v-select>
+              </v-col>
+              <v-col cols="6">
+                <v-select
+                  v-model="incidentVisibilitySelected"
+                  :items="incidentVisibility"
+                  v-on:change="searchIncident()"
+                  label="Visibilidad del incidente"
                 ></v-select>
               </v-col>
               <v-col cols="6">
-                <v-switch
-                  v-model="isIncidentPublicFilter"
-                  :label="
-                    `${
-                      isIncidentPublicFilter
-                        ? 'Incidentes Publicos'
-                        : 'Incidentes Privados'
-                    }`
-                  "
-                  class="pa-3"
-                  @change="searchIncident()"
-                ></v-switch>
-              </v-col>
-              <v-col cols="6">
-                <v-switch
-                  v-model="isIncidentCompleteFilter"
-                  :label="
-                    `${
-                      isIncidentCompleteFilter
-                        ? 'Incidentes completos'
-                        : 'Incidentes incompletos'
-                    }`
-                  "
-                  class="pa-3"
-                  @change="searchIncident()"
-                ></v-switch>
+                <v-select
+                  v-model="incidentCompletedSelected"
+                  :items="incidentCompleted"
+                  v-on:change="searchIncident()"
+                  label="Visibilidad del incidente"
+                ></v-select>
               </v-col>
             </v-row>
           </v-card-title>
@@ -86,23 +69,45 @@
               hide-default-footer
             >
               <template v-slot:top>
-                <v-dialog v-model="dialogChangeStatus" max-width="500px">
+                <v-dialog v-model="dialogEditResource" max-width="500px">
                   <v-card>
                     <v-card-title class="headline"
-                      >¿Desea
-                      {{
-                        `${isIncidentActiveFilter ? "desactivar" : "activar"}`
-                      }}
-                      el siguiente usuario?</v-card-title
+                      >aqui iria una tabla de recursos si tan solo tuviera
+                      api!</v-card-title
                     >
                     <v-card-actions>
                       <v-spacer></v-spacer>
                       <v-btn
                         color="primary"
                         outlined
-                        @click="dialogChangeStatus = false"
+                        @click="dialogEditResource = false"
                         :class="['mr-5']"
                         >Acepto</v-btn
+                      >
+                      <v-btn
+                        color="primary"
+                        outlined
+                        @click="dialogEditResource = false"
+                        >Cancelar</v-btn
+                      >
+                      <v-spacer></v-spacer>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+                <v-dialog v-model="dialogChangeStatus" max-width="515px">
+                  <v-card>
+                    <v-card-title class="headline"
+                      >¿Desea cambiar la visibilidad del
+                      incidente?</v-card-title
+                    >
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        color="success"
+                        outlined
+                        @click="changeStateSupport()"
+                        :class="['mr-5']"
+                        >Cambiar</v-btn
                       >
                       <v-btn
                         color="primary"
@@ -123,29 +128,46 @@
                       v-on="on"
                       small
                       color="success"
-                      @click="openDialog(item)"
+                      @click="openDialogEditResource(item)"
+                      :class="['mr-2']"
                     >
-                      mdi-account-plus
+                      mdi-account-convert
                     </v-icon>
                   </template>
                   <span>Editar usuario relacionados</span>
                 </v-tooltip>
 
-                <!--   <v-tooltip bottom>
+                <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-icon
-                        v-if="isIncidentActiveFilter"
-                        v-bind="attrs"
-                        v-on="on"
-                        small
-                        color="primary"
-                        @click="openDialog(item)"
+                      v-bind="attrs"
+                      v-on="on"
+                      small
+                      color="pink"
+                      @click="funcionParaElEmi(item)"
+                      :class="['mr-2']"
                     >
-                      mdi-account-off
+                      mdi-google-maps
                     </v-icon>
                   </template>
-                  <span>Desactivar usuario</span>
-                </v-tooltip>-->
+                  <span>Emi apretame ;)</span>
+                </v-tooltip>
+
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      v-bind="attrs"
+                      v-on="on"
+                      small
+                      color="blue"
+                      @click="openDialogChangeState(item)"
+                      :class="['mr-2']"
+                    >
+                      mdi-pencil-circle-outline
+                    </v-icon>
+                  </template>
+                  <span>Cambiar Visibilidad del incidente</span>
+                </v-tooltip>
               </template>
             </v-data-table>
             <v-pagination
@@ -160,46 +182,40 @@
     </v-container>
   </v-app>
 </template>
-<script>
-//
-import { mapGetters } from "vuex";
 
+<script>
+import { mapGetters } from "vuex";
 export default {
   name: "incidentsView",
   data() {
     return {
-      translateName: [],
+      incidentVisibilitySelected: "Sin asistencia externa",
+      incidentVisibility: ["Con asistencia externa", "Sin asistencia externa"],
       incidentStatusSelected: "Iniciado",
       incidentStatus: ["Iniciado", "Cancelado", "Finalizado"],
+      incidentCompletedSelected: "Incompleto",
+      incidentCompleted: ["Incompleto", "Completo"],
       autoCompleteIncidentType: "",
       typeIncidentTypeList: [],
-      searchIncidentTypeName: "",
-      searchDataStatus: "",
-      isIncidentActiveFilter: true,
-      isIncidentPublicFilter: true,
-      isIncidentCompleteFilter: false,
       loadingTable: false,
-      headerIncident: {},
       page: 1,
       numberOfPage: 1,
       referenceSearch: {
         searchIncidentTypeName: "",
-        searchVisibility: this.isIncidentPublicFilter ? "Public" : "Private",
-        searchStatus: this.isIncidentActiveFilter ? "Started" : "Finished",
-        searchDataStatus: this.isIncidentCompleteFilter
-          ? "Complete"
-          : "Incomplete",
+        searchVisibility:
+          this.incidentVisibilitySelected === "Con asistencia externa"
+            ? "With external support"
+            : "Without external support",
+        searchStatus: this.incidentStatusSelected,
+        searchDataStatus:
+          this.incidentCompletedSelected === "Completo"
+            ? "Complete"
+            : "Incomplete",
         page: 1
       },
       userIncidentData: [],
       headersIncident: [
-        {
-          text: "Tipo de incidente",
-          align: "start",
-          sortable: false,
-          value: "incident_type.name"
-        },
-        { text: "Estado", sortable: false, value: "status" },
+        { text: "Estado", sortable: false, value: "statusTranslate" },
         {
           text: "Información del estado",
           sortable: false,
@@ -213,22 +229,24 @@ export default {
         },
         {
           text: "Cambiar el estado",
-          value: "actions", //--'user.is_active',
+          value: "actions",
           sortable: false
         }
       ],
       incidentSelected: [],
-      dialogChangeStatus: false
+      dialogChangeStatus: false,
+      dialogEditResource: false
     };
   },
   computed: {
     ...mapGetters({
+      domainConfig: "domainConfig/domainConfig",
       incidentConfig: "domainConfig/incidentConfig"
     })
   },
   created() {
+    this.createtypeIncidentTypeList();
     this.searchIncident();
-    this.CreatetypeIncidentTypeList();
   },
   watch: {
     page() {
@@ -237,23 +255,26 @@ export default {
   },
 
   methods: {
-    async translate(incidentEnglish) {
+    createIncident: function() {
+      this.$router.push({ name: "CreateIncident" });
+    },
+    translate(incidentEnglish) {
       incidentEnglish.forEach(incident => {
-        if (this.isIncidentCompleteFilter) {
+        if (this.incidentCompletedSelected === "Completo") {
           incident.data_status = "Completo";
         } else {
           incident.data_status = "Incompleto";
         }
-        incident.status = this.incidentStatusSelected;
-        if (this.isIncidentPublicFilter) {
-          incident.visibility = "Público";
+        incident.statusTranslate = this.incidentStatusSelected;
+        if (this.incidentVisibilitySelected === "Con asistencia externa") {
+          incident.visibility = "Con asistencia externa";
         } else {
-          incident.visibility = "Privado";
+          incident.visibility = "Sin asistencia externa";
         }
       });
       this.userIncidentData = incidentEnglish;
     },
-    CreatetypeIncidentTypeList() {
+    createtypeIncidentTypeList() {
       this.incidentConfig.forEach(incident => {
         incident.incidentTypes.forEach(typeIncident => {
           this.typeIncidentTypeList.push(
@@ -275,17 +296,23 @@ export default {
         incidentType = incidentType[1];
       }
       let Status = "Started";
-      if (this.incidentStatusSelected == "Finalizado") {
+      if (this.incidentStatusSelected === "Finalizado") {
         Status = "Finalized";
       }
-      if (this.incidentStatusSelected == "Cancelado") {
+      if (this.incidentStatusSelected === "Cancelado") {
         Status = "Canceled";
       }
       let searchInfo = {
         incident_type__name: incidentType,
-        visibility: this.isIncidentPublicFilter ? "Public" : "Private",
+        visibility:
+          this.incidentVisibilitySelected === "Con asistencia externa"
+            ? "With external support"
+            : "Without external support",
         status: Status,
-        data_status: this.isIncidentCompleteFilter ? "Complete" : "Incomplete",
+        data_status:
+          this.incidentCompletedSelected === "Completo"
+            ? "Complete"
+            : "Incomplete",
         page: this.page
       };
 
@@ -326,6 +353,7 @@ export default {
           this.loadingTable = false;
         });
     },
+
     loadIncidentData(completeData) {
       this.translate(completeData.data.results);
       let itemsPerPage = process.env.VUE_APP_ITEMS_PER_PAGE;
@@ -335,9 +363,61 @@ export default {
 
       this.numberOfPage = Math.ceil(completeData.data.count / itemsPerPage);
     },
-    openDialog(incidentSelected) {
+    async changeStateSupport() {
+      this.dialogChangeStatus = false;
+      this.loadingTable = true;
+      await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
+      let incidentInfo = {
+        incidentId: this.incidentSelected.id,
+        incidentChange:
+          this.incidentVisibilitySelected === "Con asistencia externa"
+            ? "without-external-support"
+            : "with-external-support"
+      };
+      await this.$store
+        .dispatch(
+          "domainConfig/postIncidentChangeExternalSupport",
+          incidentInfo
+        )
+        .then(async () => {
+          this.searchIncident();
+
+          this.$store.commit("uiParams/dispatchAlert", {
+            text: "Se ha cambiado exitosamente la visibilidad al incidente",
+            color: "success",
+            timeout: 4000
+          });
+        })
+        .catch(async () => {
+          this.$store.commit("uiParams/dispatchAlert", {
+            text: "No hay resultados con esas especificaciones",
+            color: "primary",
+            timeout: 4000
+          });
+
+          await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+        })
+        .finally(async () => {
+          await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+          this.loadingTable = false;
+        });
+    },
+
+    openDialogEditResource(incidentSelected) {
+      this.incidentSelected = incidentSelected;
+      this.dialogEditResource = true;
+    },
+    openDialogChangeState(incidentSelected) {
       this.incidentSelected = incidentSelected;
       this.dialogChangeStatus = true;
+    },
+    funcionParaElEmi(incidentSelectData) {
+      console.log(incidentSelectData);
+      alert(
+        "Emi el id de este incidente es: " +
+          incidentSelectData.id +
+          " para mas información mira el console log"
+      );
     }
   }
 };

@@ -158,9 +158,7 @@ export default {
       autoCompleteTypeResource: "",
       idResource: "",
       dialogChangeStatus: false,
-      resourceTable: true,
       loadingTable: false,
-      isComponentEnable: false,
       isUserActiveFilter: false,
       page: 1,
       numberOfPage: 1,
@@ -183,12 +181,11 @@ export default {
         { text: "Tipos de Recursos", sortable: false, value: "type.name" },
         {
           text: "Cambiar el estado",
-          value: "actions", //--'user.is_active',
+          value: "actions",
           sortable: false
         }
       ],
       userResourceData: [],
-      aqui: [],
       typeResourceSelectedList: []
     };
   },

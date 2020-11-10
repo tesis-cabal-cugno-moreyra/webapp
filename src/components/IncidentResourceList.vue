@@ -155,7 +155,6 @@ export default {
         .dispatch("domainConfig/getResource", searchInfo)
         .then(response => {
           this.loadResourceData(response);
-          console.log(response);
           this.referenceSearch = searchInfo;
         })
         .catch(async () => {
