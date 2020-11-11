@@ -11,6 +11,7 @@ import SupervisorManager from "@/views/SupervisorManager";
 import ResourceManager from "@/views/ResourceManager";
 import AdminManager from "@/views/AdminManager";
 import IncidentDetails from "@/components/IncidentDetails";
+import IncidentMap from "@/views/IncidentMap";
 
 Vue.use(VueRouter);
 
@@ -93,6 +94,16 @@ const routes = [
     path: "/create-incident",
     name: "CreateIncident",
     component: CreateIncident,
+    meta: {
+      requires_auth: true,
+      is_admin: true,
+      is_supervisor: true
+    }
+  },
+  {
+    path: "/incident-map",
+    name: "IncidentMap",
+    component: IncidentMap,
     meta: {
       requires_auth: true,
       is_admin: true,

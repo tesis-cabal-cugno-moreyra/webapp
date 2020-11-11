@@ -70,8 +70,8 @@ export default {
       this.$router.push({ name: "CreateIncident" });
     },
     goToMap() {
-      // this.$router.push({ name: "Map" });
-      console.log("You must uncomment router push on Home.vue view!");
+      this.$router.push({ name: "IncidentMap" });
+      // console.log("You must uncomment router push on Home.vue view!");
     }
   }
 };
