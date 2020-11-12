@@ -1,31 +1,49 @@
 <template>
   <v-row class="fill-height">
-    <v-col class="col-sm-3 col-md-4 col-lg-2 fill-height">
-      <!--      <v-row align="center" justify="center" class="ma-auto pa-auto col-sm-12 col-md-12 col-lg-12">-->
-      <!--        <v-container>-->
-      <!--          Aquí va si querés ver track points y/o map points.-->
-      <!--        </v-container>-->
-      <!--      </v-row>-->
-      <!--      <v-divider></v-divider>-->
-      <!--      <v-row align="center" justify="center" class="ma-auto pa-auto col-sm-12 col-md-12 col-lg-12">-->
-      <!--        <v-col class="col-sm-12 col-md-12 col-lg-12">-->
-      <!--        <v-container>-->
-      <!--          Aquí va para filtrar por recurso (ver trackpoints y/o mappoints de uno-->
-      <!--          o varios recursos)-->
-      <!--        </v-container>-->
-      <!--        </v-col>-->
-      <!--      </v-row>-->
-      <v-container class="ma-auto pa-auto" style="flex-direction: column;">
-        <v-row>
-          Aquí va si querés ver track points y/o map points.
-        </v-row>
-        <v-row>
-          Aquí va para filtrar por recurso (ver trackpoints y/o mappoints de uno
-          o varios recursos)</v-row
+    <v-col
+      class="col-sm-5 col-md-4 col-lg-3 col-xl-2 pt-5 pb-0 mt-5 pb-0 d-flex align-center flex-column"
+    >
+      <v-card class="pt-3 pr-0 pb-2 pl-2 mt-3 mr-0 mb-2 ml-2">
+        <v-card-title>Filtros</v-card-title>
+        <v-card-subtitle
+          >Vea los puntos de interés y/o recorridos realizados.</v-card-subtitle
         >
-      </v-container>
+        <v-card-text>
+          <v-switch v-model="switchMapPoints" label="Ver map points"></v-switch>
+          <v-switch
+            v-model="switchTrackPoints"
+            label="Ver track points"
+          ></v-switch>
+        </v-card-text>
+      </v-card>
+      <v-card class="pt-2 pr-0 pb-2 pl-2 mt-2 mr-0 mb-2 ml-2 fill-height">
+        <v-card-title>Recursos</v-card-title>
+        <v-card-subtitle>
+          Filtre por recurso, selecione los que desea visualizar.
+        </v-card-subtitle>
+        <v-card-text>
+          <v-virtual-scroll
+            :bench="benched"
+            :items="items"
+            height="260"
+            item-height="64"
+          >
+            <template v-slot:default="{ item }">
+              <v-list-item :key="item">
+                <v-list-item-content
+                  class="d-flex justify-space-between pb-0 mb-0"
+                >
+                  Name Lastname
+                  <v-checkbox v-model="checkbox" class="pa-0 ma-0"></v-checkbox>
+                </v-list-item-content>
+              </v-list-item>
+              <v-divider></v-divider>
+            </template>
+          </v-virtual-scroll>
+        </v-card-text>
+      </v-card>
     </v-col>
-    <v-col class="col-sm-9 col-md-8 col-lg-10">
+    <v-col class="col-sm-7 col-md-8 col-lg-9 col-xl-10 pt-5 pb-0 mt-5 pb-0">
       <gmap-map
         class="map"
         :zoom="15"
@@ -60,6 +78,9 @@ export default {
     return {
       centerLatitude: null,
       centerLongitude: null,
+      switchMapPoints: false,
+      switchTrackPoints: false,
+      checkbox: false,
       style: [
         {
           elementType: "geometry",
@@ -245,7 +266,8 @@ export default {
             }
           ]
         }
-      ]
+      ],
+      benched: 0
     };
   },
   created() {
@@ -266,6 +288,14 @@ export default {
         this.errorStr = err.message;
       }
     );
+  },
+  computed: {
+    items() {
+      return Array.from({ length: this.length }, (k, v) => v + 1);
+    },
+    length() {
+      return 15;
+    }
   }
 };
 </script>
