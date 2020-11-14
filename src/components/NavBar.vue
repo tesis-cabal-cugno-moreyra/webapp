@@ -13,7 +13,7 @@
       </v-layout>
       <v-divider></v-divider>
 
-      <v-list-item link v-on:click="goHome">
+      <v-list-item link v-on:click="goIncidentsView">
         <v-list-item-icon>
           <v-icon color="grey darken-1">mdi-home</v-icon>
         </v-list-item-icon>
@@ -128,8 +128,8 @@ export default {
     openLogoutModal: function() {
       this.$emit("open-logout-modal");
     },
-    goHome() {
-      this.$router.push({ name: "Home" });
+    goIncidentsView() {
+      this.$router.push({ name: "incidentsView" });
     },
     goDomainAccessCode() {
       this.$router.push({ name: "DomainAccessCode" });

@@ -5,7 +5,7 @@
         <v-row align="center" justify="center">
           <v-container text-center v-if="this.domainAccessCode !== null">
             <h1 style="font-size: 102px">{{ this.domainAccessCode }}</h1>
-            <v-btn v-on:click="goHome" class="ma-5 pa-5"
+            <v-btn v-on:click="goIncidentView" class="ma-5 pa-5"
               >Ir a la página principal</v-btn
             >
             <v-btn v-on:click="generateNewDomainAccessCode" class="ma-5 pa-5"
@@ -14,7 +14,7 @@
           </v-container>
           <v-container text-center v-else>
             <h1>El código de acceso no está disponible.</h1>
-            <v-btn v-on:click="goHome">Ir a la página principal</v-btn>
+            <v-btn v-on:click="goIncidentView">Ir a la página principal</v-btn>
           </v-container>
         </v-row>
       </v-layout>
@@ -42,8 +42,8 @@ export default {
       );
   },
   methods: {
-    goHome() {
-      this.$router.push({ name: "Home" });
+    goIncidentView() {
+      this.$router.push({ name: "incidentsView" });
     },
     async generateNewDomainAccessCode() {
       await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");

@@ -158,9 +158,7 @@ export default {
       autoCompleteTypeSupervisor: "",
       idSupervisor: "",
       dialogChangeStatus: false,
-      supervisorTable: true,
       loadingTable: false,
-      isComponentEnable: false,
       isUserActiveFilter: false,
       page: 1,
       numberOfPage: 1,
@@ -187,7 +185,7 @@ export default {
         },
         {
           text: "Cambiar el estado",
-          value: "actions", //--'user.is_active',
+          value: "actions",
           sortable: false
         }
       ],
@@ -204,7 +202,6 @@ export default {
     }
   },
   methods: {
-    // Supervisor methods
     async serchSupervisor() {
       await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
       this.loadingTable = true;
