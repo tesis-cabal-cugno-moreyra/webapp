@@ -38,7 +38,7 @@ export default {
   },
   methods: {
     goIncidentView() {
-      this.$router.push({ name: "incidentsView" });
+      this.$router.push({ name: "IncidentsView" });
     }
   }
 };
