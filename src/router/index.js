@@ -1,6 +1,5 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import Home from "../views/Home.vue";
 import DomainInformation from "../components/DomainInformation.vue";
 import Login from "../views/Login.vue";
 import Error from "../views/Error.vue";
@@ -10,6 +9,7 @@ import authServices from "@/services/authServices";
 import SupervisorManager from "@/views/SupervisorManager";
 import ResourceManager from "@/views/ResourceManager";
 import AdminManager from "@/views/AdminManager";
+import incidentsView from "@/views/incidentsView";
 import IncidentDetails from "@/components/IncidentDetails";
 import IncidentMap from "@/views/IncidentMap";
 
@@ -21,9 +21,9 @@ const routes = [
     redirect: { name: "Error" }
   },
   {
-    path: "/",
-    name: "Home",
-    component: Home,
+    path: "/incidents-view",
+    name: "incidentsView",
+    component: incidentsView,
     meta: {
       requires_auth: true,
       is_admin: true,
@@ -193,7 +193,7 @@ router.beforeEach((to, from, next) => {
       next();
     } else {
       next({
-        name: "Home"
+        name: "incidentsView"
       });
     }
   } else {

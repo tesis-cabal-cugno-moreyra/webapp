@@ -927,7 +927,7 @@ export default {
           this.messaggeSnackbar = "Creación del dominio exitosa!";
           this.snackbar = true;
           setTimeout(() => {
-            this.$router.push({ name: "Home" });
+            this.$router.push({ name: "incidentsView" });
           }, this.timeout);
         })
         .catch(async () => {

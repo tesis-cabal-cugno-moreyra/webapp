@@ -19,9 +19,15 @@
               </v-col>
             </v-row>
             <v-row align="center" justify="center">
-              <v-col cols="1" xs="12" sm="12" md="3">
-                <v-btn rounded color="primary" dark x-large class="ma-5 pa-5">
-                  Ver Incidentes
+              <v-col cols="2" sm="12" md="12">
+                <v-btn
+                  rounded
+                  color="primary"
+                  dark
+                  x-large
+                  class="ma-5 pa-5"
+                  v-on:click="seeIncident"
+                >
                 </v-btn>
               </v-col>
             </v-row>
@@ -72,6 +78,9 @@ export default {
     goToMap() {
       this.$router.push({ name: "IncidentMap" });
       // console.log("You must uncomment router push on Home.vue view!");
+    },
+    seeIncident: function() {
+      this.$router.push({ name: "incidentsView" });
     }
   }
 };
