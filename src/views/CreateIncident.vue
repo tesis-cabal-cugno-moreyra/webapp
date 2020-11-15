@@ -162,7 +162,7 @@ export default {
       this.place = place;
     },
     goIncidentView() {
-      this.$router.push({ name: "incidentsView" });
+      this.$router.push({ name: "IncidentsView" });
     },
     inputsFilled() {
       /* Try to find at least one input empty. */
@@ -226,7 +226,7 @@ export default {
     },
     closeModal() {
       this.showIncidentResourceList = false;
-      this.$router.push({ name: "incidentsView" });
+      this.$router.push({ name: "IncidentsView" });
     }
   },
   computed: {

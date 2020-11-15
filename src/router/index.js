@@ -9,7 +9,7 @@ import authServices from "@/services/authServices";
 import SupervisorManager from "@/views/SupervisorManager";
 import ResourceManager from "@/views/ResourceManager";
 import AdminManager from "@/views/AdminManager";
-import incidentsView from "@/views/incidentsView";
+import IncidentsView from "@/views/IncidentsView";
 import IncidentDetails from "@/components/IncidentDetails";
 
 Vue.use(VueRouter);
@@ -20,9 +20,9 @@ const routes = [
     redirect: { name: "Error" }
   },
   {
-    path: "/incidents-view",
-    name: "incidentsView",
-    component: incidentsView,
+    path: "/",
+    name: "IncidentsView",
+    component: IncidentsView,
     meta: {
       requires_auth: true,
       is_admin: true,
@@ -182,7 +182,7 @@ router.beforeEach((to, from, next) => {
       next();
     } else {
       next({
-        name: "incidentsView"
+        name: "IncidentsView"
       });
     }
   } else {

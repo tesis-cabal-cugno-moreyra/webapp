@@ -266,7 +266,7 @@ export default {
       };
       const userState = this.isUserActiveFilter ? "desactivado" : "activado";
       await this.$store
-        .dispatch("domainConfig/postChangeStatus", userInfo)
+        .dispatch("domainConfig/postChangeStatusUser", userInfo)
         .then(async () => {
           this.searchAdmin();
           this.$store.commit("uiParams/dispatchAlert", {

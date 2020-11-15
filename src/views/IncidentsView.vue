@@ -1,17 +1,17 @@
 <template>
   <v-app class="pa-md-2 mx-lg-auto">
     <v-container fill-height fill-width text-center>
-      <v-layout align="center" justify="center">
+      <v-layout justify="center">
         <v-card>
           <v-card-title :class="['pa-3', 'mt-5', 'black_selected']">
-            <v-col cols="8">
+            <v-col cols="6">
               {{ `${"Incidentes " + incidentStatusSelected + "s"}` }}
             </v-col>
             <v-btn
               color="primary"
               dark
               x-large
-              class="mb-2 pa-5"
+              class="mb-2 pa-5  mx-auto"
               v-on:click="createIncident"
             >
               Crear Incidente
@@ -94,7 +94,7 @@
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
-                <v-dialog v-model="dialogChangeStatus" max-width="515px">
+                <v-dialog v-model="dialogChangeVisibility" max-width="515px">
                   <v-card>
                     <v-card-title class="headline"
                       >¿Desea cambiar la visibilidad del
@@ -112,8 +112,40 @@
                       <v-btn
                         color="primary"
                         outlined
-                        @click="dialogChangeStatus = false"
+                        @click="dialogChangeVisibility = false"
                         >Cancelar</v-btn
+                      >
+                      <v-spacer></v-spacer>
+                    </v-card-actions>
+                  </v-card>
+                </v-dialog>
+                <v-dialog v-model="dialogChangeStatus" max-width="610px">
+                  <v-card>
+                    <v-card-title
+                      class="d-flex align-center justify-center pa-4 mx-auto"
+                      >¿Desea cambiar el estado del incidente?</v-card-title
+                    >
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn
+                        color="success"
+                        outlined
+                        @click="changeStatusIncident('finalize')"
+                        :class="['mr-5']"
+                        >Finalizar incidente</v-btn
+                      >
+                      <v-btn
+                        color="#FFB91F"
+                        outlined
+                        @click="changeStatusIncident('cancel')"
+                        :class="['mr-5']"
+                        >Cancelar incidente</v-btn
+                      >
+                      <v-btn
+                        color="primary"
+                        outlined
+                        @click="dialogChangeStatus = false"
+                        >Cancelar accion</v-btn
                       >
                       <v-spacer></v-spacer>
                     </v-card-actions>
@@ -144,7 +176,7 @@
                       v-on="on"
                       small
                       color="pink"
-                      @click="funcionParaElEmi(item)"
+                      @click="functionParaElEmi(item)"
                       :class="['mr-2']"
                     >
                       mdi-google-maps
@@ -160,13 +192,32 @@
                       v-on="on"
                       small
                       color="blue"
-                      @click="openDialogChangeState(item)"
+                      @click="openDialogChangeVisibility(item)"
                       :class="['mr-2']"
                     >
                       mdi-pencil-circle-outline
                     </v-icon>
                   </template>
                   <span>Cambiar Visibilidad del incidente</span>
+                </v-tooltip>
+
+                <v-tooltip bottom>
+                  <template
+                    v-slot:activator="{ on, attrs }"
+                    v-if="incidentStatusSelected === 'Iniciado'"
+                  >
+                    <v-icon
+                      v-bind="attrs"
+                      v-on="on"
+                      small
+                      color="#68D4CE"
+                      @click="openDialogChangeStatus(item)"
+                      :class="['mr-2']"
+                    >
+                      mdi-ballot-recount
+                    </v-icon>
+                  </template>
+                  <span>Cambiar estado del incidente</span>
                 </v-tooltip>
               </template>
             </v-data-table>
@@ -185,9 +236,10 @@
 
 <script>
 import { mapGetters } from "vuex";
+
 export default {
-  name: "incidentsView",
-  data() {
+  name: "IncidentsView",
+  data: function() {
     return {
       incidentVisibilitySelected: "Sin asistencia externa",
       incidentVisibility: ["Con asistencia externa", "Sin asistencia externa"],
@@ -234,26 +286,20 @@ export default {
         }
       ],
       incidentSelected: [],
+      dialogChangeVisibility: false,
       dialogChangeStatus: false,
       dialogEditResource: false
     };
   },
-  computed: {
-    ...mapGetters({
-      domainConfig: "domainConfig/domainConfig",
-      incidentConfig: "domainConfig/incidentConfig"
-    })
-  },
-  created() {
-    this.createtypeIncidentTypeList();
-    this.searchIncident();
+  async created() {
+    await this.searchIncident();
+    await this.createTypeIncidentTypeList();
   },
   watch: {
     page() {
       this.searchIncident();
     }
   },
-
   methods: {
     createIncident: function() {
       this.$router.push({ name: "CreateIncident" });
@@ -274,7 +320,7 @@ export default {
       });
       this.userIncidentData = incidentEnglish;
     },
-    createtypeIncidentTypeList() {
+    createTypeIncidentTypeList() {
       this.incidentConfig.forEach(incident => {
         incident.incidentTypes.forEach(typeIncident => {
           this.typeIncidentTypeList.push(
@@ -329,7 +375,7 @@ export default {
       }
 
       await this.$store
-        .dispatch("domainConfig/getIncident", searchInfo)
+        .dispatch("incident/getIncident", searchInfo)
         .then(response => {
           this.loadIncidentData(response);
           this.referenceSearch = searchInfo;
@@ -337,7 +383,7 @@ export default {
         .catch(async () => {
           if (searchInfo.page !== 1) {
             this.page = this.page - 1;
-            this.searchIncident();
+            await this.searchIncident();
           } else {
             this.$store.commit("uiParams/dispatchAlert", {
               text: "No hay resultados con esas especificaciones",
@@ -364,7 +410,7 @@ export default {
       this.numberOfPage = Math.ceil(completeData.data.count / itemsPerPage);
     },
     async changeStateSupport() {
-      this.dialogChangeStatus = false;
+      this.dialogChangeVisibility = false;
       this.loadingTable = true;
       await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
       let incidentInfo = {
@@ -375,11 +421,41 @@ export default {
             : "with-external-support"
       };
       await this.$store
-        .dispatch(
-          "domainConfig/postIncidentChangeExternalSupport",
-          incidentInfo
-        )
+        .dispatch("incident/postIncidentChangeExternalSupport", incidentInfo)
         .then(async () => {
+          await this.searchIncident();
+
+          this.$store.commit("uiParams/dispatchAlert", {
+            text: "Se ha cambiado exitosamente la visibilidad al incidente",
+            color: "success",
+            timeout: 4000
+          });
+        })
+        .catch(async () => {
+          this.$store.commit("uiParams/dispatchAlert", {
+            text: "No hay resultados con esas especificaciones",
+            color: "primary",
+            timeout: 4000
+          });
+
+          await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+        })
+        .finally(async () => {
+          await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+          this.loadingTable = false;
+        });
+    },
+    async changeStatusIncident(status) {
+      this.dialogChangeStatus = false;
+      this.loadingTable = true;
+      await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
+      let incidentInfo = {
+        incidentId: this.incidentSelected.id,
+        incidentChangeStatus: status
+      };
+      await this.$store
+        .dispatch("incident/postIncidentChangeStatus", incidentInfo)
+        .then(() => {
           this.searchIncident();
 
           this.$store.commit("uiParams/dispatchAlert", {
@@ -407,18 +483,28 @@ export default {
       this.incidentSelected = incidentSelected;
       this.dialogEditResource = true;
     },
-    openDialogChangeState(incidentSelected) {
+    openDialogChangeVisibility(incidentSelected) {
       this.incidentSelected = incidentSelected;
-      this.dialogChangeStatus = true;
+      this.dialogChangeVisibility = true;
     },
-    funcionParaElEmi(incidentSelectData) {
+    functionParaElEmi(incidentSelectData) {
       console.log(incidentSelectData);
       alert(
         "Emi el id de este incidente es: " +
           incidentSelectData.id +
           " para mas información mira el console log"
       );
+    },
+    openDialogChangeStatus(incidentSelected) {
+      this.incidentSelected = incidentSelected;
+      this.dialogChangeStatus = true;
     }
+  },
+  computed: {
+    ...mapGetters({
+      domainConfig: "domainConfig/domainConfig",
+      incidentConfig: "domainConfig/incidentConfig"
+    })
   }
 };
 </script>

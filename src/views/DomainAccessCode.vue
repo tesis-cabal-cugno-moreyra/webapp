@@ -43,7 +43,7 @@ export default {
   },
   methods: {
     goIncidentView() {
-      this.$router.push({ name: "incidentsView" });
+      this.$router.push({ name: "IncidentsView" });
     },
     async generateNewDomainAccessCode() {
       await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
