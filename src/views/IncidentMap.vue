@@ -78,6 +78,7 @@
             :path="resource"
             :key="index"
             ref="polyline"
+            :options="{ strokeColor: '#999999' }"
           >
           </gmap-polyline>
         </div>
