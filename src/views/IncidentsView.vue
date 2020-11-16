@@ -3,7 +3,7 @@
     <v-container fill-height fill-width text-center>
       <v-layout align="center" justify="center">
         <v-card>
-          <v-card-title :class="['pa-3', 'mt-5', 'black_selected']">
+          <v-card-title class="pa-3  mt-5 black_selected">
             <v-col cols="8">
               {{ `${"Incidentes " + incidentStatusSelected + "s"}` }}
             </v-col>
@@ -144,7 +144,7 @@
                       v-on="on"
                       small
                       color="pink"
-                      @click="funcionParaElEmi(item)"
+                      @click="goToMap(item)"
                       :class="['mr-2']"
                     >
                       mdi-google-maps
@@ -186,7 +186,7 @@
 <script>
 import { mapGetters } from "vuex";
 export default {
-  name: "incidentsView",
+  name: "IncidentsView",
   data() {
     return {
       incidentVisibilitySelected: "Sin asistencia externa",
@@ -411,13 +411,9 @@ export default {
       this.incidentSelected = incidentSelected;
       this.dialogChangeStatus = true;
     },
-    funcionParaElEmi(incidentSelectData) {
-      console.log(incidentSelectData);
-      alert(
-        "Emi el id de este incidente es: " +
-          incidentSelectData.id +
-          " para mas información mira el console log"
-      );
+    goToMap(incident) {
+      console.log(incident.id);
+      this.$router.push({ name: "IncidentMap", params: { id: incident.id } });
     }
   }
 };

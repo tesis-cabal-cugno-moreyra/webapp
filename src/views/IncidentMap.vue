@@ -122,6 +122,7 @@ export default {
   name: "IncidentMap",
   data() {
     return {
+      id: null,
       centerLatitude: null,
       centerLongitude: null,
       switchMapPoints: false,
@@ -372,6 +373,9 @@ export default {
     };
   },
   created() {
+    if (this.$route.params.id) {
+      this.id = this.$route.params.id;
+    }
     if (!("geolocation" in navigator)) {
       this.errorStr = "Geolocation is not available.";
       return;

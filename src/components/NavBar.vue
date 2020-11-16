@@ -129,7 +129,7 @@ export default {
       this.$emit("open-logout-modal");
     },
     goIncidentsView() {
-      this.$router.push({ name: "incidentsView" });
+      this.$router.push({ name: "IncidentsView" });
     },
     goDomainAccessCode() {
       this.$router.push({ name: "DomainAccessCode" });
