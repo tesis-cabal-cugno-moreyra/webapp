@@ -9,7 +9,7 @@ import authServices from "@/services/authServices";
 import SupervisorManager from "@/views/SupervisorManager";
 import ResourceManager from "@/views/ResourceManager";
 import AdminManager from "@/views/AdminManager";
-import incidentsView from "@/views/incidentsView";
+import IncidentsView from "@/views/IncidentsView";
 import IncidentDetails from "@/components/IncidentDetails";
 import IncidentMap from "@/views/IncidentMap";
 
@@ -19,16 +19,6 @@ const routes = [
   {
     path: "*",
     redirect: { name: "Error" }
-  },
-  {
-    path: "/incidents-view",
-    name: "incidentsView",
-    component: incidentsView,
-    meta: {
-      requires_auth: true,
-      is_admin: true,
-      is_supervisor: true
-    }
   },
   {
     path: "/login",
@@ -101,9 +91,19 @@ const routes = [
     }
   },
   {
-    path: "/incident-map",
+    path: "/incident-map/:id",
     name: "IncidentMap",
     component: IncidentMap,
+    meta: {
+      requires_auth: true,
+      is_admin: true,
+      is_supervisor: true
+    }
+  },
+  {
+    path: "/incidents-view",
+    name: "IncidentsView",
+    component: IncidentsView,
     meta: {
       requires_auth: true,
       is_admin: true,
@@ -147,6 +147,7 @@ const tokenCheck = (
     rolesCheck(to, next, isAdmin, isSupervisor, isResource);
   } else {
     //TODO: Renovar token, si no se puede mandar a vista de error! En la vista de error, decir que el token es invalido, y brindar boton a login. Vista de error toma título, texto del boton  y nombre de ruta a redireccionar ()
+    this.$store.dispatch("uiParams/hideNavBar");
     next({
       name: "Login"
     });
