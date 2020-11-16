@@ -1,5 +1,5 @@
 <template>
-  <v-main>
+  <v-main v-show="isComponentEnabled">
     <v-form v-model="valid" ref="incidentDetailsForm">
       <v-card>
         <v-dialog v-model="isComponentEnabled" width="600" persistent dark>
@@ -15,12 +15,14 @@
             <v-btn
               :class="['mb-2', 'mr-1', 'primary', 'float-right']"
               @click="send"
+              :loading="incidentDetailsLoading"
             >
               Continuar
             </v-btn>
             <v-btn
               :class="['pa-0', 'mb-2', 'mr-4', 'primary', 'float-right']"
-              @click="isComponentEnabled = false"
+              @click="closeModal"
+              :loading="incidentDetailsLoading"
             >
               Cerrar
             </v-btn>
@@ -41,42 +43,51 @@ export default {
   name: "IncidentDetails",
   components: { VJsf },
   props: {
-    incidentAbstraction: {
-      type: String,
-      default: "string"
+    incidentData: {
+      type: Object
     },
-    incidentType: {
-      type: String,
-      default: "string"
+    isComponentEnabled: {
+      type: Boolean,
+      default: false
     }
   },
   data: () => ({
-    isComponentEnabled: true,
     valid: true,
     formData: {},
-    schema: {}
+    incidentDetailsLoading: false
   }),
-  async mounted() {
-    const payload = {
-      incidentAbstraction: this.incidentAbstraction,
-      incidentType: this.incidentType
-    };
-    const incidentTypeData = await this.$store.dispatch(
-      "domainConfig/getIncidentTypeFromLocalDomainConfig",
-      payload
-    );
-    if (!incidentTypeData.detailsSchema) {
-      this.$store.commit("uiParams/dispatchAlert", {
-        text:
-          "Error al cargar la estructura de datos relacionada al formulario",
-        color: "primary",
-        timeout: 5000
-      });
+  computed: {
+    schema() {
+      if (!this.incidentData) {
+        return {};
+      } else if (!this.incidentData.incident_type) {
+        return {};
+      } else if (!this.incidentData.incident_type.details_schema) {
+        return {};
+      } else {
+        return this.incidentData.incident_type.details_schema;
+      }
     }
-    this.schema = incidentTypeData.detailsSchema;
   },
   methods: {
+    closeModal() {
+      this.$emit("incidentDetailsClosed");
+    },
     async send() {
+      if (!this.incidentData) {
+        this.$store.commit("uiParams/dispatchAlert", {
+          text: "Incidente no referenciado",
+          color: "primary",
+          timeout: 5000
+        });
+      }
+      if (!this.incidentData.id) {
+        this.$store.commit("uiParams/dispatchAlert", {
+          text: "Incidente referenciado pero ID inexistente",
+          color: "primary",
+          timeout: 5000
+        });
+      }
       let formIsValid = this.$refs.incidentDetailsForm.validate();
       if (!formIsValid) {
         this.$store.commit("uiParams/dispatchAlert", {
@@ -88,27 +99,37 @@ export default {
         return;
       }
       const payload = {
-        incident_id: "", // Replace once workflow is defined. Maybe, this could be a prop?
         details: this.formData
       };
+      this.incidentDetailsLoading = true;
       await api
-        .post("api/v1/incidents/details/", payload) // Replace once emi has finished his issue
+        .post(`/api/v1/incidents/${this.incidentData.id}/details/`, payload) // Replace once emi has finished his issue
         .then(async () => {
           this.$store.commit("uiParams/dispatchAlert", {
             text: "Detalles del incidente cargados correctamente.",
             color: "success",
             timeout: 5000
           });
+          this.closeModal();
+          this.$emit("detailsLoadedSuccessfully");
         })
-        .catch(async response => {
-          if (response.data.incident_id) {
+        .catch(async error => {
+          if (!error.data) {
+            this.$store.commit("uiParams/dispatchAlert", {
+              text:
+                "Error al intentar enviar los datos del formulario! Por favor, intente mas tarde",
+              color: "primary",
+              timeout: 5000
+            });
+          }
+          if (error.data.incident_id) {
             this.$store.commit("uiParams/dispatchAlert", {
               text: "Incidente relacionado no existe!",
               color: "primary",
               timeout: 5000
             });
           }
-          if (response.data.details) {
+          if (error.data.details) {
             this.$store.commit("uiParams/dispatchAlert", {
               text:
                 "Validación de detalles falló, corrija los datos ingresados e intente nuevamente",
@@ -119,6 +140,8 @@ export default {
         })
         .finally(async () => {
           this.loadingProcessInfo = false;
+          this.formData = {};
+          this.incidentDetailsLoading = false;
         });
     }
   }
