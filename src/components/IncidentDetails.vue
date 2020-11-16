@@ -37,7 +37,6 @@
 import VJsf from "@koumoul/vjsf/lib/VJsf.js";
 import "@koumoul/vjsf/lib/VJsf.css";
 import "@koumoul/vjsf/lib/deps/third-party.js";
-import api from "@/services/api";
 
 export default {
   name: "IncidentDetails",
@@ -99,11 +98,13 @@ export default {
         return;
       }
       const payload = {
+        incidentId: this.incidentData.id,
         details: this.formData
       };
       this.incidentDetailsLoading = true;
-      await api
-        .post(`/api/v1/incidents/${this.incidentData.id}/details/`, payload) // Replace once emi has finished his issue
+
+      await this.$store
+        .dispatch("incident/postIncidentDetails", payload)
         .then(async () => {
           this.$store.commit("uiParams/dispatchAlert", {
             text: "Detalles del incidente cargados correctamente.",
