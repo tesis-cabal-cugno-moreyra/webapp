@@ -43,5 +43,39 @@ export default {
         return reject(e);
       }
     });
+  },
+  getIncidentResources(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlSearch = `/api/v1/incidents/${payload.incident_id}/resources/?page=${payload.page}`;
+        return resolve(await api.get(urlSearch));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  postResourceIncident(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlResourceIncident = `/api/v1/incidents/${payload.incidentId}/resources/${payload.resourceId}/`;
+        return resolve(await api.post(urlResourceIncident));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+
+  deleteResourceIncident(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlResourceIncident = `/api/v1/incidents/${payload.incidentId}/resources/${payload.resourceId}/`;
+        return resolve(await api.delete(urlResourceIncident));
+      } catch (e) {
+        return reject(e);
+      }
+    });
   }
 };

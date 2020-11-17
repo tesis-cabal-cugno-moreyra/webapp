@@ -3,13 +3,12 @@
     <v-container fill-height fill-width text-center>
       <v-layout justify="center">
         <v-card>
-          <v-card-title :class="['pa-3', 'mt-5', 'black_selected']">
+          <v-card-title :class="['pa-3', 'mt-5']">
             <v-col cols="6">
               {{ `${"Incidentes " + incidentStatusSelected + "s"}` }}
             </v-col>
             <v-btn
               color="primary"
-              dark
               x-large
               class="mb-2 pa-5  mx-auto"
               v-on:click="createIncident"
@@ -17,7 +16,7 @@
               Crear Incidente
             </v-btn>
           </v-card-title>
-          <v-card-title :class="['pa-2', 'black_selected']">
+          <v-card-title :class="['pa-2']">
             <v-row align="center" justify="center">
               <v-col cols="6">
                 <v-autocomplete
@@ -57,7 +56,7 @@
             </v-row>
           </v-card-title>
 
-          <v-card-text :class="[' black_selected', 'pa-1']">
+          <v-card-text :class="['pa-1']">
             <v-data-table
               :loading="loadingTable"
               loading-text="Cargando... Espere por favor"
@@ -94,6 +93,11 @@
                     </v-card-actions>
                   </v-card>
                 </v-dialog>
+
+                <IncidentResourceManager
+                  v-if="showIncidentResourceList === true"
+                ></IncidentResourceManager>
+
                 <v-dialog v-model="dialogChangeVisibility" max-width="515px">
                   <v-card>
                     <v-card-title class="headline"
@@ -236,11 +240,14 @@
 
 <script>
 import { mapGetters } from "vuex";
+import IncidentResourceManager from "@/components/IncidentResourceManager";
 
 export default {
   name: "IncidentsView",
+  components: { IncidentResourceManager },
   data: function() {
     return {
+      showIncidentResourceList: false,
       incidentVisibilitySelected: "Sin asistencia externa",
       incidentVisibility: ["Con asistencia externa", "Sin asistencia externa"],
       incidentStatusSelected: "Iniciado",
@@ -479,9 +486,20 @@ export default {
         });
     },
 
-    openDialogEditResource(incidentSelected) {
+    async openDialogEditResource(incidentSelected) {
       this.incidentSelected = incidentSelected;
-      this.dialogEditResource = true;
+      this.$store.commit("incident/dispatchResourceSelected", {
+        state: true,
+        incidentId: incidentSelected.id
+      });
+      this.showIncidentResourceList = true;
+
+      //  this.dialogEditResource = true;*/
+    },
+
+    closeModal() {
+      // this.showIncidentResourceList = false;
+      this.$router.push({ name: "IncidentsView" });
     },
     openDialogChangeVisibility(incidentSelected) {
       this.incidentSelected = incidentSelected;

@@ -88,17 +88,6 @@ export default {
       }
     });
   },
-  postResourceIncident(context, payload) {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-      try {
-        let urlResourceIncident = `/api/v1/incidents/${payload.incidentId}/resources/${payload.incidentTypeId}/`;
-        return resolve(await api.post(urlResourceIncident));
-      } catch (e) {
-        return reject(e);
-      }
-    });
-  },
   getResource(context, payload) {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
