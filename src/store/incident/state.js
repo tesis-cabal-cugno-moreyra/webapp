@@ -1,6 +1,7 @@
 export default {
   resourceSelectedInfo: {
     state: false,
-    incidentId: null
+    incidentId: null,
+    statusSelected: ""
   }
 };

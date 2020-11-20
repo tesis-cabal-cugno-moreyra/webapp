@@ -68,32 +68,6 @@
               hide-default-footer
             >
               <template v-slot:top>
-                <v-dialog v-model="dialogEditResource" max-width="500px">
-                  <v-card>
-                    <v-card-title class="headline"
-                      >aqui iria una tabla de recursos si tan solo tuviera
-                      api!</v-card-title
-                    >
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn
-                        color="primary"
-                        outlined
-                        @click="dialogEditResource = false"
-                        :class="['mr-5']"
-                        >Acepto</v-btn
-                      >
-                      <v-btn
-                        color="primary"
-                        outlined
-                        @click="dialogEditResource = false"
-                        >Cancelar</v-btn
-                      >
-                      <v-spacer></v-spacer>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-
                 <IncidentResourceManager
                   v-if="showIncidentResourceList === true"
                 ></IncidentResourceManager>
@@ -170,7 +144,15 @@
                       mdi-account-convert
                     </v-icon>
                   </template>
-                  <span>Editar usuario relacionados</span>
+                  <span>
+                    {{
+                      `${
+                        incidentStatus === "Iniciado"
+                          ? "Editar usuario relacionados"
+                          : "Ver usuarios relacionados"
+                      }`
+                    }}
+                  </span>
                 </v-tooltip>
 
                 <v-tooltip bottom>
@@ -490,7 +472,8 @@ export default {
       this.incidentSelected = incidentSelected;
       this.$store.commit("incident/dispatchResourceSelected", {
         state: true,
-        incidentId: incidentSelected.id
+        incidentId: incidentSelected.id,
+        statusSelected: this.incidentStatusSelected
       });
       this.showIncidentResourceList = true;
 

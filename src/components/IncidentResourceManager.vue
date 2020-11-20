@@ -50,7 +50,7 @@
             :items="resourceData"
             :single-select="singleSelect"
             item-key="id"
-            show-select
+            :show-select="showSelect"
             :class="['pb-1']"
             hide-default-footer
           >
@@ -68,12 +68,16 @@
           <v-btn
             :loading="loadingProcessInfo"
             :class="['mb-2', 'mr-1', 'primary', 'float-right']"
-            v-on:click="saveAndClose()"
+            v-on:click="
+              resourceSelectedInfo.statusSelected === 'Iniciado'
+                ? saveAndClose()
+                : closeModal()
+            "
             >Continuar</v-btn
           >
           <v-btn
             :class="['pa-0', 'mb-2', 'mr-4', 'primary', 'float-right']"
-            @click="closeModal"
+            @click="closeModal()"
             >Cerrar</v-btn
           >
         </v-card-actions>
@@ -95,6 +99,7 @@ export default {
         user__is_active: true,
         page: 1
       },
+      showSelect: true,
       isUpdate: false,
       loadingTable: false,
       loadingProcessInfo: false,
@@ -126,29 +131,101 @@ export default {
     };
   },
   created() {
-    if (this.resourceSelectedInfo.state) {
+    if (
+      this.resourceSelectedInfo.state &&
+      this.resourceSelectedInfo.statusSelected === "Iniciado"
+    ) {
       this.searchResourceMarked();
+    } else if (
+      this.resourceSelectedInfo.state &&
+      this.resourceSelectedInfo.statusSelected !== "Iniciado"
+    ) {
+      this.showSelect = false;
+      this.searchIncidentResources();
     }
   },
   updated() {
-    if (this.resourceSelectedInfo.state && !this.isUpdate) {
+    if (
+      this.resourceSelectedInfo.state &&
+      !this.isUpdate &&
+      this.resourceSelectedInfo.statusSelected === "Iniciado"
+    ) {
+      this.showSelect = true;
       this.searchResourceMarked();
+    } else if (
+      this.resourceSelectedInfo.state &&
+      !this.isUpdate &&
+      this.resourceSelectedInfo.statusSelected !== "Iniciado"
+    ) {
+      this.showSelect = false;
+      this.searchIncidentResources();
     }
   },
   watch: {
     page() {
-      this.processInfo();
-      this.selected = [];
-      this.resourceData = [];
-      this.markedResource = [];
-      this.isUpdate = false;
-      this.numberOfCycles = 1;
-      this.pageMarked = 1;
-      this.countCycles = 2;
-      this.searchResourceMarked();
+      if (this.resourceSelectedInfo.statusSelected === "Iniciado") {
+        this.processInfo();
+        this.selected = [];
+        this.resourceData = [];
+        this.markedResource = [];
+        this.isUpdate = false;
+        this.numberOfCycles = 1;
+        this.pageMarked = 1;
+        this.countCycles = 2;
+        this.searchResourceMarked();
+      } else {
+        this.searchIncidentResources();
+      }
     }
   },
   methods: {
+    async searchIncidentResources() {
+      this.loadingTable = true;
+      this.isUpdate = true;
+      let resourceTemporary = [];
+      let incidentInfo = {
+        incident_id: this.resourceSelectedInfo.incidentId,
+        page: this.page
+      };
+      await this.$store
+        .dispatch("incident/getIncidentResources", incidentInfo)
+        .then(response => {
+          response.data.results.forEach(async Data => {
+            let idResource = Data.resource.id;
+
+            if (idResource !== undefined) {
+              await this.$store
+                .dispatch("domainConfig/getResourceById", idResource)
+                .then(response => {
+                  resourceTemporary.push(response.data);
+                })
+                .catch(async () => {
+                  this.$store.commit("uiParams/dispatchAlert", {
+                    text:
+                      "Hubo problemas en la busqueda de un recurso seleccionado",
+                    color: "primary",
+                    timeout: 4000
+                  });
+                })
+                .finally(async () => {});
+            }
+          });
+          this.numberOfPage = Math.ceil(
+            response.data.count / process.env.VUE_APP_ITEMS_PER_PAGE
+          );
+        })
+        .catch(async () => {
+          this.$store.commit("uiParams/dispatchAlert", {
+            text: "Hubo problemas en la busqueda de recursos seleccionados",
+            color: "primary",
+            timeout: 4000
+          });
+        })
+        .finally(async () => {
+          this.resourceData = resourceTemporary;
+          this.loadingTable = false;
+        });
+    },
     saveAndClose() {
       this.processInfo();
       this.closeModal();
@@ -240,7 +317,7 @@ export default {
         })
         .catch(async () => {
           this.$store.commit("uiParams/dispatchAlert", {
-            text: "No hay resultados con esas especificaciones 4",
+            text: "No hay resultados con esas especificaciones",
             color: "primary",
             timeout: 3000
           });
