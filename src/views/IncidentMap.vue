@@ -73,14 +73,16 @@
           </gmap-marker>
         </div>
         <div v-if="switchTrackPoints">
-          <gmap-polyline
-            v-for="(resource, index) in resources"
-            :path="resource"
-            :key="index"
-            ref="polyline"
-            :options="{ strokeColor: '#999999' }"
-          >
-          </gmap-polyline>
+          <div v-for="(resource, index) in resources" :key="index">
+            <div v-if="showResource">
+              <gmap-polyline
+                :path="resource"
+                ref="polyline"
+                :options="{ strokeColor: '#999999' }"
+              >
+              </gmap-polyline>
+            </div>
+          </div>
         </div>
         <div v-if="switchCurrentPosition">
           <gmap-info-window
@@ -376,6 +378,8 @@ export default {
     if (this.$route.params.id) {
       this.id = this.$route.params.id;
     }
+    // TODO: Call get incident endpoint. We need resources (with IDs) for scroll checkboxes
+    // TODO: Call get incident trak-points endpoint, using incident id.
     if (!("geolocation" in navigator)) {
       this.errorStr = "Geolocation is not available.";
       return;
@@ -434,6 +438,10 @@ export default {
         this.infoWinOpenCurrentPosition = true;
         this.currentMidxCurrentPosition = idx;
       }
+    },
+    showResource: function() {
+      // TODO: This must search if this resourse wants to be showed. This must recieve resource ID, WIP.
+      return true;
     }
   }
 };
