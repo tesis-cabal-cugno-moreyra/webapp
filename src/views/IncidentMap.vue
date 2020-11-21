@@ -57,28 +57,37 @@
         :center="{ lat: centerLatitude, lng: centerLongitude }"
       >
         <div v-if="switchMapPoints">
-          <gmap-info-window
-            :options="infoOptionsMapPoint"
-            :position="infoWindowPosMapPoint"
-            :opened="infoWinOpenMapPoint"
-          >
-          </gmap-info-window>
-          <gmap-marker
-            v-for="(marker, index) in markersMapPoint"
-            :position="marker.position"
+          <div
+            v-for="(mapPoints, index) in parsedPoints.mapPoints"
             :key="index"
-            :clickable="true"
-            @mouseover="toggleInfoWindowMapPoint(marker, index)"
-            @mouseout="infoWinOpenMapPoint = false"
-            :icon="{ url: require('@/assets/pins/map-pin.png') }"
           >
-          </gmap-marker>
+            <div v-if="showResource">
+              <gmap-info-window
+                :options="infoOptionsMapPoint"
+                :position="infoWindowPosMapPoint"
+                :opened="infoWinOpenMapPoint"
+              >
+              </gmap-info-window>
+              <gmap-marker
+                :position="mapPoints.position"
+                :key="index"
+                :clickable="true"
+                @mouseover="toggleInfoWindowMapPoint(mapPoints, index)"
+                @mouseout="infoWinOpenMapPoint = false"
+                :icon="{ url: require('@/assets/pins/map-pin.png') }"
+              >
+              </gmap-marker>
+            </div>
+          </div>
         </div>
         <div v-if="switchTrackPoints">
-          <div v-for="(resource, index) in resources" :key="index">
+          <div
+            v-for="(trackPoints, index) in parsedPoints.trackPoints"
+            :key="index"
+          >
             <div v-if="showResource">
               <gmap-polyline
-                :path="resource"
+                :path="trackPoints.route"
                 ref="polyline"
                 :options="{ strokeColor: '#999999' }"
               >
@@ -87,33 +96,42 @@
           </div>
         </div>
         <div v-if="switchCurrentPosition">
-          <gmap-info-window
-            :options="infoOptionsCurrentPosition"
-            :position="infoWindowPosCurrentPosition"
-            :opened="infoWinOpenCurrentPosition"
+          <div
+            v-for="(currentPositionPoint,
+            index) in parsedPoints.currentPositionPoint"
+            :key="index"
           >
-          </gmap-info-window>
-          <div v-for="(marker, index) in markersCurrentPosition" :key="index">
-            <gmap-marker
-              v-if="marker.resource === 'person'"
-              :position="marker.position"
-              :key="index"
-              :clickable="true"
-              @mouseover="toggleInfoWindowCurrentPosition(marker, index)"
-              @mouseout="infoWinOpenCurrentPosition = false"
-              :icon="{ url: require('@/assets/pins/person-marker.png') }"
-            >
-            </gmap-marker>
-            <gmap-marker
-              v-if="marker.resource === 'vehicle'"
-              :position="marker.position"
-              :key="index"
-              :clickable="true"
-              @mouseover="toggleInfoWindowCurrentPosition(marker, index)"
-              @mouseout="infoWinOpenCurrentPosition = false"
-              :icon="{ url: require('@/assets/pins/car-marker.png') }"
-            >
-            </gmap-marker>
+            <div v-if="showResource">
+              <gmap-info-window
+                :options="infoOptionsCurrentPosition"
+                :position="infoWindowPosCurrentPosition"
+                :opened="infoWinOpenCurrentPosition"
+              >
+              </gmap-info-window>
+
+              <gmap-marker
+                v-if="currentPositionPoint.resourceType === 'person'"
+                :position="currentPositionPoint.position"
+                :key="index"
+                :clickable="true"
+                @mouseover="
+                  toggleInfoWindowCurrentPosition(currentPositionPoint, index)
+                "
+                @mouseout="infoWinOpenCurrentPosition = false"
+                :icon="{ url: require('@/assets/pins/person-marker.png') }"
+              >
+              </gmap-marker>
+              <gmap-marker
+                v-if="currentPositionPoint.resourceType === 'vehicle'"
+                :position="currentPositionPoint.position"
+                :key="index"
+                :clickable="true"
+                @mouseover="toggleInfoWindowCurrentPosition(marker, index)"
+                @mouseout="infoWinOpenCurrentPosition = false"
+                :icon="{ url: require('@/assets/pins/car-marker.png') }"
+              >
+              </gmap-marker>
+            </div>
           </div>
         </div>
       </gmap-map>
@@ -330,13 +348,13 @@ export default {
           {
             resourceName: "Name Lastname 1",
             resourceId: 1,
-            position: { lat: -31.429363, lng: -62.105353 },
+            position: { lat: -31.430845, lng: -62.103329 },
             description: "Bla bla bla 1"
           },
           {
             resourceName: "Name Lastname 2",
             resourceId: 2,
-            position: { lat: -31.429363, lng: -62.105353 },
+            position: { lat: -31.4293, lng: -62.105353 },
             description: "Bla bla bla 2"
           },
           {
@@ -370,14 +388,14 @@ export default {
           {
             resourceName: "Name Lastname 1",
             resourceId: 1,
-            position: { lat: -31.429363, lng: -62.105353 },
-            description: "Bla bla bla 1"
+            resourceType: "vehicle",
+            position: { lat: -31.429363, lng: -62.105353 }
           },
           {
             resourceName: "Name Lastname 2",
             resourceId: 2,
-            position: { lat: -31.429363, lng: -62.105353 },
-            description: "Bla bla bla 2"
+            resourceType: "person",
+            position: { lat: -31.428031, lng: -62.0999 }
           }
         ]
       },
@@ -483,7 +501,9 @@ export default {
     toggleInfoWindowMapPoint: function(marker, idx) {
       this.infoWindowPosMapPoint = marker.position;
       this.infoOptionsMapPoint.content =
-        "<strong style='color: black !important'>" + marker.text + "</strong>";
+        "<strong style='color: black !important'>" +
+        marker.description +
+        "</strong>";
 
       //check if its the same marker that was selected if yes toggle
       if (this.currentMidxMapPoint === idx) {
@@ -499,7 +519,9 @@ export default {
     toggleInfoWindowCurrentPosition: function(marker, idx) {
       this.infoWindowPosCurrentPosition = marker.position;
       this.infoOptionsCurrentPosition.content =
-        "<strong style='color: black !important'>" + marker.text + "</strong>";
+        "<strong style='color: black !important'>" +
+        marker.resourceName +
+        "</strong>";
 
       //check if its the same marker that was selected if yes toggle
       if (this.currentMidxCurrentPosition === idx) {
