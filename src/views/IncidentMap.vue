@@ -52,7 +52,7 @@
     <v-col class="col-sm-7 col-md-8 col-lg-9 col-xl-10 pt-5 pb-0 mt-5 pb-0">
       <gmap-map
         class="map"
-        :zoom="15"
+        :zoom="14"
         :options="{ styles: style }"
         :center="{ lat: centerLatitude, lng: centerLongitude }"
       >
@@ -86,7 +86,7 @@
               <gmap-polyline
                 :path="trackPoint.route"
                 ref="polyline"
-                :options="{ strokeColor: '#999999' }"
+                :options="{ strokeColor: trackPoint.color }"
               >
               </gmap-polyline>
             </div>
@@ -149,7 +149,13 @@ export default {
       switchMapPoints: false,
       switchTrackPoints: false,
       switchCurrentPosition: true,
-      checkbox: false,
+      resourceListFilter: [
+        { name: "Name LastName 1", id: 1, show: true },
+        { name: "Name LastName 2", id: 2, show: false },
+        { name: "Name LastName 3", id: 3, show: false },
+        { name: "Name LastName 4", id: 4, show: true },
+        { name: "Name LastName 5", id: 5, show: false }
+      ],
       style: [
         {
           elementType: "geometry",
@@ -339,27 +345,15 @@ export default {
       parsedPoints: {
         mapPoints: [
           {
-            resourceName: "Name Lastname 1",
-            resourceId: 1,
-            position: { lat: -31.429363, lng: -62.105353 },
-            description: "Bla bla bla 1"
-          },
-          {
-            resourceName: "Name Lastname 1",
-            resourceId: 1,
-            position: { lat: -31.430845, lng: -62.103329 },
-            description: "Bla bla bla 1"
-          },
-          {
             resourceName: "Name Lastname 2",
             resourceId: 2,
-            position: { lat: -31.4293, lng: -62.105353 },
+            position: { lat: -31.42528, lng: -62.085035 },
             description: "Bla bla bla 2"
           },
           {
             resourceName: "Name Lastname 3",
             resourceId: 3,
-            position: { lat: -31.429363, lng: -62.105353 },
+            position: { lat: -31.425117, lng: -62.086124 },
             description: "Bla bla bla 3"
           }
         ],
@@ -367,19 +361,56 @@ export default {
           {
             resourceName: "Name Lastname 1",
             resourceId: 1,
+            color: "blue",
             route: [
-              { lat: -31.444926, lng: -62.081311 },
-              { lat: -31.430845, lng: -62.103329 },
-              { lat: -31.428031, lng: -62.0999 }
+              { lat: -31.425654, lng: -62.085296 },
+              { lat: -31.42580050120433, lng: -62.08465511181211 },
+              { lat: -31.426257644820797, lng: -62.082022772727186 },
+              { lat: -31.424790262364997, lng: -62.08060739451158 }
             ]
           },
           {
             resourceName: "Name Lastname 2",
             resourceId: 2,
+            color: "red",
             route: [
-              { lat: -31.444933, lng: -62.0813 },
-              { lat: -31.430398, lng: -62.1033 },
-              { lat: -31.429872, lng: -62.09999 }
+              { lat: -31.425581, lng: -62.085956 },
+              { lat: -31.42528, lng: -62.085035 },
+              { lat: -31.425654, lng: -62.085296 },
+              { lat: -31.425654, lng: -62.085296 }
+            ]
+          },
+          {
+            resourceName: "Name Lastname 3",
+            resourceId: 3,
+            color: "yellow",
+            route: [
+              { lat: -31.425082, lng: -62.085751 },
+              { lat: -31.425117, lng: -62.086124 },
+              { lat: -31.425654, lng: -62.085296 }
+            ]
+          },
+          {
+            resourceName: "Name Lastname 4",
+            resourceId: 4,
+            color: "green",
+            route: [
+              { lat: -31.425461874873964, lng: -62.08076612851433 },
+              { lat: -31.4237517932081, lng: -62.08058093883543 },
+              { lat: -31.423114031993038, lng: -62.083405081308435 },
+              { lat: -31.422814903555892, lng: -62.085772863629735 },
+              { lat: -31.423413159466918, lng: -62.08591836979892 },
+              { lat: -31.42453628997294, lng: -62.08608371771845 },
+              { lat: -31.424732, lng: -62.08566 }
+            ]
+          },
+          {
+            resourceName: "Name Lastname 5",
+            resourceId: 5,
+            color: "orange",
+            route: [
+              { lat: -31.425178, lng: -62.085526 },
+              { lat: -31.424732, lng: -62.08566 }
             ]
           }
         ],
@@ -388,48 +419,34 @@ export default {
             resourceName: "Name Lastname 1",
             resourceId: 1,
             resourceType: "vehicle",
-            position: { lat: -31.429363, lng: -62.105353 }
+            position: { lat: -31.425654, lng: -62.085296 }
           },
           {
             resourceName: "Name Lastname 2",
             resourceId: 2,
             resourceType: "person",
-            position: { lat: -31.428031, lng: -62.0999 }
+            position: { lat: -31.425581, lng: -62.085956 }
+          },
+          {
+            resourceName: "Name Lastname 3",
+            resourceId: 3,
+            resourceType: "person",
+            position: { lat: -31.425082, lng: -62.085751 }
+          },
+          {
+            resourceName: "Name Lastname 4",
+            resourceId: 4,
+            resourceType: "vehicle",
+            position: { lat: -31.424732, lng: -62.08566 }
+          },
+          {
+            resourceName: "Name Lastname 5",
+            resourceId: 5,
+            resourceType: "person",
+            position: { lat: -31.425178, lng: -62.085526 }
           }
         ]
       },
-      markersMapPoint: [
-        {
-          position: { lat: -31.429363, lng: -62.105353 },
-          text: "Bla bla bla Bla bla bla Bla bla bla Bla bla bla"
-        },
-        { position: { lat: -31.430845, lng: -62.103329 }, text: "Ble ble ble" }
-      ],
-      resources: [
-        [
-          { lat: -31.444926, lng: -62.081311 },
-          { lat: -31.430845, lng: -62.103329 },
-          { lat: -31.428031, lng: -62.0999 }
-        ],
-        [
-          { lat: -31.444933, lng: -62.0813 },
-          { lat: -31.430398, lng: -62.1033 },
-          { lat: -31.429872, lng: -62.09999 }
-        ]
-      ],
-      markersCurrentPosition: [
-        {
-          resource: "person",
-          position: { lat: -31.429872, lng: -62.09999 },
-          text: "Name Lastname"
-        },
-        {
-          resource: "vehicle",
-          position: { lat: -31.428031, lng: -62.0999 },
-          text: "Car 15"
-        }
-      ],
-      statusText: "",
       infoWindowPosMapPoint: null,
       infoWinOpenMapPoint: false,
       currentMidxMapPoint: null,
@@ -451,17 +468,7 @@ export default {
           width: 0,
           height: -35
         }
-      },
-      resourceListFilter: [
-        { name: "Name LastName 1", id: 1, show: true },
-        { name: "Name LastName 2", id: 2, show: false },
-        { name: "Name LastName 3", id: 3, show: false },
-        { name: "Name LastName 4", id: 4, show: true },
-        { name: "Name LastName 5", id: 5, show: false },
-        { name: "Name LastName 6", id: 6, show: false },
-        { name: "Name LastName 7", id: 7, show: true },
-        { name: "Name LastName 8", id: 8, show: true }
-      ]
+      }
     };
   },
   created() {
