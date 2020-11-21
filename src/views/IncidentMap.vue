@@ -27,18 +27,20 @@
         </v-card-subtitle>
         <v-card-text>
           <v-virtual-scroll
-            :bench="benched"
-            :items="items"
+            :items="resourceListFilter"
             height="260"
             item-height="64"
           >
             <template v-slot:default="{ item }">
-              <v-list-item :key="item">
+              <v-list-item :key="item.id">
                 <v-list-item-content
                   class="d-flex justify-space-between pb-0 mb-0"
                 >
-                  Name Lastname
-                  <v-checkbox v-model="checkbox" class="pa-0 ma-0"></v-checkbox>
+                  {{ item.name }}
+                  <v-checkbox
+                    v-model="item.show"
+                    class="pa-0 ma-0"
+                  ></v-checkbox>
                 </v-list-item-content>
               </v-list-item>
               <v-divider></v-divider>
@@ -317,7 +319,68 @@ export default {
           ]
         }
       ],
-      benched: 0,
+      parsedPoints: {
+        mapPoints: [
+          {
+            resourceName: "Name Lastname 1",
+            resourceId: 1,
+            position: { lat: -31.429363, lng: -62.105353 },
+            description: "Bla bla bla 1"
+          },
+          {
+            resourceName: "Name Lastname 1",
+            resourceId: 1,
+            position: { lat: -31.429363, lng: -62.105353 },
+            description: "Bla bla bla 1"
+          },
+          {
+            resourceName: "Name Lastname 2",
+            resourceId: 2,
+            position: { lat: -31.429363, lng: -62.105353 },
+            description: "Bla bla bla 2"
+          },
+          {
+            resourceName: "Name Lastname 3",
+            resourceId: 3,
+            position: { lat: -31.429363, lng: -62.105353 },
+            description: "Bla bla bla 3"
+          }
+        ],
+        trackPoints: [
+          {
+            resourceName: "Name Lastname 1",
+            resourceId: 1,
+            route: [
+              { lat: -31.444926, lng: -62.081311 },
+              { lat: -31.430845, lng: -62.103329 },
+              { lat: -31.428031, lng: -62.0999 }
+            ]
+          },
+          {
+            resourceName: "Name Lastname 2",
+            resourceId: 2,
+            route: [
+              { lat: -31.444933, lng: -62.0813 },
+              { lat: -31.430398, lng: -62.1033 },
+              { lat: -31.429872, lng: -62.09999 }
+            ]
+          }
+        ],
+        currentPositionPoint: [
+          {
+            resourceName: "Name Lastname 1",
+            resourceId: 1,
+            position: { lat: -31.429363, lng: -62.105353 },
+            description: "Bla bla bla 1"
+          },
+          {
+            resourceName: "Name Lastname 2",
+            resourceId: 2,
+            position: { lat: -31.429363, lng: -62.105353 },
+            description: "Bla bla bla 2"
+          }
+        ]
+      },
       markersMapPoint: [
         {
           position: { lat: -31.429363, lng: -62.105353 },
@@ -371,7 +434,17 @@ export default {
           width: 0,
           height: -35
         }
-      }
+      },
+      resourceListFilter: [
+        { name: "Name LastName 1", id: 1, show: true },
+        { name: "Name LastName 2", id: 2, show: false },
+        { name: "Name LastName 3", id: 3, show: false },
+        { name: "Name LastName 4", id: 4, show: true },
+        { name: "Name LastName 5", id: 5, show: false },
+        { name: "Name LastName 6", id: 6, show: false },
+        { name: "Name LastName 7", id: 7, show: true },
+        { name: "Name LastName 8", id: 8, show: true }
+      ]
     };
   },
   created() {
