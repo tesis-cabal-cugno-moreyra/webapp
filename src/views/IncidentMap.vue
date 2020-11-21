@@ -139,6 +139,8 @@
 </template>
 
 <script>
+import incidentPointsAdapter from "@/adapter/incidentPointsAdapter";
+
 export default {
   name: "IncidentMap",
   data() {
@@ -475,8 +477,231 @@ export default {
     if (this.$route.params.id) {
       this.id = this.$route.params.id;
     }
-    // TODO: Call get incident endpoint. We need resources (with IDs) for scroll checkboxes
-    // TODO: Call get incident trak-points endpoint, using incident id.
+    // TODO: GET /api/v1/incidents/{id}/
+    // let getIncidentResponse = {
+    //   id: 23,
+    //   domain_name: "DominioPersonalizado",
+    //   incident_type_name: "Capacitaicón",
+    //   external_assistance: "Without external support",
+    //   data_status: "Incomplete",
+    //   status: "Started",
+    //   location_as_string_reference: "",
+    //   location_point: {
+    //     type: "Point",
+    //     coordinates: [-31.42258864467819, -62.1098611960261]
+    //   },
+    //   reference: "",
+    //   created_at: "2020-10-25T21:52:33.993407Z",
+    //   updated_at: "2020-10-25T21:52:33.993452Z",
+    //   cancelled_at: null,
+    //   finalized_at: null
+    // };
+    // TODO: GET /api/v1/incidents/{indicent_id}/resources/
+    let getIncidentResourcesResponse = [
+      {
+        id: 74,
+        created_at: "2020-11-17T14:44:24+0000",
+        updated_at: "2020-11-17T14:44:24+0000",
+        incident: {
+          id: 23,
+          created_at: "2020-10-25T21:52:33+0000",
+          updated_at: "2020-10-25T21:52:33+0000",
+          external_assistance: "Without external support",
+          details: {},
+          status: "Started",
+          data_status: "Incomplete",
+          location_as_string_reference: "",
+          reference: "",
+          location_point: {
+            type: "Point",
+            coordinates: [-31.42258864467819, -62.1098611960261]
+          },
+          finalized_at: null,
+          cancelled_at: null,
+          domain_config: 1,
+          incident_type: 3
+        },
+        resource: {
+          id: 9,
+          user: "98fc6d81-30f1-4860-9a21-d9240f72e160",
+          type: 2,
+          domain: 1
+        }
+      },
+      {
+        id: 102,
+        created_at: "2020-11-21T19:14:28+0000",
+        updated_at: "2020-11-21T19:14:28+0000",
+        incident: {
+          id: 23,
+          created_at: "2020-10-25T21:52:33+0000",
+          updated_at: "2020-10-25T21:52:33+0000",
+          external_assistance: "Without external support",
+          details: {},
+          status: "Started",
+          data_status: "Incomplete",
+          location_as_string_reference: "",
+          reference: "",
+          location_point: {
+            type: "Point",
+            coordinates: [-31.42258864467819, -62.1098611960261]
+          },
+          finalized_at: null,
+          cancelled_at: null,
+          domain_config: 1,
+          incident_type: 3
+        },
+        resource: {
+          id: 2,
+          user: "a4c50701-1a2d-4960-be64-4966a88f8077",
+          type: 1,
+          domain: 1
+        }
+      },
+      {
+        id: 118,
+        created_at: "2020-11-21T19:27:51+0000",
+        updated_at: "2020-11-21T19:27:51+0000",
+        incident: {
+          id: 23,
+          created_at: "2020-10-25T21:52:33+0000",
+          updated_at: "2020-10-25T21:52:33+0000",
+          external_assistance: "Without external support",
+          details: {},
+          status: "Started",
+          data_status: "Incomplete",
+          location_as_string_reference: "",
+          reference: "",
+          location_point: {
+            type: "Point",
+            coordinates: [-31.42258864467819, -62.1098611960261]
+          },
+          finalized_at: null,
+          cancelled_at: null,
+          domain_config: 1,
+          incident_type: 3
+        },
+        resource: {
+          id: 11,
+          user: "f196f272-c272-4def-b149-6d0fac71ea14",
+          type: 1,
+          domain: 1
+        }
+      }
+    ];
+    // TODO: GET TrackPoints
+    let getIncidentTrackPointsResponse = [
+      {
+        location: {
+          type: "Point",
+          coordinates: [-31.425654, -62.085296]
+        },
+        collected_at: "2020-11-21T00:26:36+0000",
+        internal_type: "TrackPoint",
+        resource_id: 1
+      },
+      {
+        location: {
+          type: "Point",
+          coordinates: [-31.42580050120433, -62.08465511181211]
+        },
+        collected_at: "2020-11-21T00:26:37+0000",
+        internal_type: "TrackPoint",
+        resource_id: 1
+      },
+      {
+        location: {
+          type: "Point",
+          coordinates: [-31.426257644820797, -62.082022772727186]
+        },
+        collected_at: "2020-11-21T00:26:38+0000",
+        internal_type: "TrackPoint",
+        resource_id: 1
+      },
+      {
+        location: {
+          type: "Point",
+          coordinates: [-31.424790262364997, -62.08060739451158]
+        },
+        collected_at: "2020-11-21T00:26:39+0000",
+        internal_type: "TrackPoint",
+        resource_id: 1
+      },
+      {
+        location: {
+          type: "Point",
+          coordinates: [-31.425581, -62.085956]
+        },
+        collected_at: "2020-11-21T00:26:36+0000",
+        internal_type: "TrackPoint",
+        resource_id: 2
+      },
+      {
+        location: {
+          type: "Point",
+          coordinates: [-31.42528, -62.085035]
+        },
+        collected_at: "2020-11-21T00:26:37+0000",
+        internal_type: "TrackPoint",
+        resource_id: 2
+      },
+      {
+        location: {
+          type: "Point",
+          coordinates: [-31.425654, -62.085296]
+        },
+        collected_at: "2020-11-21T00:26:38+0000",
+        internal_type: "TrackPoint",
+        resource_id: 2
+      },
+      {
+        location: {
+          type: "Point",
+          coordinates: [-31.425654, -62.085296]
+        },
+        collected_at: "2020-11-21T00:26:39+0000",
+        internal_type: "TrackPoint",
+        resource_id: 2
+      },
+      {
+        location: {
+          type: "Point",
+          coordinates: [-31.425082, -62.085751]
+        },
+        collected_at: "2020-11-21T00:26:37+0000",
+        internal_type: "TrackPoint",
+        resource_id: 3
+      },
+      {
+        location: {
+          type: "Point",
+          coordinates: [-31.425117, -62.086124]
+        },
+        collected_at: "2020-11-21T00:26:38+0000",
+        internal_type: "TrackPoint",
+        resource_id: 3
+      },
+      {
+        location: {
+          type: "Point",
+          coordinates: [-31.425654, -62.085296]
+        },
+        collected_at: "2020-11-21T00:26:39+0000",
+        internal_type: "TrackPoint",
+        resource_id: 3
+      }
+    ];
+    // TODO: GET MapPoints
+    let getIncidentMapPointsResponse = [];
+
+    let parsedPoints = incidentPointsAdapter.parsePoints(
+      getIncidentResourcesResponse,
+      getIncidentTrackPointsResponse,
+      getIncidentMapPointsResponse
+    );
+    console.log(parsedPoints);
+    // this.parsedPoints = parsedPoints;
+
     if (!("geolocation" in navigator)) {
       this.errorStr = "Geolocation is not available.";
       return;
