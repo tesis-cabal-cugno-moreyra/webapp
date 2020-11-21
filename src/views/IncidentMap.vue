@@ -123,7 +123,9 @@
                 :position="currentPositionPoint.position"
                 :key="index"
                 :clickable="true"
-                @mouseover="toggleInfoWindowCurrentPosition(marker, index)"
+                @mouseover="
+                  toggleInfoWindowCurrentPosition(currentPositionPoint, index)
+                "
                 @mouseout="infoWinOpenCurrentPosition = false"
                 :icon="{ url: require('@/assets/pins/car-marker.png') }"
               >
