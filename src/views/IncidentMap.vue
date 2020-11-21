@@ -57,11 +57,8 @@
         :center="{ lat: centerLatitude, lng: centerLongitude }"
       >
         <div v-if="switchMapPoints">
-          <div
-            v-for="(mapPoints, index) in parsedPoints.mapPoints"
-            :key="index"
-          >
-            <div v-if="showResource">
+          <div v-for="(mapPoint, index) in parsedPoints.mapPoints" :key="index">
+            <div v-if="showResource(mapPoint.resourceId)">
               <gmap-info-window
                 :options="infoOptionsMapPoint"
                 :position="infoWindowPosMapPoint"
@@ -69,10 +66,10 @@
               >
               </gmap-info-window>
               <gmap-marker
-                :position="mapPoints.position"
+                :position="mapPoint.position"
                 :key="index"
                 :clickable="true"
-                @mouseover="toggleInfoWindowMapPoint(mapPoints, index)"
+                @mouseover="toggleInfoWindowMapPoint(mapPoint, index)"
                 @mouseout="infoWinOpenMapPoint = false"
                 :icon="{ url: require('@/assets/pins/map-pin.png') }"
               >
@@ -82,12 +79,12 @@
         </div>
         <div v-if="switchTrackPoints">
           <div
-            v-for="(trackPoints, index) in parsedPoints.trackPoints"
+            v-for="(trackPoint, index) in parsedPoints.trackPoints"
             :key="index"
           >
-            <div v-if="showResource">
+            <div v-if="showResource(trackPoint.resourceId)">
               <gmap-polyline
-                :path="trackPoints.route"
+                :path="trackPoint.route"
                 ref="polyline"
                 :options="{ strokeColor: '#999999' }"
               >
@@ -98,10 +95,10 @@
         <div v-if="switchCurrentPosition">
           <div
             v-for="(currentPositionPoint,
-            index) in parsedPoints.currentPositionPoint"
+            index) in parsedPoints.currentPositionPoints"
             :key="index"
           >
-            <div v-if="showResource">
+            <div v-if="showResource(currentPositionPoint.resourceId)">
               <gmap-info-window
                 :options="infoOptionsCurrentPosition"
                 :position="infoWindowPosCurrentPosition"
@@ -384,7 +381,7 @@ export default {
             ]
           }
         ],
-        currentPositionPoint: [
+        currentPositionPoints: [
           {
             resourceName: "Name Lastname 1",
             resourceId: 1,
@@ -534,9 +531,20 @@ export default {
         this.currentMidxCurrentPosition = idx;
       }
     },
-    showResource: function() {
-      // TODO: This must search if this resourse wants to be showed. This must recieve resource ID, WIP.
-      return true;
+    showResource: function(resourceId) {
+      let listedResource = false;
+      let showResource = false;
+      this.resourceListFilter.forEach(function(resource) {
+        if (resource.id === resourceId) {
+          listedResource = true;
+          showResource = resource.show;
+        }
+      });
+      if (listedResource === false) {
+        return false;
+      } else {
+        return showResource;
+      }
     }
   }
 };
