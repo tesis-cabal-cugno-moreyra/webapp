@@ -8,9 +8,16 @@
         dark
       >
         <v-card-title :class="['pa-4', 'mb-2', 'black_selected']">
-          Recursos para relacionar
+          {{
+            `${
+              resourceSelectedInfo.statusSelected === "Iniciado"
+                ? " Recursos para relacionar"
+                : "Recursos relacionados con el incidente"
+            }`
+          }}
+
           <v-spacer></v-spacer>
-          <v-row>
+          <v-row v-if="resourceSelectedInfo.statusSelected === 'Iniciado'">
             <v-col cols="6">
               <v-text-field
                 v-model="searchName"
@@ -36,6 +43,35 @@
                 clearable
                 label="Tipo de recurso"
                 @change="searchResource()"
+              ></v-autocomplete>
+            </v-col>
+          </v-row>
+          <v-row v-if="resourceSelectedInfo.statusSelected !== 'Iniciado'">
+            <v-col cols="6">
+              <v-text-field
+                v-model="searchNameFinalized"
+                append-icon="mdi-magnify"
+                label="Enter para buscar por nombre"
+                v-on:keyup.enter="searchIncidentResources()"
+              ></v-text-field>
+            </v-col>
+            <v-col cols="6">
+              <v-text-field
+                v-model="searchLastNameFinalized"
+                append-icon="mdi-magnify"
+                label="Enter para buscar por apellido"
+                v-on:keyup.enter="searchIncidentResources()"
+              ></v-text-field>
+            </v-col>
+
+            <v-col cols="6">
+              <v-autocomplete
+                v-model="autoCompleteTypeResource"
+                :items="typeResourceSelectedList"
+                item-text="name"
+                clearable
+                label="Tipo de recurso"
+                @change="searchIncidentResources()"
               ></v-autocomplete>
             </v-col>
           </v-row>
@@ -66,6 +102,7 @@
         <v-card-actions :class="['pa-2', 'pb-1', ' black_selected']">
           <v-spacer></v-spacer>
           <v-btn
+            v-if="resourceSelectedInfo.statusSelected === 'Iniciado'"
             :loading="loadingProcessInfo"
             :class="['mb-2', 'mr-1', 'primary', 'float-right']"
             v-on:click="
@@ -92,11 +129,20 @@ export default {
   name: "IncidentResourceManager",
   data() {
     return {
+      searchResourceFinalized: "",
+      searchNameFinalized: "",
+      searchLastNameFinalized: "",
       referenceSearch: {
         user__first_name: "",
         user__last_name: "",
         type__name: "",
         user__is_active: true,
+        page: 1
+      },
+      referenceSearchFinalized: {
+        resource__user__first_name: "",
+        resource__user__last_name: "",
+        resource__type: "",
         page: 1
       },
       showSelect: true,
@@ -143,6 +189,7 @@ export default {
       this.showSelect = false;
       this.searchIncidentResources();
     }
+    this.typeResourceSelectedList = this.domainConfig.incidentAbstractions[1].types[0].resourceTypes;
   },
   updated() {
     if (
@@ -151,6 +198,7 @@ export default {
       this.resourceSelectedInfo.statusSelected === "Iniciado"
     ) {
       this.showSelect = true;
+      this.page = 1;
       this.searchResourceMarked();
     } else if (
       this.resourceSelectedInfo.state &&
@@ -158,6 +206,7 @@ export default {
       this.resourceSelectedInfo.statusSelected !== "Iniciado"
     ) {
       this.showSelect = false;
+      this.page = 1;
       this.searchIncidentResources();
     }
   },
@@ -174,6 +223,7 @@ export default {
         this.countCycles = 2;
         this.searchResourceMarked();
       } else {
+        this.isUpdate = false;
         this.searchIncidentResources();
       }
     }
@@ -182,47 +232,44 @@ export default {
     async searchIncidentResources() {
       this.loadingTable = true;
       this.isUpdate = true;
-      let resourceTemporary = [];
+      this.resourceData = [];
       let incidentInfo = {
         incident_id: this.resourceSelectedInfo.incidentId,
+        resource__user__first_name: this.searchNameFinalized,
+        resource__user__last_name: this.searchLastNameFinalized,
+        resource__type:
+          this.autoCompleteTypeResource === undefined
+            ? ""
+            : this.autoCompleteTypeResource,
         page: this.page
       };
+
+      if (
+        incidentInfo.resource__user__first_name !==
+          this.referenceSearchFinalized.resource__user__first_name ||
+        incidentInfo.resource__user__last_name !==
+          this.referenceSearchFinalized.resource__user__last_name ||
+        incidentInfo.resource__type !==
+          this.referenceSearchFinalized.resource__type
+      ) {
+        this.page = 1;
+        incidentInfo.page = 1;
+      }
+
       await this.$store
         .dispatch("incident/getIncidentResources", incidentInfo)
         .then(response => {
-          response.data.results.forEach(async Data => {
-            let idResource = Data.resource.id;
-
-            if (idResource !== undefined) {
-              await this.$store
-                .dispatch("domainConfig/getResourceById", idResource)
-                .then(response => {
-                  resourceTemporary.push(response.data);
-                })
-                .catch(async () => {
-                  this.$store.commit("uiParams/dispatchAlert", {
-                    text:
-                      "Hubo problemas en la busqueda de un recurso seleccionado",
-                    color: "primary",
-                    timeout: 4000
-                  });
-                })
-                .finally(async () => {});
-            }
-          });
-          this.numberOfPage = Math.ceil(
-            response.data.count / process.env.VUE_APP_ITEMS_PER_PAGE
-          );
+          this.referenceSearchFinalized = incidentInfo;
+          this.loadResourceData(response);
         })
         .catch(async () => {
           this.$store.commit("uiParams/dispatchAlert", {
-            text: "Hubo problemas en la busqueda de recursos seleccionados",
+            text: "Hubo problemas en la busqueda de recursos relacionados",
             color: "primary",
             timeout: 4000
           });
         })
         .finally(async () => {
-          this.resourceData = resourceTemporary;
           this.loadingTable = false;
         });
     },
@@ -282,12 +329,15 @@ export default {
       this.numberOfCycles = 1;
       this.pageMarked = 1;
       this.countCycles = 2;
-      this.page = 1;
+      this.searchName = "";
+      this.searchLastName = "";
+      this.searchLastNameFinalized = "";
+      this.searchNameFinalized = "";
       this.$store.commit("incident/closeResource", {});
     },
     async searchResource() {
       this.loadingTable = true;
-
+      this.resourceData = [];
       let searchInfo = {
         user__first_name: this.searchName,
         user__last_name: this.searchLastName,
@@ -325,15 +375,20 @@ export default {
         .finally(async () => {
           this.loadingTable = false;
         });
-      this.typeResourceSelectedList = this.domainConfig.incidentAbstractions[1].types[0].resourceTypes;
     },
 
     loadResourceData(completeData) {
-      this.resourceData = completeData.data.results;
+      if (this.resourceSelectedInfo.statusSelected === "Iniciado") {
+        this.resourceData = completeData.data.results;
 
-      this.markedResource.forEach(resourceInfo => {
-        this.selected.push(resourceInfo.resource);
-      });
+        this.markedResource.forEach(resourceInfo => {
+          this.selected.push(resourceInfo.resource);
+        });
+      } else {
+        completeData.data.results.forEach(resourceInfo => {
+          this.resourceData.push(resourceInfo.resource);
+        });
+      }
 
       let itemsPerPage = process.env.VUE_APP_ITEMS_PER_PAGE;
       if (!itemsPerPage) {
