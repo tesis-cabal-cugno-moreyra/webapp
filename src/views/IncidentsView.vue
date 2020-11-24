@@ -476,8 +476,6 @@ export default {
         statusSelected: this.incidentStatusSelected
       });
       this.showIncidentResourceList = true;
-
-      //  this.dialogEditResource = true;*/
     },
 
     closeModal() {

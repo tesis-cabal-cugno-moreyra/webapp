@@ -66,7 +66,7 @@
 
             <v-col cols="6">
               <v-autocomplete
-                v-model="autoCompleteTypeResource"
+                v-model="autoCompleteTypeResourceFinalized"
                 :items="typeResourceSelectedList"
                 item-text="name"
                 clearable
@@ -154,6 +154,7 @@ export default {
       searchName: "",
       searchLastName: "",
       autoCompleteTypeResource: "",
+      autoCompleteTypeResourceFinalized: "",
       page: 1,
       pageMarked: 1,
       numberOfCycles: 1,
@@ -238,9 +239,9 @@ export default {
         resource__user__first_name: this.searchNameFinalized,
         resource__user__last_name: this.searchLastNameFinalized,
         resource__type:
-          this.autoCompleteTypeResource === undefined
+          this.autoCompleteTypeResourceFinalized === undefined
             ? ""
-            : this.autoCompleteTypeResource,
+            : this.autoCompleteTypeResourceFinalized,
         page: this.page
       };
 
@@ -280,6 +281,9 @@ export default {
     async searchResourceMarked() {
       this.isUpdate = true;
       let incidentInfo = {
+        resource__user__first_name: "",
+        resource__user__last_name: "",
+        resource__type: "",
         incident_id: this.resourceSelectedInfo.incidentId,
         page: this.pageMarked
       };
