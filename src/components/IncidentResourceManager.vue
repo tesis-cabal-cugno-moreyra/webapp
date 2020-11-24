@@ -293,7 +293,8 @@ export default {
           response.data.results.forEach(incident => {
             this.markedResource.push(incident);
           });
-
+          //se obtiene el numero de veces que se recorre esta funcion ciclicamente para obtener una lista de todos los
+          // recursos ya seleccinados
           this.numberOfCycles = Math.ceil(
             response.data.count / process.env.VUE_APP_ITEMS_PER_PAGE
           );
