@@ -155,7 +155,7 @@ export default {
           });
       }
       this.tryToCreateIncident = false;
-      this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+      await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
     },
     placeChanged(place) {
       this.placeError = false;
@@ -240,7 +240,7 @@ export default {
       if (this.incidentConfig !== null) {
         this.incidentConfig.forEach(incident => {
           if (
-            incident.incidentAbstraction == this.incidentAbstractionSelected
+            incident.incidentAbstraction === this.incidentAbstractionSelected
           ) {
             incidentTypes = incident.incidentTypes;
           }

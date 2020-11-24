@@ -193,11 +193,11 @@ export default {
       this.selected.forEach((element, index) => {
         let resourceIncidentData = {
           incidentId: this.incidentId,
-          incidentTypeId: element.id
+          resourceId: element.id
         };
 
         this.$store
-          .dispatch("domainConfig/postResourceIncident", resourceIncidentData)
+          .dispatch("incident/postResourceIncident", resourceIncidentData)
           .then(async () => {
             this.$store.commit("uiParams/dispatchAlert", {
               text: "Se cargó correctamente: ",

@@ -206,7 +206,7 @@ export default {
         user__first_name: this.searchName,
         user__last_name: this.searchLastName,
         type__name:
-          this.autoCompleteTypeResource == undefined
+          this.autoCompleteTypeResource === undefined
             ? ""
             : this.autoCompleteTypeResource,
         user__is_active: this.isUserActiveFilter,
@@ -214,10 +214,10 @@ export default {
       };
 
       if (
-        searchInfo.user__first_name != this.referenceSearch.user__first_name ||
-        searchInfo.user__last_name != this.referenceSearch.user__last_name ||
-        searchInfo.type__name != this.referenceSearch.type__name ||
-        searchInfo.user__is_active != this.referenceSearch.user__is_active
+        searchInfo.user__first_name !== this.referenceSearch.user__first_name ||
+        searchInfo.user__last_name !== this.referenceSearch.user__last_name ||
+        searchInfo.type__name !== this.referenceSearch.type__name ||
+        searchInfo.user__is_active !== this.referenceSearch.user__is_active
       ) {
         this.page = 1;
         searchInfo.page = 1;
@@ -229,8 +229,8 @@ export default {
           this.loaduserResourceData(response);
           this.referenceSearch = searchInfo;
         })
-        .catch(async () => {
-          if (searchInfo.page != 1) {
+        .catch(() => {
+          if (searchInfo.page !== 1) {
             this.page = this.page - 1;
             this.searchResource();
           } else {
@@ -241,7 +241,7 @@ export default {
             });
           }
           this.loadingTable = false;
-          await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+          this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
         })
         .finally(async () => {
           await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
@@ -275,7 +275,7 @@ export default {
       const userState = this.isUserActiveFilter ? "desactivado" : "activado";
       await this.$store
         .dispatch("domainConfig/postChangeStatusUser", userInfo)
-        .then(async () => {
+        .then(() => {
           this.searchResource();
           this.$store.commit("uiParams/dispatchAlert", {
             text: "Usuario " + userState + " correctamente",
