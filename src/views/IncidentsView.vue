@@ -412,7 +412,6 @@ export default {
       this.dialogChangeStatus = true;
     },
     goToMap(incident) {
-      console.log(incident.id);
       this.$router.push({ name: "IncidentMap", params: { id: incident.id } });
     }
   }
