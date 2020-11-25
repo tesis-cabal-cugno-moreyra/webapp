@@ -618,7 +618,7 @@ export default {
           type: "Point",
           coordinates: [-31.425082, -62.085751]
         },
-        collected_at: "2020-11-21T00:26:37+0000",
+        collected_at: "2020-11-21T00:26:39+0000",
         internal_type: "TrackPoint",
         resource_id: 3
       },
@@ -636,7 +636,7 @@ export default {
           type: "Point",
           coordinates: [-31.425654, -62.085296]
         },
-        collected_at: "2020-11-21T00:26:39+0000",
+        collected_at: "2020-11-21T00:26:37+0000",
         internal_type: "TrackPoint",
         resource_id: 3
       }

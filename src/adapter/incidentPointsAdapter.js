@@ -76,7 +76,7 @@ let apiResponse = [
       type: "Point",
       coordinates: [-31.425082, -62.085751]
     },
-    collected_at: "2020-11-21T00:26:37+0000",
+    collected_at: "2020-11-21T00:26:39+0000",
     internal_type: "TrackPoint",
     resource_id: 3
   },
@@ -94,7 +94,7 @@ let apiResponse = [
       type: "Point",
       coordinates: [-31.425654, -62.085296]
     },
-    collected_at: "2020-11-21T00:26:39+0000",
+    collected_at: "2020-11-21T00:26:37+0000",
     internal_type: "TrackPoint",
     resource_id: 3
   }
@@ -218,14 +218,19 @@ export default {
       apiTrackPointsResponse,
       resourcesArray
     );
+    let parsedCurrentPositionPoint = this.getCurrentPositionPoints(
+      apiTrackPointsResponse,
+      resourcesArray
+    );
     console.log(parsedTrackPoints);
+    console.log(parsedCurrentPositionPoint);
     console.log("Datos falopa:");
     console.log(apiMapPointsResponse);
     // TODO: pass real API response to this function
     let parsedPoints = {
       mapPoints: apiResponse.mapPoints,
       trackPoints: parsedTrackPoints,
-      currentPositionPoints: apiResponse.currentPositionPoints
+      currentPositionPoints: parsedCurrentPositionPoint
     };
     return parsedPoints;
   },
@@ -244,9 +249,7 @@ export default {
       });
     });
     apiTrackPointsResponse.forEach(function(trackPoint) {
-      console.log(trackPoint);
       trackPoints.forEach(function(trackPointByResource) {
-        console.log(trackPointByResource);
         if (trackPointByResource.resourceId === trackPoint.resource_id) {
           trackPointByResource.route.push({
             lat: trackPoint.location.coordinates[0],
@@ -257,9 +260,42 @@ export default {
     });
     return trackPoints;
   },
-  getCurrentPositionPoints(apiTrackPointsResponse) {
-    console.log(apiTrackPointsResponse);
-    return true;
+  getCurrentPositionPoints(apiTrackPointsResponse, resourcesArray) {
+    let currentPositionPoints = [];
+    resourcesArray.forEach(function(resource) {
+      currentPositionPoints.push({
+        resourceName: resource.name,
+        resourceId: resource.id,
+        resourceType: "person",
+        position: { lat: null, lng: null }
+      });
+    });
+    currentPositionPoints.forEach(function(pointByResource) {
+      let point = {
+        coordinates: [],
+        collected_at: null,
+        resource_id: null
+      };
+      apiTrackPointsResponse.forEach(function(trackPoint) {
+        if (pointByResource.resourceId === trackPoint.resource_id) {
+          if (point.resource_id === null) {
+            point.coordinates = trackPoint.location.coordinates;
+            point.collected_at = trackPoint.collected_at;
+            point.resource_id = trackPoint.resource_id;
+          } else if (trackPoint.collected_at > point.collected_at) {
+            point.coordinates = trackPoint.location.coordinates;
+            point.collected_at = trackPoint.collected_at;
+            point.resource_id = trackPoint.resource_id;
+          }
+        }
+      });
+
+      pointByResource.position = {
+        lat: point.coordinates[0],
+        lng: point.coordinates[1]
+      };
+    });
+    return currentPositionPoints;
   },
   getResources(apiIncidentsResourceResponse) {
     let resourcesArray = [];
