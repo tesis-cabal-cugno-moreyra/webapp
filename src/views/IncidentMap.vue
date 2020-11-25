@@ -344,111 +344,7 @@ export default {
           ]
         }
       ],
-      parsedPoints: {
-        mapPoints: [
-          {
-            resourceName: "Name Lastname 2",
-            resourceId: 2,
-            position: { lat: -31.42528, lng: -62.085035 },
-            description: "Bla bla bla 2"
-          },
-          {
-            resourceName: "Name Lastname 3",
-            resourceId: 3,
-            position: { lat: -31.425117, lng: -62.086124 },
-            description: "Bla bla bla 3"
-          }
-        ],
-        trackPoints: [
-          {
-            resourceName: "Name Lastname 1",
-            resourceId: 1,
-            color: "blue",
-            route: [
-              { lat: -31.425654, lng: -62.085296 },
-              { lat: -31.42580050120433, lng: -62.08465511181211 },
-              { lat: -31.426257644820797, lng: -62.082022772727186 },
-              { lat: -31.424790262364997, lng: -62.08060739451158 }
-            ]
-          },
-          {
-            resourceName: "Name Lastname 2",
-            resourceId: 2,
-            color: "red",
-            route: [
-              { lat: -31.425581, lng: -62.085956 },
-              { lat: -31.42528, lng: -62.085035 },
-              { lat: -31.425654, lng: -62.085296 },
-              { lat: -31.425654, lng: -62.085296 }
-            ]
-          },
-          {
-            resourceName: "Name Lastname 3",
-            resourceId: 3,
-            color: "yellow",
-            route: [
-              { lat: -31.425082, lng: -62.085751 },
-              { lat: -31.425117, lng: -62.086124 },
-              { lat: -31.425654, lng: -62.085296 }
-            ]
-          },
-          {
-            resourceName: "Name Lastname 4",
-            resourceId: 4,
-            color: "green",
-            route: [
-              { lat: -31.425461874873964, lng: -62.08076612851433 },
-              { lat: -31.4237517932081, lng: -62.08058093883543 },
-              { lat: -31.423114031993038, lng: -62.083405081308435 },
-              { lat: -31.422814903555892, lng: -62.085772863629735 },
-              { lat: -31.423413159466918, lng: -62.08591836979892 },
-              { lat: -31.42453628997294, lng: -62.08608371771845 },
-              { lat: -31.424732, lng: -62.08566 }
-            ]
-          },
-          {
-            resourceName: "Name Lastname 5",
-            resourceId: 5,
-            color: "orange",
-            route: [
-              { lat: -31.425178, lng: -62.085526 },
-              { lat: -31.424732, lng: -62.08566 }
-            ]
-          }
-        ],
-        currentPositionPoints: [
-          {
-            resourceName: "Name Lastname 1",
-            resourceId: 1,
-            resourceType: "vehicle",
-            position: { lat: -31.425654, lng: -62.085296 }
-          },
-          {
-            resourceName: "Name Lastname 2",
-            resourceId: 2,
-            resourceType: "person",
-            position: { lat: -31.425581, lng: -62.085956 }
-          },
-          {
-            resourceName: "Name Lastname 3",
-            resourceId: 3,
-            resourceType: "person",
-            position: { lat: -31.425082, lng: -62.085751 }
-          },
-          {
-            resourceName: "Name Lastname 4",
-            resourceId: 4,
-            resourceType: "vehicle",
-            position: { lat: -31.424732, lng: -62.08566 }
-          },
-          {
-            resourceName: "Name Lastname 5",
-            resourceId: 5,
-            resourceType: "person",
-            position: { lat: -31.425178, lng: -62.085526 }
-          }
-        ]
-      },
+      parsedPoints: null,
       infoWindowPosMapPoint: null,
       infoWinOpenMapPoint: false,
       currentMidxMapPoint: null,
@@ -500,93 +396,147 @@ export default {
     let getIncidentResourcesResponse = [
       {
         id: 74,
-        created_at: "2020-11-17T14:44:24+0000",
-        updated_at: "2020-11-17T14:44:24+0000",
         incident: {
           id: 23,
-          created_at: "2020-10-25T21:52:33+0000",
-          updated_at: "2020-10-25T21:52:33+0000",
+          domain_name: "DominioPersonalizado",
+          incident_type_name: "Capacitaicón",
           external_assistance: "Without external support",
-          details: {},
-          status: "Started",
           data_status: "Incomplete",
+          status: "Started",
           location_as_string_reference: "",
-          reference: "",
           location_point: {
             type: "Point",
             coordinates: [-31.42258864467819, -62.1098611960261]
           },
-          finalized_at: null,
+          reference: "",
+          created_at: "2020-10-25T21:52:33.993407Z",
+          updated_at: "2020-10-25T21:52:33.993452Z",
           cancelled_at: null,
-          domain_config: 1,
-          incident_type: 3
+          finalized_at: null
         },
         resource: {
-          id: 9,
-          user: "98fc6d81-30f1-4860-9a21-d9240f72e160",
-          type: 2,
-          domain: 1
-        }
+          id: 1,
+          user: {
+            id: "98fc6d81-30f1-4860-9a21-d9240f72e160",
+            email: "asd123prueba@holis.com",
+            username: "asd123prueba",
+            first_name: "asd1",
+            last_name: "23prueba",
+            is_active: true
+          },
+          domain: {
+            id: 1,
+            created_at: "2020-09-28T00:26:36+0000",
+            updated_at: "2020-11-05T14:44:44+0000",
+            domain_name: "DominioPersonalizado",
+            admin_alias: "Administrador"
+          },
+          type: {
+            id: 2,
+            created_at: "2020-09-28T00:26:36+0000",
+            updated_at: "2020-09-28T00:26:36+0000",
+            name: "Canino",
+            domain_config: 1
+          }
+        },
+        created_at: "2020-11-17T14:44:24+0000",
+        updated_at: "2020-11-17T14:44:24+0000"
       },
       {
         id: 102,
-        created_at: "2020-11-21T19:14:28+0000",
-        updated_at: "2020-11-21T19:14:28+0000",
         incident: {
           id: 23,
-          created_at: "2020-10-25T21:52:33+0000",
-          updated_at: "2020-10-25T21:52:33+0000",
+          domain_name: "DominioPersonalizado",
+          incident_type_name: "Capacitaicón",
           external_assistance: "Without external support",
-          details: {},
-          status: "Started",
           data_status: "Incomplete",
+          status: "Started",
           location_as_string_reference: "",
-          reference: "",
           location_point: {
             type: "Point",
             coordinates: [-31.42258864467819, -62.1098611960261]
           },
-          finalized_at: null,
+          reference: "",
+          created_at: "2020-10-25T21:52:33.993407Z",
+          updated_at: "2020-10-25T21:52:33.993452Z",
           cancelled_at: null,
-          domain_config: 1,
-          incident_type: 3
+          finalized_at: null
         },
         resource: {
           id: 2,
-          user: "a4c50701-1a2d-4960-be64-4966a88f8077",
-          type: 1,
-          domain: 1
-        }
+          user: {
+            id: "a4c50701-1a2d-4960-be64-4966a88f8077",
+            email: "facmir@asd.com",
+            username: "prueba12",
+            first_name: "fac",
+            last_name: "mor",
+            is_active: true
+          },
+          domain: {
+            id: 1,
+            created_at: "2020-09-28T00:26:36+0000",
+            updated_at: "2020-11-05T14:44:44+0000",
+            domain_name: "DominioPersonalizado",
+            admin_alias: "Administrador"
+          },
+          type: {
+            id: 1,
+            created_at: "2020-09-28T00:26:36+0000",
+            updated_at: "2020-09-28T00:26:36+0000",
+            name: "Bombero",
+            domain_config: 1
+          }
+        },
+        created_at: "2020-11-21T19:14:28+0000",
+        updated_at: "2020-11-21T19:14:28+0000"
       },
       {
         id: 118,
-        created_at: "2020-11-21T19:27:51+0000",
-        updated_at: "2020-11-21T19:27:51+0000",
         incident: {
           id: 23,
-          created_at: "2020-10-25T21:52:33+0000",
-          updated_at: "2020-10-25T21:52:33+0000",
+          domain_name: "DominioPersonalizado",
+          incident_type_name: "Capacitaicón",
           external_assistance: "Without external support",
-          details: {},
-          status: "Started",
           data_status: "Incomplete",
+          status: "Started",
           location_as_string_reference: "",
-          reference: "",
           location_point: {
             type: "Point",
             coordinates: [-31.42258864467819, -62.1098611960261]
           },
-          finalized_at: null,
+          reference: "",
+          created_at: "2020-10-25T21:52:33.993407Z",
+          updated_at: "2020-10-25T21:52:33.993452Z",
           cancelled_at: null,
-          domain_config: 1,
-          incident_type: 3
+          finalized_at: null
         },
         resource: {
-          id: 11,
-          user: "f196f272-c272-4def-b149-6d0fac71ea14",
-          type: 1,
-          domain: 1
-        }
+          id: 3,
+          user: {
+            id: "f196f272-c272-4def-b149-6d0fac71ea14",
+            email: "carlioss@carlioss.com",
+            username: "carlioss",
+            first_name: "carlioss",
+            last_name: "carlioss",
+            is_active: true
+          },
+          domain: {
+            id: 1,
+            created_at: "2020-09-28T00:26:36+0000",
+            updated_at: "2020-11-05T14:44:44+0000",
+            domain_name: "DominioPersonalizado",
+            admin_alias: "Administrador"
+          },
+          type: {
+            id: 1,
+            created_at: "2020-09-28T00:26:36+0000",
+            updated_at: "2020-09-28T00:26:36+0000",
+            name: "Bombero",
+            domain_config: 1
+          }
+        },
+        created_at: "2020-11-21T19:27:51+0000",
+        updated_at: "2020-11-21T19:27:51+0000"
       }
     ];
     // TODO: GET TrackPoints
@@ -699,8 +649,7 @@ export default {
       getIncidentTrackPointsResponse,
       getIncidentMapPointsResponse
     );
-    console.log(parsedPoints);
-    // this.parsedPoints = parsedPoints;
+    this.parsedPoints = parsedPoints;
 
     if (!("geolocation" in navigator)) {
       this.errorStr = "Geolocation is not available.";

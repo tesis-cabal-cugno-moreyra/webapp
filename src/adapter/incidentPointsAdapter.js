@@ -99,31 +99,184 @@ let apiResponse = [
     resource_id: 3
   }
 ];
-console.log(apiResponse);
+
+apiResponse = {
+  mapPoints: [
+    {
+      resourceName: "Name Lastname 2",
+      resourceId: 2,
+      position: { lat: -31.42528, lng: -62.085035 },
+      description: "Bla bla bla 2"
+    },
+    {
+      resourceName: "Name Lastname 3",
+      resourceId: 3,
+      position: { lat: -31.425117, lng: -62.086124 },
+      description: "Bla bla bla 3"
+    }
+  ],
+  trackPoints: [
+    {
+      resourceName: "Name Lastname 1",
+      resourceId: 1,
+      color: "blue",
+      route: [
+        { lat: -31.425654, lng: -62.085296 },
+        { lat: -31.42580050120433, lng: -62.08465511181211 },
+        { lat: -31.426257644820797, lng: -62.082022772727186 },
+        { lat: -31.424790262364997, lng: -62.08060739451158 }
+      ]
+    },
+    {
+      resourceName: "Name Lastname 2",
+      resourceId: 2,
+      color: "red",
+      route: [
+        { lat: -31.425581, lng: -62.085956 },
+        { lat: -31.42528, lng: -62.085035 },
+        { lat: -31.425654, lng: -62.085296 },
+        { lat: -31.425654, lng: -62.085296 }
+      ]
+    },
+    {
+      resourceName: "Name Lastname 3",
+      resourceId: 3,
+      color: "yellow",
+      route: [
+        { lat: -31.425082, lng: -62.085751 },
+        { lat: -31.425117, lng: -62.086124 },
+        { lat: -31.425654, lng: -62.085296 }
+      ]
+    },
+    {
+      resourceName: "Name Lastname 4",
+      resourceId: 4,
+      color: "green",
+      route: [
+        { lat: -31.425461874873964, lng: -62.08076612851433 },
+        { lat: -31.4237517932081, lng: -62.08058093883543 },
+        { lat: -31.423114031993038, lng: -62.083405081308435 },
+        { lat: -31.422814903555892, lng: -62.085772863629735 },
+        { lat: -31.423413159466918, lng: -62.08591836979892 },
+        { lat: -31.42453628997294, lng: -62.08608371771845 },
+        { lat: -31.424732, lng: -62.08566 }
+      ]
+    },
+    {
+      resourceName: "Name Lastname 5",
+      resourceId: 5,
+      color: "orange",
+      route: [
+        { lat: -31.425178, lng: -62.085526 },
+        { lat: -31.424732, lng: -62.08566 }
+      ]
+    }
+  ],
+  currentPositionPoints: [
+    {
+      resourceName: "Name Lastname 1",
+      resourceId: 1,
+      resourceType: "vehicle",
+      position: { lat: -31.425654, lng: -62.085296 }
+    },
+    {
+      resourceName: "Name Lastname 2",
+      resourceId: 2,
+      resourceType: "person",
+      position: { lat: -31.425581, lng: -62.085956 }
+    },
+    {
+      resourceName: "Name Lastname 3",
+      resourceId: 3,
+      resourceType: "person",
+      position: { lat: -31.425082, lng: -62.085751 }
+    },
+    {
+      resourceName: "Name Lastname 4",
+      resourceId: 4,
+      resourceType: "vehicle",
+      position: { lat: -31.424732, lng: -62.08566 }
+    },
+    {
+      resourceName: "Name Lastname 5",
+      resourceId: 5,
+      resourceType: "person",
+      position: { lat: -31.425178, lng: -62.085526 }
+    }
+  ]
+};
+let colors = ["blue", "red", "yellow", "green", "orange"];
 
 export default {
-  parsePoints(apiTrackPointsResponse, apiMapPointsResponse) {
-    console.log(apiTrackPointsResponse);
+  parsePoints(
+    apiIncidentsResourceResponse,
+    apiTrackPointsResponse,
+    apiMapPointsResponse
+  ) {
+    let resourcesArray = this.getResources(apiIncidentsResourceResponse);
+    let parsedTrackPoints = this.getTrackPoints(
+      apiTrackPointsResponse,
+      resourcesArray
+    );
+    console.log(parsedTrackPoints);
+    console.log("Datos falopa:");
     console.log(apiMapPointsResponse);
     // TODO: pass real API response to this function
-    let parsedPoints = apiResponse;
+    let parsedPoints = {
+      mapPoints: apiResponse.mapPoints,
+      trackPoints: parsedTrackPoints,
+      currentPositionPoints: apiResponse.currentPositionPoints
+    };
     return parsedPoints;
   },
   getMapPoints(apiMapPointsResponse) {
     console.log(apiMapPointsResponse);
     return true;
   },
-  getTrackPoints(apiTrackPointsResponse) {
-    console.log(apiTrackPointsResponse);
-    return true;
+  getTrackPoints(apiTrackPointsResponse, resourcesArray) {
+    let trackPoints = [];
+    resourcesArray.forEach(function(resource) {
+      trackPoints.push({
+        resourceName: resource.name,
+        resourceId: resource.id,
+        color: "blue",
+        route: []
+      });
+    });
+    apiTrackPointsResponse.forEach(function(trackPoint) {
+      console.log(trackPoint);
+      trackPoints.forEach(function(trackPointByResource) {
+        console.log(trackPointByResource);
+        if (trackPointByResource.resourceId === trackPoint.resource_id) {
+          trackPointByResource.route.push({
+            lat: trackPoint.location.coordinates[0],
+            lng: trackPoint.location.coordinates[1]
+          });
+        }
+      });
+    });
+    return trackPoints;
   },
   getCurrentPositionPoints(apiTrackPointsResponse) {
     console.log(apiTrackPointsResponse);
     return true;
   },
-  getResources(apiTrackPointsResponse) {
-    console.log(apiTrackPointsResponse);
-    //TODO: search all the IDs, and get resources info.
-    return true;
+  getResources(apiIncidentsResourceResponse) {
+    let resourcesArray = [];
+    apiIncidentsResourceResponse.forEach(function(incidentResourceItem) {
+      let name =
+        incidentResourceItem.resource.user.last_name +
+        " " +
+        incidentResourceItem.resource.user.first_name;
+      resourcesArray.push({ id: incidentResourceItem.resource.id, name: name });
+    });
+    return resourcesArray;
+  },
+  getColor() {
+    let colorSelected = colors[0];
+    console.log(colorSelected);
+    colors.shift();
+    colors.push(colorSelected);
+    return colorSelected;
   }
 };
