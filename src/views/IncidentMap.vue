@@ -28,8 +28,8 @@
         <v-card-text>
           <v-virtual-scroll
             :items="resourceListFilter"
-            height="260"
-            item-height="64"
+            height="210"
+            item-height="55"
           >
             <template v-slot:default="{ item }">
               <v-list-item :key="item.id">
