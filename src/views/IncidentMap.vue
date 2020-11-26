@@ -27,7 +27,7 @@
         </v-card-subtitle>
         <v-card-text>
           <v-virtual-scroll
-            :items="resourceListFilter"
+            :items="this.parsedPoints.resources"
             height="210"
             item-height="55"
           >
@@ -151,13 +151,6 @@ export default {
       switchMapPoints: false,
       switchTrackPoints: false,
       switchCurrentPosition: true,
-      resourceListFilter: [
-        { name: "Name LastName 1", id: 1, show: true },
-        { name: "Name LastName 2", id: 2, show: false },
-        { name: "Name LastName 3", id: 3, show: false },
-        { name: "Name LastName 4", id: 4, show: true },
-        { name: "Name LastName 5", id: 5, show: false }
-      ],
       style: [
         {
           elementType: "geometry",
@@ -373,26 +366,7 @@ export default {
     if (this.$route.params.id) {
       this.id = this.$route.params.id;
     }
-    // TODO: GET /api/v1/incidents/{id}/
-    // let getIncidentResponse = {
-    //   id: 23,
-    //   domain_name: "DominioPersonalizado",
-    //   incident_type_name: "Capacitaicón",
-    //   external_assistance: "Without external support",
-    //   data_status: "Incomplete",
-    //   status: "Started",
-    //   location_as_string_reference: "",
-    //   location_point: {
-    //     type: "Point",
-    //     coordinates: [-31.42258864467819, -62.1098611960261]
-    //   },
-    //   reference: "",
-    //   created_at: "2020-10-25T21:52:33.993407Z",
-    //   updated_at: "2020-10-25T21:52:33.993452Z",
-    //   cancelled_at: null,
-    //   finalized_at: null
-    // };
-    // TODO: GET /api/v1/incidents/{indicent_id}/resources/
+    // TODO: GET Incident Resources
     let getIncidentResourcesResponse = [
       {
         id: 74,
@@ -641,7 +615,7 @@ export default {
         resource_id: 3
       }
     ];
-
+    // TODO: GET MapPoints
     let getIncidentMapPointsResponse = [
       {
         location: {
@@ -736,7 +710,7 @@ export default {
     showResource: function(resourceId) {
       let listedResource = false;
       let showResource = false;
-      this.resourceListFilter.forEach(function(resource) {
+      this.parsedPoints.resources.forEach(function(resource) {
         if (resource.id === resourceId) {
           listedResource = true;
           showResource = resource.show;

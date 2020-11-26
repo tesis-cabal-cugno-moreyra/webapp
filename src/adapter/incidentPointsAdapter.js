@@ -226,12 +226,12 @@ export default {
       apiTrackPointsResponse,
       resourcesArray
     );
-    let parsedPoints = {
+    return {
       mapPoints: parsedMapPoints,
       trackPoints: parsedTrackPoints,
-      currentPositionPoints: parsedCurrentPositionPoint
+      currentPositionPoints: parsedCurrentPositionPoint,
+      resources: resourcesArray
     };
-    return parsedPoints;
   },
   getMapPoints(apiMapPointsResponse, resourcesArray) {
     let mapPoints = [];
