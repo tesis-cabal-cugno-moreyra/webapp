@@ -337,7 +337,12 @@ export default {
           ]
         }
       ],
-      parsedPoints: null,
+      parsedPoints: {
+        mapPoints: [],
+        trackPoints: [],
+        currentPositionPoints: [],
+        resources: []
+      },
       infoWindowPosMapPoint: null,
       infoWinOpenMapPoint: false,
       currentMidxMapPoint: null,
@@ -362,158 +367,35 @@ export default {
       }
     };
   },
-  created() {
+  async created() {
     if (this.$route.params.id) {
       this.id = this.$route.params.id;
     }
     // TODO: GET Incident Resources
-    let getIncidentResourcesResponse = [
-      {
-        id: 74,
-        incident: {
-          id: 23,
-          domain_name: "DominioPersonalizado",
-          incident_type_name: "Capacitaicón",
-          external_assistance: "Without external support",
-          data_status: "Incomplete",
-          status: "Started",
-          location_as_string_reference: "",
-          location_point: {
-            type: "Point",
-            coordinates: [-31.42258864467819, -62.1098611960261]
-          },
-          reference: "",
-          created_at: "2020-10-25T21:52:33.993407Z",
-          updated_at: "2020-10-25T21:52:33.993452Z",
-          cancelled_at: null,
-          finalized_at: null
-        },
-        resource: {
-          id: 1,
-          user: {
-            id: "98fc6d81-30f1-4860-9a21-d9240f72e160",
-            email: "asd123prueba@holis.com",
-            username: "asd123prueba",
-            first_name: "asd1",
-            last_name: "23prueba",
-            is_active: true
-          },
-          domain: {
-            id: 1,
-            created_at: "2020-09-28T00:26:36+0000",
-            updated_at: "2020-11-05T14:44:44+0000",
-            domain_name: "DominioPersonalizado",
-            admin_alias: "Administrador"
-          },
-          type: {
-            id: 2,
-            created_at: "2020-09-28T00:26:36+0000",
-            updated_at: "2020-09-28T00:26:36+0000",
-            name: "Canino",
-            domain_config: 1
-          }
-        },
-        created_at: "2020-11-17T14:44:24+0000",
-        updated_at: "2020-11-17T14:44:24+0000"
-      },
-      {
-        id: 102,
-        incident: {
-          id: 23,
-          domain_name: "DominioPersonalizado",
-          incident_type_name: "Capacitaicón",
-          external_assistance: "Without external support",
-          data_status: "Incomplete",
-          status: "Started",
-          location_as_string_reference: "",
-          location_point: {
-            type: "Point",
-            coordinates: [-31.42258864467819, -62.1098611960261]
-          },
-          reference: "",
-          created_at: "2020-10-25T21:52:33.993407Z",
-          updated_at: "2020-10-25T21:52:33.993452Z",
-          cancelled_at: null,
-          finalized_at: null
-        },
-        resource: {
-          id: 2,
-          user: {
-            id: "a4c50701-1a2d-4960-be64-4966a88f8077",
-            email: "facmir@asd.com",
-            username: "prueba12",
-            first_name: "fac",
-            last_name: "mor",
-            is_active: true
-          },
-          domain: {
-            id: 1,
-            created_at: "2020-09-28T00:26:36+0000",
-            updated_at: "2020-11-05T14:44:44+0000",
-            domain_name: "DominioPersonalizado",
-            admin_alias: "Administrador"
-          },
-          type: {
-            id: 1,
-            created_at: "2020-09-28T00:26:36+0000",
-            updated_at: "2020-09-28T00:26:36+0000",
-            name: "Bombero",
-            domain_config: 1
-          }
-        },
-        created_at: "2020-11-21T19:14:28+0000",
-        updated_at: "2020-11-21T19:14:28+0000"
-      },
-      {
-        id: 118,
-        incident: {
-          id: 23,
-          domain_name: "DominioPersonalizado",
-          incident_type_name: "Capacitaicón",
-          external_assistance: "Without external support",
-          data_status: "Incomplete",
-          status: "Started",
-          location_as_string_reference: "",
-          location_point: {
-            type: "Point",
-            coordinates: [-31.42258864467819, -62.1098611960261]
-          },
-          reference: "",
-          created_at: "2020-10-25T21:52:33.993407Z",
-          updated_at: "2020-10-25T21:52:33.993452Z",
-          cancelled_at: null,
-          finalized_at: null
-        },
-        resource: {
-          id: 3,
-          user: {
-            id: "f196f272-c272-4def-b149-6d0fac71ea14",
-            email: "carlioss@carlioss.com",
-            username: "carlioss",
-            first_name: "carlioss",
-            last_name: "carlioss",
-            is_active: true
-          },
-          domain: {
-            id: 1,
-            created_at: "2020-09-28T00:26:36+0000",
-            updated_at: "2020-11-05T14:44:44+0000",
-            domain_name: "DominioPersonalizado",
-            admin_alias: "Administrador"
-          },
-          type: {
-            id: 1,
-            created_at: "2020-09-28T00:26:36+0000",
-            updated_at: "2020-09-28T00:26:36+0000",
-            name: "Bombero",
-            domain_config: 1
-          }
-        },
-        created_at: "2020-11-21T19:27:51+0000",
-        updated_at: "2020-11-21T19:27:51+0000"
-      }
-    ];
-    // TODO: GET TrackPoints
+    let getIncidentResourcesResponse;
+    let payload = {
+      incident_id: this.id,
+      resource__user__first_name: "",
+      resource__user__last_name: "",
+      resource__type: "",
+      page: 1
+    };
+    await this.$store
+      .dispatch("incident/getIncidentResources", payload)
+      .then(response => {
+        console.log(response);
+        getIncidentResourcesResponse = response.data.results;
+      })
+      .catch(async () => {
+        this.$store.commit("uiParams/dispatchAlert", {
+          text: "Hubo problemas en la busqueda de recursos relacionados",
+          color: "primary",
+          timeout: 4000
+        });
+      })
+      .finally(async () => {
+        this.loadingTable = false;
+      });
     let getIncidentTrackPointsResponse = [
       {
         location: {
@@ -710,12 +592,14 @@ export default {
     showResource: function(resourceId) {
       let listedResource = false;
       let showResource = false;
-      this.parsedPoints.resources.forEach(function(resource) {
-        if (resource.id === resourceId) {
-          listedResource = true;
-          showResource = resource.show;
-        }
-      });
+      if (this.parsedPoints.resources) {
+        this.parsedPoints.resources.forEach(function(resource) {
+          if (resource.id === resourceId) {
+            listedResource = true;
+            showResource = resource.show;
+          }
+        });
+      }
       if (listedResource === false) {
         return false;
       } else {
