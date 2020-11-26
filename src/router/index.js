@@ -21,6 +21,16 @@ const routes = [
     redirect: { name: "Error" }
   },
   {
+    path: "/",
+    name: "IncidentsView",
+    component: IncidentsView,
+    meta: {
+      requires_auth: true,
+      is_admin: true,
+      is_supervisor: true
+    }
+  },
+  {
     path: "/login",
     name: "Login",
     component: Login
@@ -194,7 +204,7 @@ router.beforeEach((to, from, next) => {
       next();
     } else {
       next({
-        name: "incidentsView"
+        name: "IncidentsView"
       });
     }
   } else {

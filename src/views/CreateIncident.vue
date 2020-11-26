@@ -155,14 +155,14 @@ export default {
           });
       }
       this.tryToCreateIncident = false;
-      this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+      await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
     },
     placeChanged(place) {
       this.placeError = false;
       this.place = place;
     },
     goIncidentView() {
-      this.$router.push({ name: "incidentsView" });
+      this.$router.push({ name: "IncidentsView" });
     },
     inputsFilled() {
       /* Try to find at least one input empty. */
@@ -226,7 +226,7 @@ export default {
     },
     closeModal() {
       this.showIncidentResourceList = false;
-      this.$router.push({ name: "incidentsView" });
+      this.$router.push({ name: "IncidentsView" });
     }
   },
   computed: {
@@ -240,7 +240,7 @@ export default {
       if (this.incidentConfig !== null) {
         this.incidentConfig.forEach(incident => {
           if (
-            incident.incidentAbstraction == this.incidentAbstractionSelected
+            incident.incidentAbstraction === this.incidentAbstractionSelected
           ) {
             incidentTypes = incident.incidentTypes;
           }

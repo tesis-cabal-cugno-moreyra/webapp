@@ -208,7 +208,7 @@ export default {
         .catch(async () => {
           if (searchInfo.page != 1) {
             this.page = this.page - 1;
-            this.AdminResource();
+            await this.searchAdmin();
           } else {
             this.$store.commit("uiParams/dispatchAlert", {
               text: "No hay resultados con esas especificaciones",
@@ -266,8 +266,8 @@ export default {
       };
       const userState = this.isUserActiveFilter ? "desactivado" : "activado";
       await this.$store
-        .dispatch("domainConfig/postChangeStatus", userInfo)
-        .then(async () => {
+        .dispatch("domainConfig/postChangeStatusUser", userInfo)
+        .then(() => {
           this.searchAdmin();
           this.$store.commit("uiParams/dispatchAlert", {
             text: "Usuario " + userState + " correctamente",

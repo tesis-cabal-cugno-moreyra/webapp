@@ -233,7 +233,7 @@ export default {
           this.loaduserSupervisorData(response);
           this.referenceSearch = searchInfo;
         })
-        .catch(async () => {
+        .catch(() => {
           if (searchInfo.page != 1) {
             this.page = this.page - 1;
             this.serchSupervisor();
@@ -245,7 +245,7 @@ export default {
             });
           }
           this.loadingTable = false;
-          await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+          this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
         })
         .finally(async () => {
           await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
@@ -278,8 +278,8 @@ export default {
       };
       const userState = this.isUserActiveFilter ? "desactivado" : "activado";
       await this.$store
-        .dispatch("domainConfig/postChangeStatus", userInfo)
-        .then(async () => {
+        .dispatch("domainConfig/postChangeStatusUser", userInfo)
+        .then(() => {
           this.serchSupervisor();
           this.$store.commit("uiParams/dispatchAlert", {
             text: "Usuario " + userState + " correctamente",
