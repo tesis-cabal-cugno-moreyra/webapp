@@ -168,7 +168,7 @@
                       mdi-google-maps
                     </v-icon>
                   </template>
-                  <span>Emi apretame ;)</span>
+                  <span>Ver mapa</span>
                 </v-tooltip>
 
                 <v-tooltip bottom>
