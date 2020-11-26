@@ -641,15 +641,34 @@ export default {
         resource_id: 3
       }
     ];
-    // TODO: GET MapPoints
-    let getIncidentMapPointsResponse = [];
 
-    let parsedPoints = incidentPointsAdapter.parsePoints(
+    let getIncidentMapPointsResponse = [
+      {
+        location: {
+          type: "Point",
+          coordinates: [-31.425117, -62.086124]
+        },
+        collected_at: "2020-11-21T00:26:38+0000",
+        internal_type: "MapPoint",
+        resource_id: 3,
+        comment: "Bla bla bla 3"
+      },
+      {
+        location: {
+          type: "Point",
+          coordinates: [-31.42528, -62.085035]
+        },
+        collected_at: "2020-11-21T00:26:37+0000",
+        internal_type: "MapPoint",
+        resource_id: 2,
+        comment: "Bla bla bla 2"
+      }
+    ];
+    this.parsedPoints = incidentPointsAdapter.parsePoints(
       getIncidentResourcesResponse,
       getIncidentTrackPointsResponse,
       getIncidentMapPointsResponse
     );
-    this.parsedPoints = parsedPoints;
 
     if (!("geolocation" in navigator)) {
       this.errorStr = "Geolocation is not available.";
