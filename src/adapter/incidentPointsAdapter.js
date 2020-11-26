@@ -238,11 +238,12 @@ export default {
   },
   getTrackPoints(apiTrackPointsResponse, resourcesArray) {
     let trackPoints = [];
+    let context = this;
     resourcesArray.forEach(function(resource) {
       trackPoints.push({
         resourceName: resource.name,
         resourceId: resource.id,
-        color: "blue",
+        color: context.getColor(),
         route: []
       });
     });
@@ -311,6 +312,6 @@ export default {
     console.log(colorSelected);
     colors.shift();
     colors.push(colorSelected);
-    return colorSelected;
+    return colorSelected.toString();
   }
 };
