@@ -222,8 +222,6 @@ export default {
       apiTrackPointsResponse,
       resourcesArray
     );
-    console.log(parsedTrackPoints);
-    console.log(parsedCurrentPositionPoint);
     console.log("Datos falopa:");
     console.log(apiMapPointsResponse);
     // TODO: pass real API response to this function
