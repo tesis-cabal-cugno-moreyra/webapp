@@ -236,8 +236,6 @@ export default {
   getMapPoints(apiMapPointsResponse, resourcesArray) {
     let mapPoints = [];
     apiMapPointsResponse.forEach(function(mapPoint) {
-      console.log(mapPoint);
-      console.log(resourcesArray);
       resourcesArray.forEach(function(resource) {
         if (resource.id === mapPoint.resource_id) {
           mapPoints.push({
@@ -283,7 +281,7 @@ export default {
       currentPositionPoints.push({
         resourceName: resource.name,
         resourceId: resource.id,
-        resourceType: "person",
+        resourceType: "person", // TODO: Personalizar los iconos para personas y vehículos.
         position: { lat: null, lng: null }
       });
     });
@@ -331,7 +329,6 @@ export default {
   },
   getColor() {
     let colorSelected = colors[0];
-    console.log(colorSelected);
     colors.shift();
     colors.push(colorSelected);
     return colorSelected.toString();

@@ -371,7 +371,6 @@ export default {
     if (this.$route.params.id) {
       this.id = this.$route.params.id;
     }
-    // TODO: GET Incident Resources
     let getIncidentResourcesResponse;
     let payload = {
       incident_id: this.id,
@@ -384,7 +383,6 @@ export default {
     await this.$store
       .dispatch("incident/getIncidentResources", payload)
       .then(response => {
-        console.log(response);
         getIncidentResourcesResponse = response.data.results;
       })
       .catch(async () => {
@@ -402,7 +400,6 @@ export default {
     await this.$store
       .dispatch("incident/getIncidentTrackPoints", { incident_id: this.id })
       .then(response => {
-        console.log(response);
         getIncidentTrackPointsResponse = response.data;
       })
       .catch(async () => {
@@ -416,130 +413,24 @@ export default {
       .finally(async () => {
         this.loadingTable = false;
       });
-    // let getIncidentTrackPointsResponse = [
-    //   {
-    //     location: {
-    //       type: "Point",
-    //       coordinates: [-31.425654, -62.085296]
-    //     },
-    //     collected_at: "2020-11-21T00:26:36+0000",
-    //     internal_type: "TrackPoint",
-    //     resource_id: 1
-    //   },
-    //   {
-    //     location: {
-    //       type: "Point",
-    //       coordinates: [-31.42580050120433, -62.08465511181211]
-    //     },
-    //     collected_at: "2020-11-21T00:26:37+0000",
-    //     internal_type: "TrackPoint",
-    //     resource_id: 1
-    //   },
-    //   {
-    //     location: {
-    //       type: "Point",
-    //       coordinates: [-31.426257644820797, -62.082022772727186]
-    //     },
-    //     collected_at: "2020-11-21T00:26:38+0000",
-    //     internal_type: "TrackPoint",
-    //     resource_id: 1
-    //   },
-    //   {
-    //     location: {
-    //       type: "Point",
-    //       coordinates: [-31.424790262364997, -62.08060739451158]
-    //     },
-    //     collected_at: "2020-11-21T00:26:39+0000",
-    //     internal_type: "TrackPoint",
-    //     resource_id: 1
-    //   },
-    //   {
-    //     location: {
-    //       type: "Point",
-    //       coordinates: [-31.425581, -62.085956]
-    //     },
-    //     collected_at: "2020-11-21T00:26:36+0000",
-    //     internal_type: "TrackPoint",
-    //     resource_id: 2
-    //   },
-    //   {
-    //     location: {
-    //       type: "Point",
-    //       coordinates: [-31.42528, -62.085035]
-    //     },
-    //     collected_at: "2020-11-21T00:26:37+0000",
-    //     internal_type: "TrackPoint",
-    //     resource_id: 2
-    //   },
-    //   {
-    //     location: {
-    //       type: "Point",
-    //       coordinates: [-31.425654, -62.085296]
-    //     },
-    //     collected_at: "2020-11-21T00:26:38+0000",
-    //     internal_type: "TrackPoint",
-    //     resource_id: 2
-    //   },
-    //   {
-    //     location: {
-    //       type: "Point",
-    //       coordinates: [-31.425654, -62.085296]
-    //     },
-    //     collected_at: "2020-11-21T00:26:39+0000",
-    //     internal_type: "TrackPoint",
-    //     resource_id: 2
-    //   },
-    //   {
-    //     location: {
-    //       type: "Point",
-    //       coordinates: [-31.425082, -62.085751]
-    //     },
-    //     collected_at: "2020-11-21T00:26:39+0000",
-    //     internal_type: "TrackPoint",
-    //     resource_id: 3
-    //   },
-    //   {
-    //     location: {
-    //       type: "Point",
-    //       coordinates: [-31.425117, -62.086124]
-    //     },
-    //     collected_at: "2020-11-21T00:26:38+0000",
-    //     internal_type: "TrackPoint",
-    //     resource_id: 3
-    //   },
-    //   {
-    //     location: {
-    //       type: "Point",
-    //       coordinates: [-31.425654, -62.085296]
-    //     },
-    //     collected_at: "2020-11-21T00:26:37+0000",
-    //     internal_type: "TrackPoint",
-    //     resource_id: 3
-    //   }
-    // ];
-    // TODO: GET MapPoints
-    let getIncidentMapPointsResponse = [
-      {
-        location: {
-          type: "Point",
-          coordinates: [-31.425117, -62.086124]
-        },
-        collected_at: "2020-11-21T00:26:38+0000",
-        internal_type: "MapPoint",
-        resource_id: 3,
-        comment: "Bla bla bla 3"
-      },
-      {
-        location: {
-          type: "Point",
-          coordinates: [-31.42528, -62.085035]
-        },
-        collected_at: "2020-11-21T00:26:37+0000",
-        internal_type: "MapPoint",
-        resource_id: 2,
-        comment: "Bla bla bla 2"
-      }
-    ];
+
+    let getIncidentMapPointsResponse;
+    await this.$store
+      .dispatch("incident/getIncidentMapPoints", { incident_id: this.id })
+      .then(response => {
+        getIncidentMapPointsResponse = response.data;
+      })
+      .catch(async () => {
+        this.$store.commit("uiParams/dispatchAlert", {
+          text:
+            "Hubo problemas en la busqueda de los mappoints de recursos relacionados",
+          color: "primary",
+          timeout: 4000
+        });
+      })
+      .finally(async () => {
+        this.loadingTable = false;
+      });
     this.parsedPoints = incidentPointsAdapter.parsePoints(
       getIncidentResourcesResponse,
       getIncidentTrackPointsResponse,
@@ -577,6 +468,8 @@ export default {
       this.infoWindowPosMapPoint = marker.position;
       this.infoOptionsMapPoint.content =
         "<strong style='color: black !important'>" +
+        marker.resourceName +
+        ": " +
         marker.description +
         "</strong>";
 

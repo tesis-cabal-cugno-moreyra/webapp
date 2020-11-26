@@ -91,5 +91,16 @@ export default {
         return reject(e);
       }
     });
+  },
+  getIncidentMapPoints(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlSearch = `/api/v1/incidents/${payload.incident_id}/map-points/`;
+        return resolve(await api.get(urlSearch));
+      } catch (e) {
+        return reject(e);
+      }
+    });
   }
 };
