@@ -436,7 +436,7 @@ export default {
       getIncidentTrackPointsResponse,
       getIncidentMapPointsResponse
     );
-
+    // TODO: Pasar por prop los datos del incidente para centrar el mapa en la geolocalización del mismo.
     if (!("geolocation" in navigator)) {
       this.errorStr = "Geolocation is not available.";
       return;
@@ -455,14 +455,6 @@ export default {
       }
     );
   },
-  computed: {
-    items() {
-      return Array.from({ length: this.length }, (k, v) => v + 1);
-    },
-    length() {
-      return 15;
-    }
-  },
   methods: {
     toggleInfoWindowMapPoint: function(marker, idx) {
       this.infoWindowPosMapPoint = marker.position;
@@ -472,14 +464,9 @@ export default {
         ": " +
         marker.description +
         "</strong>";
-
-      //check if its the same marker that was selected if yes toggle
       if (this.currentMidxMapPoint === idx) {
         this.infoWinOpenMapPoint = !this.infoWinOpenMapPoint;
-      }
-
-      //if different marker set infowindow to open and reset current marker index
-      else {
+      } else {
         this.infoWinOpenMapPoint = true;
         this.currentMidxMapPoint = idx;
       }
@@ -491,13 +478,9 @@ export default {
         marker.resourceName +
         "</strong>";
 
-      //check if its the same marker that was selected if yes toggle
       if (this.currentMidxCurrentPosition === idx) {
         this.infoWinOpenCurrentPosition = !this.infoWinOpenCurrentPosition;
-      }
-
-      //if different marker set infowindow to open and reset current marker index
-      else {
+      } else {
         this.infoWinOpenCurrentPosition = true;
         this.currentMidxCurrentPosition = idx;
       }
