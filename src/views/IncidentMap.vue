@@ -143,6 +143,7 @@ import incidentPointsAdapter from "@/adapter/incidentPointsAdapter";
 
 export default {
   name: "IncidentMap",
+  props: ["incidentData"],
   data() {
     return {
       id: null,
@@ -368,6 +369,7 @@ export default {
     };
   },
   async created() {
+    console.log(this.incidentData);
     if (this.$route.params.id) {
       this.id = this.$route.params.id;
     }

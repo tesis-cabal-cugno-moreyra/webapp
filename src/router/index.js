@@ -108,7 +108,10 @@ const routes = [
       requires_auth: true,
       is_admin: true,
       is_supervisor: true
-    }
+    },
+    props: route => ({
+      ...route.params
+    })
   },
   {
     path: "/incidents-view",
