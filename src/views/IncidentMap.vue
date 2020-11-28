@@ -369,7 +369,6 @@ export default {
     };
   },
   async created() {
-    console.log(this.incidentData);
     if (this.$route.params.id) {
       this.id = this.$route.params.id;
     }
@@ -443,19 +442,35 @@ export default {
       this.errorStr = "Geolocation is not available.";
       return;
     }
-    this.gettingLocation = true;
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        this.gettingLocation = true;
-        this.location = pos;
-        this.centerLatitude = this.location.coords.latitude;
-        this.centerLongitude = this.location.coords.longitude;
-      },
-      err => {
-        this.gettingLocation = false;
-        this.errorStr = err.message;
-      }
-    );
+    if (this.incidentData) {
+      this.gettingLocation = true;
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          this.gettingLocation = true;
+          this.location = pos;
+          this.centerLatitude = this.incidentData.location_point.coordinates[0];
+          this.centerLongitude = this.incidentData.location_point.coordinates[1];
+        },
+        err => {
+          this.gettingLocation = false;
+          this.errorStr = err.message;
+        }
+      );
+    } else {
+      this.gettingLocation = true;
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          this.gettingLocation = true;
+          this.location = pos;
+          this.centerLatitude = this.location.coords.latitude;
+          this.centerLongitude = this.location.coords.longitude;
+        },
+        err => {
+          this.gettingLocation = false;
+          this.errorStr = err.message;
+        }
+      );
+    }
   },
   methods: {
     toggleInfoWindowMapPoint: function(marker, idx) {

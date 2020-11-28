@@ -487,7 +487,6 @@ export default {
       this.dialogChangeVisibility = true;
     },
     goToMap(incident) {
-      console.log(incident);
       this.$router.push({
         name: "IncidentMap",
         params: { id: incident.id, incidentData: incident }
