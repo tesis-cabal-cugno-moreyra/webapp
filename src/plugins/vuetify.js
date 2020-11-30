@@ -11,6 +11,7 @@ export default new Vuetify({
   },
   theme: {
     themes: {
+      // TODO: Arreglar la selección de colores en modo claro, modo oscuro están bien.
       light: {
         primary: "#cc4125",
         grey_selected: "#999999",

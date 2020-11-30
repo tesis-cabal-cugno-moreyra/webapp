@@ -12,7 +12,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="grey" text @click="$emit('close-modal')">
-            Calcelar
+            Cancelar
           </v-btn>
           <v-btn color="green" text @click="logout">
             Aceptar

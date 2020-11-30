@@ -49,6 +49,9 @@ export default {
     return new Promise(async (resolve, reject) => {
       try {
         let urlSearch = `/api/v1/incidents/${payload.incident_id}/resources/?resource__user__first_name=${payload.resource__user__first_name}&resource__user__last_name=${payload.resource__user__last_name}&resource__type__name=${payload.resource__type}&page=${payload.page}`;
+        if (payload.page_size) {
+          urlSearch = `${urlSearch}&page_size=${payload.page_size}`;
+        }
         return resolve(await api.get(urlSearch));
       } catch (e) {
         return reject(e);
@@ -73,6 +76,28 @@ export default {
       try {
         let urlResourceIncident = `/api/v1/incidents/${payload.incidentId}/resources/${payload.resourceId}/`;
         return resolve(await api.delete(urlResourceIncident));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  getIncidentTrackPoints(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlSearch = `/api/v1/incidents/${payload.incident_id}/track-points/`;
+        return resolve(await api.get(urlSearch));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  getIncidentMapPoints(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlSearch = `/api/v1/incidents/${payload.incident_id}/map-points/`;
+        return resolve(await api.get(urlSearch));
       } catch (e) {
         return reject(e);
       }

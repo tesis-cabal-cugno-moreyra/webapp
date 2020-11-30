@@ -162,13 +162,13 @@
                       v-on="on"
                       small
                       color="pink"
-                      @click="functionParaElEmi(item)"
+                      @click="goToMap(item)"
                       :class="['mr-2']"
                     >
                       mdi-google-maps
                     </v-icon>
                   </template>
-                  <span>Emi apretame ;)</span>
+                  <span>Ver mapa</span>
                 </v-tooltip>
 
                 <v-tooltip bottom>
@@ -486,13 +486,11 @@ export default {
       this.incidentSelected = incidentSelected;
       this.dialogChangeVisibility = true;
     },
-    functionParaElEmi(incidentSelectData) {
-      console.log(incidentSelectData);
-      alert(
-        "Emi el id de este incidente es: " +
-          incidentSelectData.id +
-          " para mas información mira el console log"
-      );
+    goToMap(incident) {
+      this.$router.push({
+        name: "IncidentMap",
+        params: { id: incident.id, incidentData: incident }
+      });
     },
     openDialogChangeStatus(incidentSelected) {
       this.incidentSelected = incidentSelected;

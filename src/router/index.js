@@ -11,6 +11,7 @@ import ResourceManager from "@/views/ResourceManager";
 import AdminManager from "@/views/AdminManager";
 import IncidentsView from "@/views/IncidentsView";
 import IncidentDetails from "@/components/IncidentDetails";
+import IncidentMap from "@/views/IncidentMap";
 
 Vue.use(VueRouter);
 
@@ -98,6 +99,29 @@ const routes = [
       is_admin: true,
       is_supervisor: true
     }
+  },
+  {
+    path: "/incident-map/:id",
+    name: "IncidentMap",
+    component: IncidentMap,
+    meta: {
+      requires_auth: true,
+      is_admin: true,
+      is_supervisor: true
+    },
+    props: route => ({
+      ...route.params
+    })
+  },
+  {
+    path: "/incidents-view",
+    name: "IncidentsView",
+    component: IncidentsView,
+    meta: {
+      requires_auth: true,
+      is_admin: true,
+      is_supervisor: true
+    }
   }
 ];
 
@@ -136,6 +160,7 @@ const tokenCheck = (
     rolesCheck(to, next, isAdmin, isSupervisor, isResource);
   } else {
     //TODO: Renovar token, si no se puede mandar a vista de error! En la vista de error, decir que el token es invalido, y brindar boton a login. Vista de error toma título, texto del boton  y nombre de ruta a redireccionar ()
+    this.$store.dispatch("uiParams/hideNavBar");
     next({
       name: "Login"
     });
