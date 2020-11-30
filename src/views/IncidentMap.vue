@@ -439,7 +439,7 @@ export default {
     );
     // TODO: Pasar por prop los datos del incidente para centrar el mapa en la geolocalización del mismo.
     if (this.incidentData) {
-      this.gettingLocation = true;
+      // this.gettingLocation = true;
       navigator.geolocation.getCurrentPosition(
         pos => {
           this.gettingLocation = true;
@@ -448,7 +448,6 @@ export default {
           this.centerLongitude = this.incidentData.location_point.coordinates[1];
         },
         err => {
-          this.gettingLocation = false;
           this.errorStr = err.message;
         }
       );
@@ -464,16 +463,13 @@ export default {
           }
         });
       if (geolocationIsAllowed) {
-        this.gettingLocation = true;
         navigator.geolocation.getCurrentPosition(
           pos => {
-            this.gettingLocation = true;
             this.location = pos;
             this.centerLatitude = this.location.coords.latitude;
             this.centerLongitude = this.location.coords.longitude;
           },
           err => {
-            this.gettingLocation = false;
             this.errorStr = err.message;
           }
         );
