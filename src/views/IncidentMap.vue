@@ -438,10 +438,6 @@ export default {
       getIncidentMapPointsResponse
     );
     // TODO: Pasar por prop los datos del incidente para centrar el mapa en la geolocalización del mismo.
-    if (!("geolocation" in navigator)) {
-      this.errorStr = "Geolocation is not available.";
-      return;
-    }
     if (this.incidentData) {
       this.gettingLocation = true;
       navigator.geolocation.getCurrentPosition(
@@ -457,19 +453,38 @@ export default {
         }
       );
     } else {
-      this.gettingLocation = true;
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          this.gettingLocation = true;
-          this.location = pos;
-          this.centerLatitude = this.location.coords.latitude;
-          this.centerLongitude = this.location.coords.longitude;
-        },
-        err => {
-          this.gettingLocation = false;
-          this.errorStr = err.message;
-        }
-      );
+      let geolocationIsAllowed = false;
+      await navigator.permissions
+        .query({ name: "geolocation" })
+        .then(function(result) {
+          if (result.state === "granted") {
+            geolocationIsAllowed = true;
+          } else {
+            geolocationIsAllowed = false;
+          }
+        });
+      if (geolocationIsAllowed) {
+        this.gettingLocation = true;
+        navigator.geolocation.getCurrentPosition(
+          pos => {
+            this.gettingLocation = true;
+            this.location = pos;
+            this.centerLatitude = this.location.coords.latitude;
+            this.centerLongitude = this.location.coords.longitude;
+          },
+          err => {
+            this.gettingLocation = false;
+            this.errorStr = err.message;
+          }
+        );
+      } else {
+        this.$store.commit("uiParams/dispatchAlert", {
+          text:
+            "El sitio necesita acceder a su ubicación para poder visualizar el mapa. Luego de habilitar su ubicación, recargue la página por favor.",
+          color: "primary",
+          timeout: 25000
+        });
+      }
     }
   },
   methods: {
