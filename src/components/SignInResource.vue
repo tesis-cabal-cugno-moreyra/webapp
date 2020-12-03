@@ -2,10 +2,10 @@
   <v-main>
     <v-form ref="form" lazy-validation>
       <v-row justify="center">
-        <v-dialog v-model="showSignInSupervisor" persistent max-width="600px">
+        <v-dialog v-model="showSignInResource" persistent max-width="600px">
           <v-card>
             <v-card-title>
-              <span class="headline">Registro de supervisor</span>
+              <span class="headline">Registro de resource</span>
             </v-card-title>
             <v-card-text>
               <v-container>
@@ -76,8 +76,8 @@
                   </v-col>
                   <v-col cols="12" sm="6">
                     <v-autocomplete
-                      v-model="supervisorAliasesSelect"
-                      :items="aliases.supervisorAliases"
+                      v-model="autoCompleteTypeResource"
+                      :items="typeResourceSelectedList"
                       item-text="name"
                       label="Cargo a ocupar"
                       :rules="[v => !!v || 'Debe seleccionar un alias']"
@@ -94,7 +94,7 @@
                 color="primary"
                 :loading="loadingCreate"
                 text
-                v-on:click="validateAndCreateSupervisor()"
+                v-on:click="validateAndCreateResource()"
                 >Enviar</v-btn
               >
               <v-btn color="primary" text @click="onClose()">Cerrar</v-btn>
@@ -110,13 +110,12 @@
 import { mapGetters } from "vuex";
 
 export default {
-  name: "SignInSupervisor",
+  name: "SignInResource",
   data: function() {
     return {
       loadingCreate: false,
       adminMessaggeProblem: false,
       messaggeProblem: "",
-      supervisorAliases: [],
       userName: "",
       name: "",
       lastName: "",
@@ -131,7 +130,8 @@ export default {
         v => !!v || "El E-mail es obligatorio",
         v => /.+@.+\..+/.test(v) || "El e-mail debe ser valido"
       ],
-      supervisorAliasesSelect: null,
+      autoCompleteTypeResource: "",
+      typeResourceSelectedList: [],
       password: "",
       confirmPassword: "",
       confirmPasswordRules: [
@@ -139,8 +139,18 @@ export default {
         v => v == this.password || "Las contreñas no son iguales"
       ],
       errorEmailField: null,
-      errorUserNameField: null
+      errorUserNameField: null,
+      domainAccessCode: null
     };
+  },
+  async created() {
+    this.typeResourceSelectedList = this.domainConfig.incidentAbstractions[1].types[0].resourceTypes;
+    await this.$store
+      .dispatch("domainConfig/getDomainAccessCode")
+      .then(response => {
+        this.domainAccessCode = response.data.domain_code;
+      })
+      .finally();
   },
   methods: {
     clearCustomErrors() {
@@ -148,10 +158,9 @@ export default {
       this.errorUserNameField = null;
     },
     onClose() {
-      this.clearCustomErrors();
-      this.$store.commit("uiParams/changeSignInSupervisorState", false);
+      this.$store.commit("uiParams/changeSignInResourceState", false);
     },
-    async validateAndCreateSupervisor() {
+    async validateAndCreateResource() {
       this.loadingCreate = true;
       this.clearCustomErrors();
       let isValid = this.$refs.form.validate();
@@ -162,15 +171,14 @@ export default {
           first_name: this.name,
           last_name: this.lastName,
           email: this.email,
-          domain_code: this.domainCode
+          domain_code: this.domainAccessCode
         };
 
-        await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
         await this.$store
           .dispatch("domainConfig/createUser", userInfo)
           .then(response => {
             let userId = response.data.id;
-            this.createSupervisorProfile(userId);
+            this.createResourceProfile(userId);
           })
           .catch(async responseError => {
             if (responseError.data.email) {
@@ -206,30 +214,28 @@ export default {
         });
       }
     },
-
-    async createSupervisorProfile(userId) {
-      let supervisorInfo = {
-        domain_code: this.domainCode,
+    async createResourceProfile(userId) {
+      let ResourceInfo = {
+        domain_code: this.domainAccessCode,
         user: userId,
         domain_name: this.domainConfig.name,
-        alias: this.supervisorAliasesSelect
+        type: this.autoCompleteTypeResource
       };
 
-      // Luego de creado el usuario, le da sus valores a el supervisor
+      // Luego de creado el usuario, le da sus valores a el recurso
       await this.$store
-        .dispatch("domainConfig/createSupervisor", supervisorInfo)
+        .dispatch("domainConfig/createResource", ResourceInfo)
         .then(async () => {
           this.onClose();
-          await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
           this.$store.commit("uiParams/dispatchAlert", {
-            text: "Se creo el usuario supervisor, debe esperar habilitacion",
+            text: "Se creo el usuario recurso, debe esperar habilitacion",
             color: "success",
             timeout: 5000
           });
         })
         .catch(async () => {
           this.$store.commit("uiParams/dispatchAlert", {
-            text: "Problemas dentro de la creacion del supervisor",
+            text: "Problemas dentro de la creacion del recurso",
             color: "primary"
           });
         });
@@ -237,13 +243,9 @@ export default {
   },
   computed: {
     ...mapGetters({
-      domainCode: "domainConfig/domainCode",
-      showSignInSupervisor: "uiParams/showSignInSupervisor",
       domainConfig: "domainConfig/domainConfig",
-      aliases: "domainConfig/aliases"
+      showSignInResource: "uiParams/showSignInResource"
     })
   }
 };
 </script>
-
-<style></style>

@@ -3,6 +3,7 @@ export default {
   errorDetected: false,
   showNavBar: true,
   showSignInSupervisor: false,
+  showSignInResource: false,
   snackbar: {
     visible: false,
     color: "primary",

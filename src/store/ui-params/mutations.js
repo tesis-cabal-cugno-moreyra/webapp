@@ -8,6 +8,9 @@ export default {
   changeSignInSupervisorState(state, value) {
     state.showSignInSupervisor = value;
   },
+  changeSignInResourceState(state, value) {
+    state.showSignInResource = value;
+  },
   dispatchAlert(state, payload) {
     state.snackbar.text = payload.text;
 
