@@ -139,8 +139,19 @@ export default {
         v => v == this.password || "Las contreñas no son iguales"
       ],
       errorEmailField: null,
-      errorUserNameField: null
+      errorUserNameField: null,
+      domainCodeAccess: ""
     };
+  },
+  created() {
+    if (this.domainCode === null) {
+      this.$store
+        .dispatch("domainConfig/getDomainAccessCode")
+        .then(response => {
+          this.domainCodeAccess = response.data.domain_code;
+        })
+        .finally();
+    }
   },
   methods: {
     clearCustomErrors() {
@@ -162,10 +173,9 @@ export default {
           first_name: this.name,
           last_name: this.lastName,
           email: this.email,
-          domain_code: this.domainCode
+          domain_code:
+            this.domainCode === null ? this.domainCodeAccess : this.domainCode
         };
-
-        await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
         await this.$store
           .dispatch("domainConfig/createUser", userInfo)
           .then(response => {
@@ -204,12 +214,14 @@ export default {
           text: "Debe rellenar todos los campos",
           color: "primary"
         });
+        this.loadingCreate = false;
       }
     },
 
     async createSupervisorProfile(userId) {
       let supervisorInfo = {
-        domain_code: this.domainCode,
+        domain_code:
+          this.domainCode === null ? this.domainCodeAccess : this.domainCode,
         user: userId,
         domain_name: this.domainConfig.name,
         alias: this.supervisorAliasesSelect
@@ -220,7 +232,6 @@ export default {
         .dispatch("domainConfig/createSupervisor", supervisorInfo)
         .then(async () => {
           this.onClose();
-          await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
           this.$store.commit("uiParams/dispatchAlert", {
             text: "Se creo el usuario supervisor, debe esperar habilitacion",
             color: "success",

@@ -5,7 +5,7 @@
         <v-dialog v-model="showSignInResource" persistent max-width="600px">
           <v-card>
             <v-card-title>
-              <span class="headline">Registro de resource</span>
+              <span class="headline">Registro de Recursos</span>
             </v-card-title>
             <v-card-text>
               <v-container>
@@ -111,6 +111,7 @@ import { mapGetters } from "vuex";
 
 export default {
   name: "SignInResource",
+
   data: function() {
     return {
       loadingCreate: false,
@@ -143,8 +144,13 @@ export default {
       domainAccessCode: null
     };
   },
-  async created() {
-    this.typeResourceSelectedList = this.domainConfig.incidentAbstractions[1].types[0].resourceTypes;
+  async mounted() {
+    if (this.typeResourceSelectedList.length === 0) {
+      this.$store.dispatch("domainConfig/getDomainConfig").then(response => {
+        this.typeResourceSelectedList =
+          response.data.incidentAbstractions[1].types[0].resourceTypes;
+      });
+    }
     await this.$store
       .dispatch("domainConfig/getDomainAccessCode")
       .then(response => {
@@ -173,7 +179,6 @@ export default {
           email: this.email,
           domain_code: this.domainAccessCode
         };
-
         await this.$store
           .dispatch("domainConfig/createUser", userInfo)
           .then(response => {
