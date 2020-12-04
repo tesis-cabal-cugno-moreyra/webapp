@@ -66,6 +66,16 @@ export default {
       }
     });
   },
+  createAdmin(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        return resolve(await api.post("/api/v1/admins/", payload));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
   createUser(context, payload) {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {

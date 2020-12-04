@@ -13,5 +13,8 @@ export default {
   },
   showSignInResource(state) {
     return state.showSignInResource;
+  },
+  showSignInAdmin(state) {
+    return state.showSignInAdmin;
   }
 };
