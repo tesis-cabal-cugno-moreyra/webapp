@@ -50,7 +50,7 @@
                   v-model="incidentCompletedSelected"
                   :items="incidentCompleted"
                   v-on:change="searchIncident()"
-                  label="Visibilidad del incidente"
+                  label="Completitud de Detalles del incidente"
                 ></v-select>
               </v-col>
             </v-row>
@@ -137,6 +137,21 @@
                       v-bind="attrs"
                       v-on="on"
                       small
+                      color="grey_selected"
+                      @click="openDialogEditIncidentDetails(item)"
+                      :class="['mr-2']"
+                    >
+                      mdi-content-save-edit
+                    </v-icon>
+                  </template>
+                  <span>Completar datos del incidente</span>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
+                      v-bind="attrs"
+                      v-on="on"
+                      small
                       color="success"
                       @click="openDialogEditResource(item)"
                       :class="['mr-2']"
@@ -215,6 +230,12 @@
             ></v-pagination>
           </v-card-text>
         </v-card>
+        <IncidentDetails
+          :isComponentEnabled="dialogIncidentDetails"
+          :incidentData="incidentSelected"
+          @incidentDetailsClosed="incidentDetailsClosed"
+          @detailsLoadedSuccessfully="detailsLoadedSuccessfully"
+        />
       </v-layout>
     </v-container>
   </v-app>
@@ -222,11 +243,12 @@
 
 <script>
 import { mapGetters } from "vuex";
+import IncidentDetails from "@/components/IncidentDetails";
 import IncidentResourceManager from "@/components/IncidentResourceManager";
 
 export default {
   name: "IncidentsView",
-  components: { IncidentResourceManager },
+  components: { IncidentDetails, IncidentResourceManager },
   data: function() {
     return {
       showIncidentResourceList: false,
@@ -258,26 +280,27 @@ export default {
       headersIncident: [
         { text: "Estado", sortable: false, value: "statusTranslate" },
         {
-          text: "Información del estado",
+          text: "Completitud de detalles",
           sortable: false,
           value: "data_status"
         },
         { text: "Visibilidad", sortable: false, value: "visibility" },
         {
-          text: "Referencia",
+          text: "Referencia de Ubicación",
           sortable: false,
           value: "location_as_string_reference"
         },
         {
-          text: "Cambiar el estado",
+          text: "Acciones",
           value: "actions",
           sortable: false
         }
       ],
-      incidentSelected: [],
+      incidentSelected: {},
       dialogChangeVisibility: false,
       dialogChangeStatus: false,
-      dialogEditResource: false
+      dialogEditResource: false,
+      dialogIncidentDetails: false
     };
   },
   async created() {
@@ -485,6 +508,16 @@ export default {
     openDialogChangeVisibility(incidentSelected) {
       this.incidentSelected = incidentSelected;
       this.dialogChangeVisibility = true;
+    },
+    openDialogEditIncidentDetails(incidentSelected) {
+      this.incidentSelected = incidentSelected;
+      this.dialogIncidentDetails = true;
+    },
+    incidentDetailsClosed() {
+      this.dialogIncidentDetails = false;
+    },
+    async detailsLoadedSuccessfully() {
+      await this.searchIncident();
     },
     goToMap(incident) {
       this.$router.push({

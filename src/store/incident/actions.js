@@ -44,6 +44,17 @@ export default {
       }
     });
   },
+  postIncidentDetails(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlApi = `/api/v1/incidents/${payload.incidentId}/details/`;
+        return resolve(await api.post(urlApi, payload));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
   getIncidentResources(context, payload) {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
