@@ -146,7 +146,7 @@ export default {
               roles: roles
             };
             this.$store.dispatch("restAuth/updateUser", user);
-            this.$router.push({ name: "Home" });
+            this.$router.push({ name: "IncidentsView" });
           })
           .catch(e => {
             if (e.status === 400 && e.statusText === "Bad Request") {

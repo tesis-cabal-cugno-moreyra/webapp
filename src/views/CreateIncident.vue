@@ -22,10 +22,10 @@
                 label="Tipo de Incidente"
               ></v-select>
               <v-select
-                v-model="visibility"
-                :items="visibilityList"
-                :error="visibilityError"
-                :error-messages="visibilityErrorMessage"
+                v-model="external_assistance"
+                :items="external_assistanceList"
+                :error="external_assistanceError"
+                :error-messages="external_assistanceErrorMessage"
                 v-on:change="resetVisibilityError"
                 label="Visibilidad"
               ></v-select>
@@ -71,7 +71,7 @@
               color="black_selected"
               class="ma-5 pa-3"
               x-large
-              v-on:click="goHome"
+              v-on:click="goIncidentView"
               >Cancelar</v-btn
             >
           </v-container>
@@ -102,10 +102,13 @@ export default {
       incidentTypeSelected: "",
       incidentTypesError: false,
       incidentTypesErrorMessage: "",
-      visibility: "",
-      visibilityList: ["Privado", "Público"],
-      visibilityError: false,
-      visibilityErrorMessage: "",
+      external_assistance: "",
+      external_assistanceList: [
+        "Sin asistencia externa",
+        "Con asistencia externa"
+      ],
+      external_assistanceError: false,
+      external_assistanceErrorMessage: "",
       place: null,
       placeError: false,
       placeErrorMessage: "",
@@ -122,17 +125,17 @@ export default {
       if (this.inputsFilled()) {
         this.tryToCreateIncident = true;
         await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
-        let visibility;
-        if (this.visibility === "Privado") {
-          visibility = "Private";
-        } else if (this.visibility === "Público") {
-          visibility = "Public";
+        let external_assistance;
+        if (this.external_assistance === "Sin asistencia externa") {
+          external_assistance = "Without external support";
+        } else if (this.external_assistance === "Con asistencia externa") {
+          external_assistance = "With external support";
         }
         let payload = {
           domain_name: this.domainConfig.name,
           incident_type_name: this.incidentTypeSelected,
-          visibility: visibility,
-          details: { reference: this.reference },
+          external_assistance: external_assistance,
+          reference: this.reference,
           location_as_string_reference: this.place.text,
           location_point: {
             type: "Point",
@@ -152,14 +155,14 @@ export default {
           });
       }
       this.tryToCreateIncident = false;
-      this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
+      await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
     },
     placeChanged(place) {
       this.placeError = false;
       this.place = place;
     },
-    goHome() {
-      this.$router.push({ name: "Home" });
+    goIncidentView() {
+      this.$router.push({ name: "IncidentsView" });
     },
     inputsFilled() {
       /* Try to find at least one input empty. */
@@ -182,10 +185,14 @@ export default {
         this.incidentTypesErrorMessage =
           "Debe seleccionar un tipo de incidente.";
       }
-      if (this.visibility === null || this.visibility === "") {
+      if (
+        this.external_assistance === null ||
+        this.external_assistance === ""
+      ) {
         errorFound = true;
-        this.visibilityError = true;
-        this.visibilityErrorMessage = "Debe seleccionar la visibilidad.";
+        this.external_assistanceError = true;
+        this.external_assistanceErrorMessage =
+          "Debe seleccionar la visibilidad.";
       }
       if (this.reference === null || this.reference === "") {
         errorFound = true;
@@ -210,8 +217,8 @@ export default {
       this.incidentTypesErrorMessage = "";
     },
     resetVisibilityError() {
-      this.visibilityError = false;
-      this.visibilityErrorMessage = "";
+      this.external_assistanceError = false;
+      this.external_assistanceErrorMessage = "";
     },
     resetReferenceError() {
       this.referenceError = false;
@@ -219,7 +226,7 @@ export default {
     },
     closeModal() {
       this.showIncidentResourceList = false;
-      this.$router.push({ name: "Home" });
+      this.$router.push({ name: "IncidentsView" });
     }
   },
   computed: {
@@ -233,7 +240,7 @@ export default {
       if (this.incidentConfig !== null) {
         this.incidentConfig.forEach(incident => {
           if (
-            incident.incidentAbstraction == this.incidentAbstractionSelected
+            incident.incidentAbstraction === this.incidentAbstractionSelected
           ) {
             incidentTypes = incident.incidentTypes;
           }

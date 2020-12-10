@@ -63,7 +63,7 @@
           <v-btn
             :loading="loadingProcessInfo"
             :class="['mb-2', 'mr-1', 'primary', 'float-right']"
-            v-on:click="proccessInfo()"
+            v-on:click="processInfo()"
             >Continuar</v-btn
           >
           <v-btn
@@ -88,6 +88,7 @@ export default {
         user__first_name: "",
         user__last_name: "",
         type__name: "",
+        user__is_active: true,
         page: 1
       },
       loadingTable: false,
@@ -133,7 +134,11 @@ export default {
       let searchInfo = {
         user__first_name: this.searchName,
         user__last_name: this.searchLastName,
-        type__name: this.autoCompleteTypeResource ?? "",
+        type__name:
+          this.autoCompleteTypeResource === undefined
+            ? ""
+            : this.autoCompleteTypeResource,
+        user__is_active: true,
         page: this.page
       };
 
@@ -174,7 +179,7 @@ export default {
       this.numberOfPage = Math.ceil(completeData.data.count / itemsPerPage);
     },
 
-    async proccessInfo() {
+    async processInfo() {
       if (this.selected.length === 0) {
         this.$store.commit("uiParams/dispatchAlert", {
           text: "Debe seleccionar al menos un recurso",
@@ -185,14 +190,14 @@ export default {
       }
       this.loadingProcessInfo = true;
       let errorPost = "";
-      this.selected.forEach(async (element, index) => {
+      this.selected.forEach((element, index) => {
         let resourceIncidentData = {
           incidentId: this.incidentId,
-          incidentTypeId: element.id
+          resourceId: element.id
         };
 
-        await this.$store
-          .dispatch("domainConfig/postResourceIncident", resourceIncidentData)
+        this.$store
+          .dispatch("incident/postResourceIncident", resourceIncidentData)
           .then(async () => {
             this.$store.commit("uiParams/dispatchAlert", {
               text: "Se cargó correctamente: ",
@@ -222,6 +227,7 @@ export default {
             color: "success",
             timeout: 2000
           });
+          this.closeModal();
         }
       });
     }
