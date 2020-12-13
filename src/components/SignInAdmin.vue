@@ -2,10 +2,10 @@
   <v-main>
     <v-form ref="form" lazy-validation>
       <v-row justify="center">
-        <v-dialog v-model="showSignInSupervisor" persistent max-width="600px">
+        <v-dialog v-model="showSignInAdmin" persistent max-width="600px">
           <v-card>
             <v-card-title>
-              <span class="headline">Registro de supervisor</span>
+              <span class="headline">Registro de Admin</span>
             </v-card-title>
             <v-card-text>
               <v-container>
@@ -13,7 +13,7 @@
                   ><v-col cols="12" sm="8" md="8">
                     <v-text-field
                       v-model="userName"
-                      :rules="UserNameRules"
+                      :rules="userNameRules"
                       autocomplete="off"
                       label="Nombre de usuario*"
                       :error-messages="errorUserNameField"
@@ -69,20 +69,10 @@
                     <v-text-field
                       v-model="confirmPassword"
                       :rules="confirmPasswordRules"
-                      label="Repita la contraseña  *"
+                      label="Repita la contraseña *"
                       type="password"
                       required
                     ></v-text-field>
-                  </v-col>
-                  <v-col cols="12" sm="6">
-                    <v-autocomplete
-                      v-model="supervisorAliasesSelect"
-                      :items="aliases.supervisorAliases"
-                      item-text="name"
-                      label="Cargo a ocupar"
-                      :rules="[v => !!v || 'Debe seleccionar un alias']"
-                      required
-                    ></v-autocomplete>
                   </v-col>
                 </v-row>
               </v-container>
@@ -94,7 +84,7 @@
                 color="primary"
                 :loading="loadingCreate"
                 text
-                v-on:click="validateAndCreateSupervisor()"
+                v-on:click="validateAndCreateAdmin()"
                 >Enviar</v-btn
               >
               <v-btn color="primary" text @click="onClose()">Cerrar</v-btn>
@@ -110,17 +100,15 @@
 import { mapGetters } from "vuex";
 
 export default {
-  name: "SignInSupervisor",
+  name: "SignInAdmin",
+
   data: function() {
     return {
       loadingCreate: false,
-      adminMessaggeProblem: false,
-      messaggeProblem: "",
-      supervisorAliases: [],
       userName: "",
       name: "",
       lastName: "",
-      UserNameRules: [
+      userNameRules: [
         v => !!v || "El nombre de usuario es obligatorio",
         v =>
           (v && v.length <= 15) ||
@@ -131,27 +119,24 @@ export default {
         v => !!v || "El E-mail es obligatorio",
         v => /.+@.+\..+/.test(v) || "El e-mail debe ser valido"
       ],
-      supervisorAliasesSelect: null,
       password: "",
       confirmPassword: "",
       confirmPasswordRules: [
         v => !!v || "Debe repetir la contraseña",
-        v => v == this.password || "Las contreñas no son iguales"
+        v => v === this.password || "Las contreñas no son iguales"
       ],
       errorEmailField: null,
       errorUserNameField: null,
-      domainCodeAccess: ""
+      domainAccessCode: null
     };
   },
-  created() {
-    if (this.domainCode === null) {
-      this.$store
-        .dispatch("domainConfig/getDomainAccessCode")
-        .then(response => {
-          this.domainCodeAccess = response.data.domain_code;
-        })
-        .finally();
-    }
+  async mounted() {
+    await this.$store
+      .dispatch("domainConfig/getDomainAccessCode")
+      .then(response => {
+        this.domainAccessCode = response.data.domain_code;
+      })
+      .finally();
   },
   methods: {
     clearCustomErrors() {
@@ -159,10 +144,9 @@ export default {
       this.errorUserNameField = null;
     },
     onClose() {
-      this.clearCustomErrors();
-      this.$store.commit("uiParams/changeSignInSupervisorState", false);
+      this.$store.commit("uiParams/changeSignInAdminState", false);
     },
-    async validateAndCreateSupervisor() {
+    async validateAndCreateAdmin() {
       this.loadingCreate = true;
       this.clearCustomErrors();
       let isValid = this.$refs.form.validate();
@@ -173,14 +157,13 @@ export default {
           first_name: this.name,
           last_name: this.lastName,
           email: this.email,
-          domain_code:
-            this.domainCode === null ? this.domainCodeAccess : this.domainCode
+          domain_code: this.domainAccessCode
         };
         await this.$store
           .dispatch("domainConfig/createUser", userInfo)
           .then(response => {
             let userId = response.data.id;
-            this.createSupervisorProfile(userId);
+            this.createAdminProfile(userId);
           })
           .catch(async responseError => {
             if (responseError.data.email) {
@@ -188,11 +171,11 @@ export default {
             }
             if (responseError.data.username) {
               if (
-                responseError.data.username ==
+                responseError.data.username ===
                 "Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters."
               ) {
                 this.errorUserNameField =
-                  "El usuario solo puede contener, letras, numeros y/o @/./+/-/_";
+                  "El usuario solo puede contener: letras, numeros y/o @/./+/-/_";
                 return;
               }
               this.errorUserNameField =
@@ -214,33 +197,28 @@ export default {
           text: "Debe rellenar todos los campos",
           color: "primary"
         });
-        this.loadingCreate = false;
       }
     },
-
-    async createSupervisorProfile(userId) {
-      let supervisorInfo = {
-        domain_code:
-          this.domainCode === null ? this.domainCodeAccess : this.domainCode,
+    async createAdminProfile(userId) {
+      let AdminInfo = {
+        domain_code: this.domainAccessCode,
         user: userId,
-        domain_name: this.domainConfig.name,
-        alias: this.supervisorAliasesSelect
+        domain_name: this.domainConfig.name
       };
-
-      // Luego de creado el usuario, le da sus valores a el supervisor
+      // Luego de creado el usuario, le da sus valores a el admin
       await this.$store
-        .dispatch("domainConfig/createSupervisor", supervisorInfo)
+        .dispatch("domainConfig/createAdmin", AdminInfo)
         .then(async () => {
           this.onClose();
           this.$store.commit("uiParams/dispatchAlert", {
-            text: "Se creo el usuario supervisor, debe esperar habilitacion",
+            text: "Se creo el usuario admin, debe esperar habilitacion",
             color: "success",
             timeout: 5000
           });
         })
         .catch(async () => {
           this.$store.commit("uiParams/dispatchAlert", {
-            text: "Problemas dentro de la creacion del supervisor",
+            text: "Problemas dentro de la creacion del admin",
             color: "primary"
           });
         });
@@ -248,13 +226,9 @@ export default {
   },
   computed: {
     ...mapGetters({
-      domainCode: "domainConfig/domainCode",
-      showSignInSupervisor: "uiParams/showSignInSupervisor",
       domainConfig: "domainConfig/domainConfig",
-      aliases: "domainConfig/aliases"
+      showSignInAdmin: "uiParams/showSignInAdmin"
     })
   }
 };
 </script>
-
-<style></style>
