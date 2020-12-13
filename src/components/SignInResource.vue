@@ -13,7 +13,7 @@
                   ><v-col cols="12" sm="8" md="8">
                     <v-text-field
                       v-model="userName"
-                      :rules="UserNameRules"
+                      :rules="userNameRules"
                       autocomplete="off"
                       label="Nombre de usuario*"
                       :error-messages="errorUserNameField"
@@ -69,7 +69,7 @@
                     <v-text-field
                       v-model="confirmPassword"
                       :rules="confirmPasswordRules"
-                      label="Repita la contraseña  *"
+                      label="Repita la contraseña *"
                       type="password"
                       required
                     ></v-text-field>
@@ -115,12 +115,10 @@ export default {
   data: function() {
     return {
       loadingCreate: false,
-      adminMessaggeProblem: false,
-      messaggeProblem: "",
       userName: "",
       name: "",
       lastName: "",
-      UserNameRules: [
+      userNameRules: [
         v => !!v || "El nombre de usuario es obligatorio",
         v =>
           (v && v.length <= 15) ||
@@ -155,8 +153,7 @@ export default {
       .dispatch("domainConfig/getDomainAccessCode")
       .then(response => {
         this.domainAccessCode = response.data.domain_code;
-      })
-      .finally();
+      });
   },
   methods: {
     clearCustomErrors() {
@@ -195,7 +192,7 @@ export default {
                 "Enter a valid username. This value may contain only letters, numbers, and @/./+/-/_ characters."
               ) {
                 this.errorUserNameField =
-                  "El usuario solo puede contener, letras, numeros y/o @/./+/-/_";
+                  "El usuario solo puede contener: letras, numeros y/o @/./+/-/_";
                 return;
               }
               this.errorUserNameField =
