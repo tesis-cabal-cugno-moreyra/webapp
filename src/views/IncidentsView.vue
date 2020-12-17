@@ -137,7 +137,6 @@
                       v-bind="attrs"
                       v-on="on"
                       small
-                      color="grey_selected"
                       @click="openDialogEditIncidentDetails(item)"
                       :class="['mr-2']"
                     >

@@ -6,7 +6,7 @@
           <v-card-title :class="['pa-4', 'mb-2', 'black_selected']">
             Detalles del Incidente
           </v-card-title>
-          <v-card-text :class="[' black_selected', 'pa-3']">
+          <v-card-text :class="['black_selected', 'pa-3']">
             <v-jsf v-model="formData" :schema="schema" />
           </v-card-text>
 
