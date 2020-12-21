@@ -43,19 +43,16 @@ export default {
       this.logoutModal = true;
     }
   },
-  beforeCreate() {
+  async beforeCreate() {
     if (authServices.getUser()) {
-      this.$store.dispatch("restAuth/updateUser", authServices.getUser());
-      this.$store.dispatch(
+      await this.$store.dispatch("restAuth/updateUser", authServices.getUser());
+      await this.$store.dispatch(
         "restAuth/updateAccessToken",
         authServices.getToken()
       );
     }
-    this.$store.dispatch("domainConfig/getDomainConfig");
-  },
-  async mounted() {
     this.$vuetify.theme.dark = true;
-    if (this.domainConfig === null) {
+    if (Object.keys(this.domainConfig)) {
       await this.$store
         .dispatch("domainConfig/getDomainConfig")
         .catch(async () => {
