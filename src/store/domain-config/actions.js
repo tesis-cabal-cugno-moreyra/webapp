@@ -46,16 +46,6 @@ export default {
       }
     });
   },
-  createUser(context, payload) {
-    // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve, reject) => {
-      try {
-        return resolve(await api.post("/api/v1/users/", payload));
-      } catch (e) {
-        return reject(e);
-      }
-    });
-  },
   createSupervisor(context, payload) {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
@@ -66,6 +56,37 @@ export default {
       }
     });
   },
+  createResource(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        return resolve(await api.post("/api/v1/resources/", payload));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  createAdmin(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        return resolve(await api.post("/api/v1/admins/", payload));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  createUser(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        return resolve(await api.post("/api/v1/users/", payload));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+
   getDomainConfig() {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
