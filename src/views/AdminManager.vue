@@ -4,15 +4,27 @@
       <v-layout align="center" justify="center">
         <v-card>
           <v-card-title :class="['pa-3', 'mt-5', 'black_selected']">
-            <v-col cols="12">
-              {{
-                `${
-                  isUserActiveFilter
-                    ? "Usuarios de administradores activos "
-                    : "Usuarios de administradores no activos"
-                }`
-              }}
-            </v-col>
+            <v-row>
+              <v-col cols="7">
+                {{
+                  `${
+                    isUserActiveFilter
+                      ? "Usuarios administradores activos "
+                      : "Usuarios administradores no activos"
+                  }`
+                }}
+              </v-col>
+              <v-col cols="5">
+                <v-btn
+                  color="primary"
+                  x-large
+                  class="mb-1 mr-2 pa-2  mx-auto"
+                  v-on:click="registerAdmin"
+                >
+                  Registrar un admin
+                </v-btn>
+              </v-col>
+            </v-row>
           </v-card-title>
           <v-card-title :class="['pa-2', 'black_selected']">
             <v-row align="center" justify="center">
@@ -133,13 +145,16 @@
         </v-card>
       </v-layout>
     </v-container>
+    <sign-in-admin></sign-in-admin>
   </v-app>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import SignInAdmin from "../components/SignInAdmin";
 export default {
   name: "AdminManager",
+  components: { SignInAdmin },
   data() {
     return {
       searchName: "",
@@ -175,10 +190,26 @@ export default {
       userAdminData: []
     };
   },
+  watch: {
+    page() {
+      this.searchAdmin();
+    },
+    showSignInAdmin() {
+      if (!this.showSignInAdmin) {
+        this.searchAdmin();
+      }
+    }
+  },
   created() {
     this.searchAdmin();
   },
   methods: {
+    registerAdmin() {
+      this.$store.commit(
+        "uiParams/changeSignInAdminState",
+        !this.showSignInAdmin
+      );
+    },
     async searchAdmin() {
       await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
       this.loadingTable = true;
@@ -291,7 +322,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      domainConfig: "domainConfig/domainConfig"
+      domainConfig: "domainConfig/domainConfig",
+      showSignInAdmin: "uiParams/showSignInAdmin"
     })
   }
 };

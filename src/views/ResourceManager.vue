@@ -4,7 +4,7 @@
       <v-layout align="center" justify="center">
         <v-card>
           <v-card-title :class="['pa-3', 'mt-5', 'black_selected']">
-            <v-col cols="12">
+            <v-col cols="6">
               {{
                 `${
                   isUserActiveFilter
@@ -13,6 +13,14 @@
                 }`
               }}
             </v-col>
+            <v-btn
+              color="primary"
+              x-large
+              class="mb-2 pa-5  mx-auto"
+              v-on:click="registerResource"
+            >
+              Registrar un usuario
+            </v-btn>
           </v-card-title>
           <v-card-title :class="['pa-2', 'black_selected']">
             <v-row align="center" justify="center">
@@ -144,13 +152,16 @@
         </v-card>
       </v-layout>
     </v-container>
+    <SignInResource></SignInResource>
   </v-app>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import SignInResource from "../components/SignInResource";
 export default {
   name: "ResourceManager",
+  components: { SignInResource },
   data() {
     return {
       searchName: "",
@@ -195,9 +206,20 @@ export default {
   watch: {
     page() {
       this.searchResource();
+    },
+    showSignInResource() {
+      if (!this.showSignInResource) {
+        this.searchResource();
+      }
     }
   },
   methods: {
+    registerResource() {
+      this.$store.commit(
+        "uiParams/changeSignInResourceState",
+        !this.showSignInResource
+      );
+    },
     async searchResource() {
       await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
       this.loadingTable = true;
@@ -226,7 +248,7 @@ export default {
       await this.$store
         .dispatch("domainConfig/getResource", searchInfo)
         .then(response => {
-          this.loaduserResourceData(response);
+          this.loadUserResourceData(response);
           this.referenceSearch = searchInfo;
         })
         .catch(() => {
@@ -250,7 +272,7 @@ export default {
       this.typeResourceSelectedList = this.domainConfig.incidentAbstractions[1].types[0].resourceTypes;
     },
 
-    loaduserResourceData(completeData) {
+    loadUserResourceData(completeData) {
       this.userResourceData = completeData.data.results;
 
       let itemsPerPage = process.env.VUE_APP_ITEMS_PER_PAGE;
@@ -299,7 +321,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      domainConfig: "domainConfig/domainConfig"
+      domainConfig: "domainConfig/domainConfig",
+      showSignInResource: "uiParams/showSignInResource"
     })
   }
 };
