@@ -150,9 +150,10 @@
 </template>
 
 <script>
-import { Incident } from "@/domain/resource";
+import { Incident, MapPoint, TrackPoint } from "@/domain/resource";
 import incidentPointsAdapter from "@/adapter/incidentPointsAdapter";
 import googleMapsDefaultStyle from "@/utils/googleMapsDefaultStyle";
+import WsApi from "@/services/wsApi";
 
 export default {
   name: "IncidentMap",
@@ -166,7 +167,6 @@ export default {
       switchCurrentPosition: true,
       style: googleMapsDefaultStyle,
       incidentResources: [],
-      shownIncidentResourceIds: [],
       infoWindowPosMapPoint: null,
       infoWinOpenMapPoint: false,
       currentMidxMapPoint: null,
@@ -196,6 +196,7 @@ export default {
     await this.getTrackPointsAlreadyLoaded();
     await this.getMapPointsAlreadyLoaded();
     await this.mapInitialConfiguration();
+    await this.connectAndRetrieveRealTimeData();
   },
   computed: {
     incident() {
@@ -365,6 +366,42 @@ export default {
         this.infoWinOpenCurrentPosition = true;
         this.currentMidxCurrentPosition = idx;
       }
+    },
+    connectAndRetrieveRealTimeData() {
+      const incidentSocket = new WsApi().getWebsocketConnection(
+        `incident/${this.incident.id}/`
+      );
+
+      incidentSocket.onmessage = event => {
+        const wsEventData = JSON.parse(event.data);
+        console.log(event.data);
+        const incidentResource = this.incidentResources.find(
+          incidentResource =>
+            incidentResource.id === wsEventData.data.resource.id
+        );
+        if (!incidentResource) {
+          console.error("id not present here! We should register this user");
+          return;
+        }
+        if (wsEventData.type === "map_point") {
+          incidentResource.addMapPoint(
+            new MapPoint(
+              wsEventData.data.location.coordinates[0],
+              wsEventData.data.location.coordinates[1],
+              wsEventData.data.comment
+            )
+          );
+        } else if (wsEventData.type === "track_point") {
+          incidentResource.addTrackPoint(
+            new TrackPoint(
+              wsEventData.data.location.coordinates[0],
+              wsEventData.data.location.coordinates[1]
+            )
+          );
+        } else {
+          throw new Error("Type not allowed for Point: " + wsEventData.type);
+        }
+      };
     }
   }
 };

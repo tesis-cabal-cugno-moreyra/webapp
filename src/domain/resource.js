@@ -139,6 +139,10 @@ class IncidentResource {
     this._mapPoints = value;
   }
 
+  addMapPoint(mapPoint) {
+    this._mapPoints.push(mapPoint);
+  }
+
   addMapPoints(mapPoints) {
     this._mapPoints = this._mapPoints.concat(mapPoints);
   }
