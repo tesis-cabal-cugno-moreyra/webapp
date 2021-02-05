@@ -4,7 +4,7 @@
       <v-layout align="center" justify="center">
         <v-card>
           <v-card-title :class="['pa-3', 'mt-5', 'black_selected']">
-            <v-col cols="12">
+            <v-col cols="6">
               {{
                 `${
                   isUserActiveFilter
@@ -13,6 +13,14 @@
                 }`
               }}
             </v-col>
+            <v-btn
+              color="primary"
+              x-large
+              class="mb-2 pa-5  mx-auto"
+              v-on:click="registerSupervisor"
+            >
+              Registrar un supervisor
+            </v-btn>
           </v-card-title>
           <v-card-title :class="['pa-2', 'black_selected']">
             <v-row align="center" justify="center">
@@ -21,7 +29,7 @@
                   v-model="searchName"
                   append-icon="mdi-magnify"
                   label="Enter para buscar por nombre"
-                  v-on:keyup.enter="serchSupervisor()"
+                  v-on:keyup.enter="searchSupervisor()"
                 ></v-text-field>
               </v-col>
               <v-col cols="6">
@@ -29,7 +37,7 @@
                   v-model="searchLastName"
                   append-icon="mdi-magnify"
                   label="Enter para buscar por apellido"
-                  v-on:keyup.enter="serchSupervisor()"
+                  v-on:keyup.enter="searchSupervisor()"
                 ></v-text-field>
               </v-col>
 
@@ -40,7 +48,7 @@
                   item-text="name"
                   clearable
                   label="Tipo de supervisor"
-                  @change="serchSupervisor()"
+                  @change="searchSupervisor()"
                 ></v-autocomplete>
               </v-col>
 
@@ -55,7 +63,7 @@
                     }`
                   "
                   class="pa-3"
-                  @change="serchSupervisor()"
+                  @change="searchSupervisor()"
                 ></v-switch>
               </v-col>
             </v-row>
@@ -144,13 +152,16 @@
         </v-card>
       </v-layout>
     </v-container>
+    <sign-in-supervisor></sign-in-supervisor>
   </v-app>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import SignInSupervisor from "../components/SignInSupervisor";
 export default {
   name: "SupervisorManager",
+  components: { SignInSupervisor },
   data() {
     return {
       searchName: "",
@@ -194,15 +205,26 @@ export default {
     };
   },
   created() {
-    this.serchSupervisor();
+    this.searchSupervisor();
   },
   watch: {
     page() {
-      this.serchSupervisor();
+      this.searchSupervisor();
+    },
+    showSignInSupervisor() {
+      if (!this.showSignInSupervisor) {
+        this.searchSupervisor();
+      }
     }
   },
   methods: {
-    async serchSupervisor() {
+    registerSupervisor() {
+      this.$store.commit(
+        "uiParams/changeSignInSupervisorState",
+        !this.showSignInSupervisor
+      );
+    },
+    async searchSupervisor() {
       await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
       this.loadingTable = true;
 
@@ -230,13 +252,13 @@ export default {
       await this.$store
         .dispatch("domainConfig/getSupervisor", searchInfo)
         .then(response => {
-          this.loaduserSupervisorData(response);
+          this.loadUserSupervisorData(response);
           this.referenceSearch = searchInfo;
         })
         .catch(() => {
           if (searchInfo.page != 1) {
             this.page = this.page - 1;
-            this.serchSupervisor();
+            this.searchSupervisor();
           } else {
             this.$store.commit("uiParams/dispatchAlert", {
               text: "No hay resultados con esas especificaciones",
@@ -254,7 +276,7 @@ export default {
       this.typeSupervisorSelectedList = this.domainConfig.supervisorAliases;
     },
 
-    loaduserSupervisorData(completeData) {
+    loadUserSupervisorData(completeData) {
       this.userSupervisorData = completeData.data.results;
 
       let itemsPerPage = process.env.VUE_APP_ITEMS_PER_PAGE;
@@ -280,7 +302,7 @@ export default {
       await this.$store
         .dispatch("domainConfig/postChangeStatusUser", userInfo)
         .then(() => {
-          this.serchSupervisor();
+          this.searchSupervisor();
           this.$store.commit("uiParams/dispatchAlert", {
             text: "Usuario " + userState + " correctamente",
             color: "success",
@@ -303,7 +325,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      domainConfig: "domainConfig/domainConfig"
+      domainConfig: "domainConfig/domainConfig",
+      showSignInSupervisor: "uiParams/showSignInSupervisor"
     })
   }
 };
