@@ -27,7 +27,7 @@
         </v-card-subtitle>
         <v-card-text>
           <v-virtual-scroll
-            :items="this.parsedPoints.resources"
+            :items="this.incidentResources"
             height="210"
             item-height="55"
           >
@@ -36,9 +36,9 @@
                 <v-list-item-content
                   class="d-flex justify-space-between pb-0 mb-0"
                 >
-                  {{ item.name }}
+                  {{ item.name() }}
                   <v-checkbox
-                    v-model="item.show"
+                    v-model="item.showOnMap"
                     class="pa-0 ma-0"
                   ></v-checkbox>
                 </v-list-item-content>
@@ -57,36 +57,48 @@
         :center="{ lat: centerLatitude, lng: centerLongitude }"
       >
         <div v-if="switchMapPoints">
-          <div v-for="(mapPoint, index) in parsedPoints.mapPoints" :key="index">
-            <div v-if="showResource(mapPoint.resourceId)">
-              <gmap-info-window
-                :options="infoOptionsMapPoint"
-                :position="infoWindowPosMapPoint"
-                :opened="infoWinOpenMapPoint"
-              >
-              </gmap-info-window>
-              <gmap-marker
-                :position="mapPoint.position"
+          <div
+            v-for="(incidentResource, index) in incidentResources"
+            :key="index"
+          >
+            <div v-if="incidentResource.showOnMap">
+              <div
+                v-for="(mapPoint, index) in incidentResource.mapPoints"
                 :key="index"
-                :clickable="true"
-                @mouseover="toggleInfoWindowMapPoint(mapPoint, index)"
-                @mouseout="infoWinOpenMapPoint = false"
-                :icon="{ url: require('@/assets/pins/map-pin.png') }"
               >
-              </gmap-marker>
+                <gmap-info-window
+                  :options="infoOptionsMapPoint"
+                  :position="infoWindowPosMapPoint"
+                  :opened="infoWinOpenMapPoint"
+                >
+                </gmap-info-window>
+                <gmap-marker
+                  :position="{ lat: mapPoint.lat, lng: mapPoint.long }"
+                  :key="index"
+                  :clickable="true"
+                  @mouseover="
+                    toggleInfoWindowMapPoint(incidentResource, mapPoint, index)
+                  "
+                  @mouseout="infoWinOpenMapPoint = false"
+                  :icon="{ url: require('@/assets/pins/map-pin.png') }"
+                >
+                </gmap-marker>
+              </div>
             </div>
           </div>
         </div>
         <div v-if="switchTrackPoints">
           <div
-            v-for="(trackPoint, index) in parsedPoints.trackPoints"
+            v-for="(incidentResource, index) in incidentResources"
             :key="index"
           >
-            <div v-if="showResource(trackPoint.resourceId)">
+            <div v-if="incidentResource.showOnMap">
               <gmap-polyline
-                :path="trackPoint.route"
+                :path="incidentResource.getTrackPointsRoute()"
                 ref="polyline"
-                :options="{ strokeColor: trackPoint.color }"
+                :options="{
+                  strokeColor: incidentResource.getTrackPointsRouteColor()
+                }"
               >
               </gmap-polyline>
             </div>
@@ -94,11 +106,10 @@
         </div>
         <div v-if="switchCurrentPosition">
           <div
-            v-for="(currentPositionPoint,
-            index) in parsedPoints.currentPositionPoints"
+            v-for="(incidentResource, index) in incidentResources"
             :key="index"
           >
-            <div v-if="showResource(currentPositionPoint.resourceId)">
+            <div v-if="incidentResource.showOnMap">
               <gmap-info-window
                 :options="infoOptionsCurrentPosition"
                 :position="infoWindowPosCurrentPosition"
@@ -107,24 +118,24 @@
               </gmap-info-window>
 
               <gmap-marker
-                v-if="currentPositionPoint.resourceType === 'person'"
-                :position="currentPositionPoint.position"
+                v-if="incidentResource.resourceTypeName === 'person'"
+                :position="incidentResource.currentPosition()"
                 :key="index"
                 :clickable="true"
                 @mouseover="
-                  toggleInfoWindowCurrentPosition(currentPositionPoint, index)
+                  toggleInfoWindowCurrentPosition(incidentResource, index)
                 "
                 @mouseout="infoWinOpenCurrentPosition = false"
                 :icon="{ url: require('@/assets/pins/person-marker.png') }"
               >
               </gmap-marker>
               <gmap-marker
-                v-if="currentPositionPoint.resourceType === 'vehicle'"
-                :position="currentPositionPoint.position"
+                v-if="incidentResource.resourceTypeName === 'vehicle'"
+                :position="incidentResource.currentPosition()"
                 :key="index"
                 :clickable="true"
                 @mouseover="
-                  toggleInfoWindowCurrentPosition(currentPositionPoint, index)
+                  toggleInfoWindowCurrentPosition(incidentResource, index)
                 "
                 @mouseout="infoWinOpenCurrentPosition = false"
                 :icon="{ url: require('@/assets/pins/car-marker.png') }"
@@ -139,211 +150,23 @@
 </template>
 
 <script>
+import { Incident, MapPoint, TrackPoint } from "@/domain/resource";
 import incidentPointsAdapter from "@/adapter/incidentPointsAdapter";
+import googleMapsDefaultStyle from "@/utils/googleMapsDefaultStyle";
+import WsApi from "@/services/wsApi";
 
 export default {
   name: "IncidentMap",
   props: ["incidentData"],
   data() {
     return {
-      id: null,
       centerLatitude: null,
       centerLongitude: null,
       switchMapPoints: false,
       switchTrackPoints: false,
       switchCurrentPosition: true,
-      style: [
-        {
-          elementType: "geometry",
-          stylers: [
-            {
-              color: "#212121"
-            }
-          ]
-        },
-        {
-          elementType: "labels.icon",
-          stylers: [
-            {
-              visibility: "off"
-            }
-          ]
-        },
-        {
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              color: "#757575"
-            }
-          ]
-        },
-        {
-          elementType: "labels.text.stroke",
-          stylers: [
-            {
-              color: "#212121"
-            }
-          ]
-        },
-        {
-          featureType: "administrative",
-          elementType: "geometry",
-          stylers: [
-            {
-              color: "#757575"
-            }
-          ]
-        },
-        {
-          featureType: "administrative.country",
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              color: "#9e9e9e"
-            }
-          ]
-        },
-        {
-          featureType: "administrative.land_parcel",
-          stylers: [
-            {
-              visibility: "off"
-            }
-          ]
-        },
-        {
-          featureType: "administrative.locality",
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              color: "#bdbdbd"
-            }
-          ]
-        },
-        {
-          featureType: "poi",
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              color: "#757575"
-            }
-          ]
-        },
-        {
-          featureType: "poi.park",
-          elementType: "geometry",
-          stylers: [
-            {
-              color: "#181818"
-            }
-          ]
-        },
-        {
-          featureType: "poi.park",
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              color: "#616161"
-            }
-          ]
-        },
-        {
-          featureType: "poi.park",
-          elementType: "labels.text.stroke",
-          stylers: [
-            {
-              color: "#1b1b1b"
-            }
-          ]
-        },
-        {
-          featureType: "road",
-          elementType: "geometry.fill",
-          stylers: [
-            {
-              color: "#2c2c2c"
-            }
-          ]
-        },
-        {
-          featureType: "road",
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              color: "#8a8a8a"
-            }
-          ]
-        },
-        {
-          featureType: "road.arterial",
-          elementType: "geometry",
-          stylers: [
-            {
-              color: "#373737"
-            }
-          ]
-        },
-        {
-          featureType: "road.highway",
-          elementType: "geometry",
-          stylers: [
-            {
-              color: "#3c3c3c"
-            }
-          ]
-        },
-        {
-          featureType: "road.highway.controlled_access",
-          elementType: "geometry",
-          stylers: [
-            {
-              color: "#4e4e4e"
-            }
-          ]
-        },
-        {
-          featureType: "road.local",
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              color: "#616161"
-            }
-          ]
-        },
-        {
-          featureType: "transit",
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              color: "#757575"
-            }
-          ]
-        },
-        {
-          featureType: "water",
-          elementType: "geometry",
-          stylers: [
-            {
-              color: "#000000"
-            }
-          ]
-        },
-        {
-          featureType: "water",
-          elementType: "labels.text.fill",
-          stylers: [
-            {
-              color: "#3d3d3d"
-            }
-          ]
-        }
-      ],
-      parsedPoints: {
-        mapPoints: [],
-        trackPoints: [],
-        currentPositionPoints: [],
-        resources: []
-      },
+      style: googleMapsDefaultStyle,
+      incidentResources: [],
       infoWindowPosMapPoint: null,
       infoWinOpenMapPoint: false,
       currentMidxMapPoint: null,
@@ -369,128 +192,159 @@ export default {
     };
   },
   async created() {
-    if (this.$route.params.id) {
-      this.id = this.$route.params.id;
+    await this.getIncidentResources();
+    await this.getTrackPointsAlreadyLoaded();
+    await this.getMapPointsAlreadyLoaded();
+    await this.mapInitialConfiguration();
+    await this.connectAndRetrieveRealTimeData();
+  },
+  computed: {
+    incident() {
+      if (!this.$route.params.id) {
+        console.error("not defined id for incident");
+      }
+      return new Incident(this.$route.params.id);
     }
-    let getIncidentResourcesResponse;
-    let payload = {
-      incident_id: this.id,
-      resource__user__first_name: "",
-      resource__user__last_name: "",
-      resource__type: "",
-      page: 1,
-      page_size: 10000
-    };
-    await this.$store
-      .dispatch("incident/getIncidentResources", payload)
-      .then(response => {
-        getIncidentResourcesResponse = response.data.results;
-      })
-      .catch(async () => {
-        this.$store.commit("uiParams/dispatchAlert", {
-          text: "Hubo problemas en la busqueda de recursos relacionados",
-          color: "primary",
-          timeout: 4000
+  },
+  methods: {
+    async getIncidentResources() {
+      let getIncidentResourcesResponse = [];
+      let payload = {
+        incident_id: this.incident.id,
+        resource__user__first_name: "",
+        resource__user__last_name: "",
+        resource__type: "",
+        page: 1,
+        page_size: 10000
+      };
+      await this.$store
+        .dispatch("incident/getIncidentResources", payload)
+        .then(response => {
+          getIncidentResourcesResponse = response.data.results;
+        })
+        .catch(async () => {
+          this.$store.commit("uiParams/dispatchAlert", {
+            text: "Hubo problemas en la busqueda de recursos relacionados",
+            color: "primary",
+            timeout: 4000
+          });
+        })
+        .finally(async () => {
+          this.loadingTable = false;
         });
-      })
-      .finally(async () => {
-        this.loadingTable = false;
-      });
 
-    let getIncidentTrackPointsResponse;
-    await this.$store
-      .dispatch("incident/getIncidentTrackPoints", { incident_id: this.id })
-      .then(response => {
-        getIncidentTrackPointsResponse = response.data;
-      })
-      .catch(async () => {
-        this.$store.commit("uiParams/dispatchAlert", {
-          text:
-            "Hubo problemas en la busqueda de los trackpoints de recursos relacionados",
-          color: "primary",
-          timeout: 4000
+      if (getIncidentResourcesResponse.length) {
+        this.incidentResources = incidentPointsAdapter.incidentResourcesAdapter(
+          getIncidentResourcesResponse
+        );
+      }
+    },
+    async getTrackPointsAlreadyLoaded() {
+      let trackPointsResponse = [];
+      await this.$store
+        .dispatch("incident/getIncidentTrackPoints", {
+          incident_id: this.incident.id
+        })
+        .then(response => {
+          trackPointsResponse = response.data;
+        })
+        .catch(async () => {
+          this.$store.commit("uiParams/dispatchAlert", {
+            text:
+              "Hubo problemas en la busqueda de los trackpoints de recursos relacionados",
+            color: "primary",
+            timeout: 4000
+          });
+        })
+        .finally(async () => {
+          this.loadingTable = false;
         });
-      })
-      .finally(async () => {
-        this.loadingTable = false;
-      });
 
-    let getIncidentMapPointsResponse;
-    await this.$store
-      .dispatch("incident/getIncidentMapPoints", { incident_id: this.id })
-      .then(response => {
-        getIncidentMapPointsResponse = response.data;
-      })
-      .catch(async () => {
-        this.$store.commit("uiParams/dispatchAlert", {
-          text:
-            "Hubo problemas en la busqueda de los mappoints de recursos relacionados",
-          color: "primary",
-          timeout: 4000
+      if (trackPointsResponse.length) {
+        incidentPointsAdapter.trackPointsAdapter(
+          this.incidentResources,
+          trackPointsResponse
+        );
+      }
+    },
+    async getMapPointsAlreadyLoaded() {
+      let incidentMapPointsResponse = [];
+      await this.$store
+        .dispatch("incident/getIncidentMapPoints", {
+          incident_id: this.incident.id
+        })
+        .then(response => {
+          incidentMapPointsResponse = response.data;
+        })
+        .catch(async () => {
+          this.$store.commit("uiParams/dispatchAlert", {
+            text:
+              "Hubo problemas en la busqueda de los mappoints de recursos relacionados",
+            color: "primary",
+            timeout: 4000
+          });
+        })
+        .finally(async () => {
+          this.loadingTable = false;
         });
-      })
-      .finally(async () => {
-        this.loadingTable = false;
-      });
-    this.parsedPoints = incidentPointsAdapter.parsePoints(
-      getIncidentResourcesResponse,
-      getIncidentTrackPointsResponse,
-      getIncidentMapPointsResponse
-    );
-    // TODO: Pasar por prop los datos del incidente para centrar el mapa en la geolocalización del mismo.
-    if (this.incidentData) {
-      // this.gettingLocation = true;
-      navigator.geolocation.getCurrentPosition(
-        pos => {
-          this.gettingLocation = true;
-          this.location = pos;
-          this.centerLatitude = this.incidentData.location_point.coordinates[0];
-          this.centerLongitude = this.incidentData.location_point.coordinates[1];
-        },
-        err => {
-          this.errorStr = err.message;
-        }
-      );
-    } else {
-      let geolocationIsAllowed = false;
-      await navigator.permissions
-        .query({ name: "geolocation" })
-        .then(function(result) {
-          if (result.state === "granted") {
-            geolocationIsAllowed = true;
-          } else {
-            geolocationIsAllowed = false;
-          }
-        });
-      if (geolocationIsAllowed) {
+
+      if (incidentMapPointsResponse.length) {
+        incidentPointsAdapter.mapPointsAdapter(
+          this.incidentResources,
+          incidentMapPointsResponse
+        );
+      }
+    },
+    async mapInitialConfiguration() {
+      // TODO: Pasar por prop los datos del incidente para centrar el mapa en la geolocalización del mismo.
+      if (this.incidentData) {
+        // this.gettingLocation = true;
         navigator.geolocation.getCurrentPosition(
           pos => {
+            this.gettingLocation = true;
             this.location = pos;
-            this.centerLatitude = this.location.coords.latitude;
-            this.centerLongitude = this.location.coords.longitude;
+            this.centerLatitude = this.incidentData.location_point.coordinates[0];
+            this.centerLongitude = this.incidentData.location_point.coordinates[1];
           },
           err => {
             this.errorStr = err.message;
           }
         );
       } else {
-        this.$store.commit("uiParams/dispatchAlert", {
-          text:
-            "El sitio necesita acceder a su ubicación para poder visualizar el mapa. Luego de habilitar su ubicación, recargue la página por favor.",
-          color: "primary",
-          timeout: 25000
-        });
+        let geolocationIsAllowed = false;
+        await navigator.permissions
+          .query({ name: "geolocation" })
+          .then(function(result) {
+            geolocationIsAllowed = result.state === "granted";
+          });
+        if (geolocationIsAllowed) {
+          navigator.geolocation.getCurrentPosition(
+            pos => {
+              this.location = pos;
+              this.centerLatitude = this.location.coords.latitude;
+              this.centerLongitude = this.location.coords.longitude;
+            },
+            err => {
+              this.errorStr = err.message;
+            }
+          );
+        } else {
+          this.$store.commit("uiParams/dispatchAlert", {
+            text:
+              "El sitio necesita acceder a su ubicación para poder visualizar el mapa. Luego de habilitar su ubicación, recargue la página por favor.",
+            color: "primary",
+            timeout: 25000
+          });
+        }
       }
-    }
-  },
-  methods: {
-    toggleInfoWindowMapPoint: function(marker, idx) {
-      this.infoWindowPosMapPoint = marker.position;
+    },
+    toggleInfoWindowMapPoint: function(incidentResource, mapPoint, idx) {
+      this.infoWindowPosMapPoint = mapPoint.position;
       this.infoOptionsMapPoint.content =
         "<strong style='color: black !important'>" +
-        marker.resourceName +
+        incidentResource.name() +
         ": " +
-        marker.description +
+        mapPoint.comment +
         "</strong>";
       if (this.currentMidxMapPoint === idx) {
         this.infoWinOpenMapPoint = !this.infoWinOpenMapPoint;
@@ -499,11 +353,11 @@ export default {
         this.currentMidxMapPoint = idx;
       }
     },
-    toggleInfoWindowCurrentPosition: function(marker, idx) {
-      this.infoWindowPosCurrentPosition = marker.position;
+    toggleInfoWindowCurrentPosition: function(incidentResource, idx) {
+      this.infoWindowPosCurrentPosition = incidentResource.currentPosition();
       this.infoOptionsCurrentPosition.content =
         "<strong style='color: black !important'>" +
-        marker.resourceName +
+        incidentResource.name() +
         "</strong>";
 
       if (this.currentMidxCurrentPosition === idx) {
@@ -513,22 +367,41 @@ export default {
         this.currentMidxCurrentPosition = idx;
       }
     },
-    showResource: function(resourceId) {
-      let listedResource = false;
-      let showResource = false;
-      if (this.parsedPoints.resources) {
-        this.parsedPoints.resources.forEach(function(resource) {
-          if (resource.id === resourceId) {
-            listedResource = true;
-            showResource = resource.show;
-          }
-        });
-      }
-      if (listedResource === false) {
-        return false;
-      } else {
-        return showResource;
-      }
+    connectAndRetrieveRealTimeData() {
+      const incidentSocket = new WsApi().getWebsocketConnection(
+        `incident/${this.incident.id}/`
+      );
+
+      incidentSocket.onmessage = event => {
+        const wsEventData = JSON.parse(event.data);
+        console.log(event.data);
+        const incidentResource = this.incidentResources.find(
+          incidentResource =>
+            incidentResource.id === wsEventData.data.resource.id
+        );
+        if (!incidentResource) {
+          console.error("id not present here! We should register this user");
+          return;
+        }
+        if (wsEventData.type === "map_point") {
+          incidentResource.addMapPoint(
+            new MapPoint(
+              wsEventData.data.location.coordinates[0],
+              wsEventData.data.location.coordinates[1],
+              wsEventData.data.comment
+            )
+          );
+        } else if (wsEventData.type === "track_point") {
+          incidentResource.addTrackPoint(
+            new TrackPoint(
+              wsEventData.data.location.coordinates[0],
+              wsEventData.data.location.coordinates[1]
+            )
+          );
+        } else {
+          throw new Error("Type not allowed for Point: " + wsEventData.type);
+        }
+      };
     }
   }
 };
