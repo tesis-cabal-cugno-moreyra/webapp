@@ -120,6 +120,18 @@ export default {
       }
     });
   },
+  getUser(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlSearch = `/api/v1/users/?page=${payload.page}`;
+
+        return resolve(await api.get(urlSearch));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
   getResource(context, payload) {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
