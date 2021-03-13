@@ -6,6 +6,10 @@ export default {
   showSignInUser: false,
   showSignInAdmin: false,
   showSignInResource: false,
+  showUserProfiles: {
+    visible: false,
+    id: null
+  },
   snackbar: {
     visible: false,
     color: "primary",

@@ -14,6 +14,14 @@ export default {
   changeSignInAdminState(state, value) {
     state.showSignInAdmin = value;
   },
+  changeSeeUserProfilesState(state, payload) {
+    state.showUserProfiles.visible = true;
+    state.showUserProfiles.id = payload.id;
+  },
+  closeProfileState(state) {
+    state.snackbar.visible = false;
+    state.snackbar.text = null;
+  },
   dispatchAlert(state, payload) {
     state.snackbar.text = payload.text;
 

@@ -80,7 +80,6 @@ export default {
       }
     });
   },
-
   deleteResourceIncident(context, payload) {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
@@ -109,6 +108,51 @@ export default {
       try {
         let urlSearch = `/api/v1/incidents/${payload.incident_id}/map-points/`;
         return resolve(await api.get(urlSearch));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  getUser(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        console.log(payload.idUser);
+        let urlSearch = `/api/v1/users/${payload.idUser}/`;
+        return resolve(await api.get(urlSearch));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  deleteResourceProfile(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlResource = `/api/v1/resources/${payload.resourceId}/`;
+        return resolve(await api.delete(urlResource));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  deleteAdminProfile(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlAdmin = `/api/v1/admins/${payload.adminId}/`;
+        return resolve(await api.delete(urlAdmin));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  deleteSupervisorProfile(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlSupervisor = `/api/v1/supervisors/${payload.supervisorId}/`;
+        return resolve(await api.delete(urlSupervisor));
       } catch (e) {
         return reject(e);
       }

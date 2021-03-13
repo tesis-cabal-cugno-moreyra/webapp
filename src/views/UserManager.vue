@@ -6,7 +6,7 @@
           <v-card-title :class="['pa-3', 'mt-5', 'black_selected']">
             <v-row>
               <v-col cols="7">
-                USUARIOS
+                Usuarios
               </v-col>
             </v-row>
           </v-card-title>
@@ -42,38 +42,10 @@
               :class="['pb-1']"
               hide-default-footer
             >
-              <template v-slot:top>
-                <v-dialog v-model="dialogChangeStatus" max-width="500px">
-                  <v-card>
-                    <v-card-title class="headline"
-                      >¿Desea
-                      {{ `${isUserActiveFilter ? "desactivar" : "activar"}` }}
-                      el siguiente usuario?</v-card-title
-                    >
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn
-                        color="primary"
-                        outlined
-                        @click="changeStateAdmin"
-                        :class="['mr-5']"
-                        >Acepto</v-btn
-                      >
-                      <v-btn
-                        color="primary"
-                        outlined
-                        @click="dialogChangeStatus = false"
-                        >Cancelar</v-btn
-                      >
-                      <v-spacer></v-spacer>
-                    </v-card-actions>
-                  </v-card>
-                </v-dialog>
-              </template>
               <template v-slot:item.actions="{ item }">
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
-                    <v-icon
+                    <v-btn
                       v-if="!isUserActiveFilter"
                       v-bind="attrs"
                       v-on="on"
@@ -81,26 +53,12 @@
                       color="success"
                       @click="openDialog(item)"
                     >
-                      mdi-account-plus
-                    </v-icon>
+                      <v-icon>
+                        mdi-account-group
+                      </v-icon>
+                    </v-btn>
                   </template>
-                  <span>Activar usuario</span>
-                </v-tooltip>
-
-                <v-tooltip bottom>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-icon
-                      v-if="isUserActiveFilter"
-                      v-bind="attrs"
-                      v-on="on"
-                      small
-                      color="primary"
-                      @click="openDialog(item)"
-                    >
-                      mdi-account-off
-                    </v-icon>
-                  </template>
-                  <span>Desactivar usuario</span>
+                  <span>Ver roles del usuario</span>
                 </v-tooltip>
               </template>
             </v-data-table>
@@ -114,7 +72,7 @@
         </v-card>
       </v-layout>
     </v-container>
-    <sign-in-admin></sign-in-admin>
+    <SeeUserProfiles></SeeUserProfiles>
   </v-app>
 </template>
 
@@ -122,10 +80,12 @@
 /* eslint-disable prettier/prettier */
 
 import { mapGetters } from "vuex";
-import SignInAdmin from "../components/SignInAdmin";
+import SeeUserProfiles from "../components/SeeUserProfiles.vue";
+
+
 export default {
   name: "UserManager",
-  components: { SignInAdmin },
+  components: {SeeUserProfiles  },
   data() {
     return {
       searchName: "",
@@ -208,7 +168,6 @@ export default {
 
     loadUserData(completeData) {
       this.userData = completeData.data.results;
-      console.log(this.userData)
 
       let itemsPerPage = process.env.VUE_APP_ITEMS_PER_PAGE;
       if (!itemsPerPage) {
@@ -219,61 +178,20 @@ export default {
     },
 
     openDialog(userSelected) {
-      this.idUser = userSelected.user.id;
+      this.idUser = userSelected.id;
       this.dialogChangeStatus = true;
+
+      this.$store.commit(
+          "uiParams/changeSeeUserProfilesState",
+          { id: this.idUser}
+      );
     },
 
-    async changeStateAdmin() {
-      this.dialogChangeStatus = false;
-
-      if (
-          this.isUserActiveFilter &&
-          this.userData.length === 1 &&
-          this.referenceSearch.user__first_name === "" &&
-          this.referenceSearch.user__last_name === ""
-      ) {
-        this.$store.commit("uiParams/dispatchAlert", {
-          text:
-              "No puede desactivar este usuario ya que es el unico admin activo",
-          color: "primary",
-          timeout: 4000
-        });
-
-        return;
-      }
-      await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
-      let userInfo = {
-        user_id: this.idUser,
-        new_state: this.isUserActiveFilter ? "deactivate" : "activate"
-      };
-      const userState = this.isUserActiveFilter ? "desactivado" : "activado";
-      await this.$store
-          .dispatch("domainConfig/postChangeStatusUser", userInfo)
-          .then(() => {
-            this.searchUser();
-            this.$store.commit("uiParams/dispatchAlert", {
-              text: "Usuario " + userState + " correctamente",
-              color: "success",
-              timeout: 4000
-            });
-          })
-          .catch(async () => {
-            await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
-
-            this.$store.commit("uiParams/dispatchAlert", {
-              text: "No se pudo realizar la acción intente luego",
-              color: "primary",
-              timeout: 4000
-            });
-          })
-          .finally(async () => {
-            await this.$store.dispatch("uiParams/turnOffSpinnerOverlay");
-          });
-    }
   },
   computed: {
     ...mapGetters({
-      domainConfig: "domainConfig/domainConfig"
+      domainConfig: "domainConfig/domainConfig",
+      showUserProfiles: "uiParams/showUserProfiles"
     })
   }
 };
