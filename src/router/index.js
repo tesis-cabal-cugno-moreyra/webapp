@@ -12,6 +12,7 @@ import AdminManager from "@/views/AdminManager";
 import IncidentsView from "@/views/IncidentsView";
 import IncidentDetails from "@/components/IncidentDetails";
 import IncidentMap from "@/views/IncidentMap";
+import StatisticsView from "@/views/StatisticsView";
 
 Vue.use(VueRouter);
 
@@ -117,6 +118,16 @@ const routes = [
     path: "/incidents-view",
     name: "IncidentsView",
     component: IncidentsView,
+    meta: {
+      requires_auth: true,
+      is_admin: true,
+      is_supervisor: true
+    }
+  },
+  {
+    path: "/stats",
+    name: "StatisticsView",
+    component: StatisticsView,
     meta: {
       requires_auth: true,
       is_admin: true,
