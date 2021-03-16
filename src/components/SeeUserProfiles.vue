@@ -18,17 +18,19 @@
                 <v-row>
                   <p>
                     Perfil admin:{{
-                      `${adminProfile === null ? " No activo " : " Activo"}`
+                      `${
+                        adminProfileActive === false ? " No activo " : " Activo"
+                      }`
                     }}
                     <v-btn
-                      v-if="adminProfile === null"
+                      v-if="adminProfileActive === false"
                       color="success"
                       class="ml-9"
                       @click="activateAdmin()"
                       >Activar</v-btn
                     >
                     <v-btn
-                      v-if="adminProfile !== null"
+                      v-if="adminProfileActive === true"
                       color="primary"
                       class="ml-14"
                       @click="deactivateAdmin()"
@@ -40,32 +42,37 @@
                   <p>
                     Perfil recurso:
                     {{
-                      `${resourceProfile === null ? " No activo " : " Activo"}`
+                      `${
+                        resourceProfileActive === false
+                          ? " No activo "
+                          : " Activo"
+                      }`
                     }}
-                  </p>
 
-                  <v-btn
-                    v-if="resourceProfile === null"
-                    color="success"
-                    class="ml-7"
-                    @click="activateResource()"
-                    >Activar</v-btn
-                  >
-                  <v-btn
-                    v-if="resourceProfile !== null"
-                    color="primary"
-                    class="ml-12"
-                    @click="deactivateResource()"
-                    >Desactivar</v-btn
-                  >
+                    <v-btn
+                      v-if="resourceProfileActive === false"
+                      color="success"
+                      class="ml-7"
+                      @click="activateResource()"
+                      >Activar</v-btn
+                    >
+                    <v-btn
+                      v-if="resourceProfileActive === true"
+                      color="primary"
+                      class="ml-12"
+                      @click="deactivateResource()"
+                      >Desactivar</v-btn
+                    >
+                  </p>
                   <v-col>
                     <v-autocomplete
-                      v-if="resourceProfile === null"
+                      v-if="resourceProfileActive === false"
                       v-model="autoCompleteTypeResource"
                       :items="typeResourceSelectedList"
                       item-text="name"
                       label="Cargo a ocupar"
                       :rules="[v => !!v || 'Debe seleccionar un alias']"
+                      :error-messages="errorResourceSelect"
                       required
                     ></v-autocomplete>
                   </v-col>
@@ -75,20 +82,22 @@
                     Perfil supervisor:
                     {{
                       `${
-                        supervisorProfile === null ? " No activo " : " Activo"
+                        supervisorProfileActive === false
+                          ? " No activo "
+                          : " Activo"
                       }`
                     }}
                   </p>
 
                   <v-btn
-                    v-if="supervisorProfile === null"
+                    v-if="supervisorProfileActive === false"
                     color="success"
                     class="ml-2"
                     @click="activateSupervisor()"
                     >Activar</v-btn
                   >
                   <v-btn
-                    v-if="supervisorProfile !== null"
+                    v-if="supervisorProfileActive === true"
                     color="primary"
                     class="ml-8"
                     @click="deactivateSupervisor()"
@@ -96,12 +105,13 @@
                   >
                   <v-col>
                     <v-autocomplete
-                      v-if="supervisorProfile === null"
+                      v-if="supervisorProfileActive === false"
                       v-model="supervisorAliasesSelect"
                       :items="aliases.supervisorAliases"
                       item-text="name"
                       label="Cargo a ocupar"
                       :rules="[v => !!v || 'Debe seleccionar un alias']"
+                      :error-messages="errorSupervisorSelect"
                       required
                     ></v-autocomplete>
                   </v-col>
@@ -135,20 +145,24 @@ export default {
   data: function() {
     return {
       loadingCreate: false,
-      dataUser: null,
       name: "",
       lastName: "",
       adminProfile: null,
       resourceProfile: null,
       supervisorProfile: null,
+      resourceProfileActive: false,
+      adminProfileActive: false,
+      supervisorProfileActive: false,
       adminId: "",
       resourceId: "",
       supervisorId: "",
-      autoCompleteTypeResource: "",
+      autoCompleteTypeResource: null,
       typeResourceSelectedList: [],
       supervisorAliases: [],
       supervisorAliasesSelect: null,
-      domainAccessCode: null
+      domainAccessCode: null,
+      errorSupervisorSelect: null,
+      errorResourceSelect: null
     };
   },
   async mounted() {
@@ -164,15 +178,30 @@ export default {
         });
     }
   },
-  watch() {
-    if (this.showUserProfiles.id !== null) {
-      this.getDataPerson();
+  watch: {
+    showUserProfiles() {
+      if (this.showUserProfiles.id !== null) {
+        this.getDataPerson();
+      }
     }
   },
   methods: {
     onClose() {
       this.showUserProfiles.visible = false;
-      this.dataUser = null;
+      this.adminProfile = null;
+      this.resourceProfile = null;
+      this.supervisorProfile = null;
+      this.resourceProfileActive = false;
+      this.adminProfileActive = false;
+      this.supervisorProfileActive = false;
+      this.adminId = "";
+      this.resourceId = "";
+      this.supervisorId = "";
+      this.supervisorAliasesSelect = null;
+      this.errorSupervisorSelect = null;
+      this.autoCompleteTypeResource = null;
+      this.errorResourceSelect = null;
+
       this.$store.commit("uiParams/closeProfileState");
     },
     async getDataPerson() {
@@ -180,8 +209,7 @@ export default {
       await this.$store
         .dispatch("incident/getUser", { idUser })
         .then(response => {
-          this.dataUser = response.data;
-          this.loadData();
+          this.loadData(response.data);
         })
         .catch(async () => {
           this.$store.commit("uiParams/dispatchAlert", {
@@ -193,22 +221,27 @@ export default {
         })
         .finally(async () => {});
     },
-    loadData() {
-      console.log("gola      asdsadsadsad");
-      this.name = this.dataUser.first_name;
-      this.lastName = this.dataUser.last_name;
-      this.adminProfile = this.dataUser.adminprofile;
-      this.adminProfile !== null
-        ? (this.adminId = this.dataUser.adminprofile.id)
-        : null;
-      this.resourceProfile = this.dataUser.resourceprofile;
-      this.resourceProfile !== null
-        ? (this.resourceId = this.dataUser.resourceprofile.id)
-        : null;
-      this.supervisorProfile = this.dataUser.supervisorprofile;
-      this.supervisorProfile !== null
-        ? (this.supervisorId = this.dataUser.supervisorprofile.id)
-        : null;
+    loadData(dataUser) {
+      this.name = dataUser.first_name;
+      this.lastName = dataUser.last_name;
+      this.adminProfile = dataUser.adminprofile;
+
+      if (this.adminProfile !== null) {
+        this.adminProfileActive = true;
+        this.adminId = dataUser.adminprofile.id;
+      }
+
+      this.resourceProfile = dataUser.resourceprofile;
+      if (this.resourceProfile !== null) {
+        this.resourceProfileActive = true;
+        this.resourceId = dataUser.resourceprofile.id;
+      }
+
+      this.supervisorProfile = dataUser.supervisorprofile;
+      if (this.supervisorProfile !== null) {
+        this.supervisorProfileActive = true;
+        this.supervisorId = dataUser.supervisorprofile.id;
+      }
     },
     async activateAdmin() {
       let AdminInfo = {
@@ -221,7 +254,10 @@ export default {
       await this.$store
         .dispatch("domainConfig/createAdmin", AdminInfo)
         .then(async response => {
+          this.adminProfileActive = true;
+          this.adminProfile = response.data;
           this.adminId = response.data.id;
+
           this.$store.commit("uiParams/dispatchAlert", {
             text: "Se le agrego el perfil administrador",
             color: "success",
@@ -243,6 +279,7 @@ export default {
       this.$store
         .dispatch("incident/deleteAdminProfile", { adminId })
         .then(async () => {
+          this.adminProfileActive = false;
           this.adminProfile = null;
           this.$store.commit("uiParams/dispatchAlert", {
             text: "Se elimino correctamente el perfil administrador",
@@ -263,30 +300,36 @@ export default {
     },
 
     async activateResource() {
-      let ResourceInfo = {
-        domain_code: this.domainAccessCode,
-        user: this.showUserProfiles.id,
-        domain_name: this.domainConfig.name,
-        type: this.autoCompleteTypeResource
-      };
-      // Luego de creado el usuario, le da sus valores a el recurso
-      await this.$store
-        .dispatch("domainConfig/createResource", ResourceInfo)
-        .then(async response => {
-          this.resourceId = response.data.id;
-          this.resourceProfile = null;
-          this.$store.commit("uiParams/dispatchAlert", {
-            text: "Se le agrego el perfil recurso",
-            color: "success",
-            timeout: 5000
+      if (this.autoCompleteTypeResource !== null) {
+        let ResourceInfo = {
+          domain_code: this.domainAccessCode,
+          user: this.showUserProfiles.id,
+          domain_name: this.domainConfig.name,
+          type: this.autoCompleteTypeResource
+        };
+        await this.$store
+          .dispatch("domainConfig/createResource", ResourceInfo)
+          .then(async response => {
+            this.resourceProfileActive = true;
+            this.resourceId = response.data.id;
+            this.autoCompleteTypeResource = null;
+            this.errorResourceSelect = null;
+
+            this.$store.commit("uiParams/dispatchAlert", {
+              text: "Se le agrego el perfil recurso",
+              color: "success",
+              timeout: 5000
+            });
+          })
+          .catch(async () => {
+            this.$store.commit("uiParams/dispatchAlert", {
+              text: "no se le pudo  agregar el perfil recurso",
+              color: "primary"
+            });
           });
-        })
-        .catch(async () => {
-          this.$store.commit("uiParams/dispatchAlert", {
-            text: "no se le pudo  agregar el perfil recurso",
-            color: "primary"
-          });
-        });
+      } else {
+        this.errorResourceSelect = "Debe seleccionar un alias";
+      }
     },
 
     async deactivateResource() {
@@ -294,6 +337,7 @@ export default {
       await this.$store
         .dispatch("incident/deleteResourceProfile", { resourceId })
         .then(async () => {
+          this.resourceProfileActive = false;
           this.$store.commit("uiParams/dispatchAlert", {
             text: "Se elimino correctamente el perfil recurso",
             color: "success",
@@ -314,30 +358,37 @@ export default {
     },
 
     async activateSupervisor() {
-      let SupervisorInfo = {
-        domain_code: this.domainAccessCode,
-        user: this.showUserProfiles.id,
-        domain_name: this.domainConfig.name,
-        alias: this.supervisorAliasesSelect
-      };
-      // Luego de creado el usuario, le da sus valores a el recurso
-      await this.$store
-        .dispatch("domainConfig/createSupervisor", SupervisorInfo)
-        .then(async response => {
-          this.supervisorId = response.data.id;
-          this.supervisorProfile = null;
-          this.$store.commit("uiParams/dispatchAlert", {
-            text: "Se creo el usuario Supervisor,",
-            color: "success",
-            timeout: 5000
+      if (this.supervisorAliasesSelect !== null) {
+        let SupervisorInfo = {
+          domain_code: this.domainAccessCode,
+          user: this.showUserProfiles.id,
+          domain_name: this.domainConfig.name,
+          alias: this.supervisorAliasesSelect
+        };
+        // Luego de creado el usuario, le da sus valores a el recurso
+        await this.$store
+          .dispatch("domainConfig/createSupervisor", SupervisorInfo)
+          .then(async response => {
+            this.supervisorId = response.data.id;
+            this.supervisorProfileActive = true;
+            this.supervisorAliasesSelect = null;
+            this.errorSupervisorSelect = null;
+
+            this.$store.commit("uiParams/dispatchAlert", {
+              text: "Se creo el usuario Supervisor",
+              color: "success",
+              timeout: 5000
+            });
+          })
+          .catch(async () => {
+            this.$store.commit("uiParams/dispatchAlert", {
+              text: "No se le pudo ingresar el perfil supervisor",
+              color: "primary"
+            });
           });
-        })
-        .catch(async () => {
-          this.$store.commit("uiParams/dispatchAlert", {
-            text: "No se le pudo ingresar el perfil supervisor",
-            color: "primary"
-          });
-        });
+      } else {
+        this.errorSupervisorSelect = "Debe seleccionar un alias";
+      }
     },
 
     deactivateSupervisor() {
@@ -345,13 +396,13 @@ export default {
       this.$store
         .dispatch("incident/deleteSupervisorProfile", { supervisorId })
         .then(async () => {
+          this.supervisorProfileActive = false;
           this.supervisorProfile = null;
           this.$store.commit("uiParams/dispatchAlert", {
             text: "Se elimino correctamente el perfil supervisor",
             color: "success",
             timeout: 5000
           });
-          this.supervisorProfile = null;
         })
         .catch(async () => {
           this.$store.commit("uiParams/dispatchAlert", {
@@ -359,9 +410,6 @@ export default {
             color: "primary",
             timeout: 5000
           });
-        })
-        .finally(async () => {
-          this.loadingProcessInfo = false;
         });
     }
   },
@@ -375,5 +423,3 @@ export default {
   }
 };
 </script>
-
-<style></style>

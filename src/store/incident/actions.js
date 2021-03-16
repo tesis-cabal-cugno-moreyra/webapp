@@ -117,7 +117,6 @@ export default {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
-        console.log(payload.idUser);
         let urlSearch = `/api/v1/users/${payload.idUser}/`;
         return resolve(await api.get(urlSearch));
       } catch (e) {

@@ -1,13 +1,13 @@
 <template>
   <v-app class="pa-md-2 mx-lg-auto">
     <v-container fill-height fill-width text-center>
-      <v-layout align="center" justify="center">
+      <v-layout justify="center">
         <v-card>
-          <v-card-title :class="['pa-3', 'mt-5', 'black_selected']">
-            <v-row>
-              <v-col cols="7">
-                Usuarios
-              </v-col>
+          <v-card-title :class="['pa-3', 'mt-7', 'black_selected']">
+            <v-row align="center" justify="center">
+              <v-span>
+                Administrador de perfiles de los usuarios
+              </v-span>
             </v-row>
           </v-card-title>
           <v-card-title :class="['pa-2', 'black_selected']">
@@ -115,7 +115,7 @@ export default {
 
         { text: "email", sortable: false, value: "email" },
         {
-          text: "Cambiar el estado",
+          text: "ver perfiles",
           value: "actions",
           sortable: false
         }
@@ -137,8 +137,18 @@ export default {
       this.loadingTable = true;
 
       let searchInfo = {
+        first_name: this.searchName,
+        last_name: this.searchLastName,
         page: this.page
       };
+
+      if (
+          searchInfo.first_name != this.referenceSearch.first_name ||
+          searchInfo.last_name != this.referenceSearch.last_name
+      ) {
+        this.page = 1;
+        searchInfo.page = 1;
+      }
 
       await this.$store
           .dispatch("domainConfig/getUser", searchInfo)
@@ -149,6 +159,7 @@ export default {
           .catch(async () => {
             if (searchInfo.page !== 1) {
               this.page = this.page - 1;
+              this.referenceSearch = searchInfo;
               await this.searchUser();
             } else {
               this.$store.commit("uiParams/dispatchAlert", {
