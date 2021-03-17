@@ -6,7 +6,7 @@
           v-model="showUserProfiles.visible"
           v-if="
             showUserProfiles.visible
-              ? (this.reactiveVariable = this.showUserProfiles.id)
+              ? (this.loadDataUserWithId = this.showUserProfiles.id)
               : false
           "
           persistent
@@ -148,7 +148,7 @@ export default {
     return {
       name: "",
       lastName: "",
-      reactiveVariable: null,
+      loadDataUserWithId: null,
       adminProfile: null,
       resourceProfile: null,
       supervisorProfile: null,
@@ -179,15 +179,17 @@ export default {
           this.domainAccessCode = response.data.domain_code;
         });
     }
-    this.reactiveVariable = this.showUserProfiles.id;
+    this.loadDataUserWithId = this.showUserProfiles.id;
     if (this.showUserProfiles.id !== null) {
-      this.getDataPerson();
+      this.getDataUser();
     }
   },
   watch: {
-    reactiveVariable() {
+    // variable que cuando se le da el id activa el watch, se uso ya que las variables de getter no reaccionan
+    // a este, solo las declaradas en el data.
+    loadDataUserWithId() {
       if (this.showUserProfiles.id !== null) {
-        this.getDataPerson();
+        this.getDataUser();
       }
     }
   },
@@ -210,11 +212,11 @@ export default {
       this.errorSupervisorSelect = null;
       this.autoCompleteTypeResource = null;
       this.errorResourceSelect = null;
-      this.reactiveVariable = null;
+      this.loadDataUserWithId = null;
 
       this.$store.commit("uiParams/closeProfileState");
     },
-    async getDataPerson() {
+    async getDataUser() {
       let idUser = this.showUserProfiles.id;
       await this.$store
         .dispatch("incident/getUser", { idUser })
