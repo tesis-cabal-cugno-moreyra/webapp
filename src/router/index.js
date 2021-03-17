@@ -12,6 +12,7 @@ import AdminManager from "@/views/AdminManager";
 import IncidentsView from "@/views/IncidentsView";
 import IncidentDetails from "@/components/IncidentDetails";
 import IncidentMap from "@/views/IncidentMap";
+import UserManager from "@/views/UserManager";
 
 Vue.use(VueRouter);
 
@@ -49,6 +50,15 @@ const routes = [
     path: "/resource-manager",
     name: "ResourceManager",
     component: ResourceManager,
+    meta: {
+      requires_auth: true,
+      is_admin: true
+    }
+  },
+  {
+    path: "/user-manager",
+    name: "UserManager",
+    component: UserManager,
     meta: {
       requires_auth: true,
       is_admin: true
@@ -198,6 +208,7 @@ router.beforeEach((to, from, next) => {
     console.log(e);
     //TODO: Add error view.
   }
+
   if (to.matched.some(record => record.meta.requires_auth)) {
     tokenCheck(to, next, isAdmin, isSupervisor, isResource, accessToken);
   } else if (to.matched.some(record => record.meta.guest)) {

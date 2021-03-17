@@ -16,5 +16,8 @@ export default {
   },
   showSignInAdmin(state) {
     return state.showSignInAdmin;
+  },
+  showUserProfiles(state) {
+    return state.showUserProfiles;
   }
 };
