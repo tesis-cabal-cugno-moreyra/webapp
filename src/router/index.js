@@ -208,6 +208,7 @@ router.beforeEach((to, from, next) => {
     console.log(e);
     //TODO: Add error view.
   }
+
   if (to.matched.some(record => record.meta.requires_auth)) {
     tokenCheck(to, next, isAdmin, isSupervisor, isResource, accessToken);
   } else if (to.matched.some(record => record.meta.guest)) {

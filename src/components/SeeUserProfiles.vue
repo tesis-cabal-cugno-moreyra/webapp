@@ -4,6 +4,11 @@
       <v-row justify="center">
         <v-dialog
           v-model="showUserProfiles.visible"
+          v-if="
+            showUserProfiles.visible
+              ? (this.reactiveVariable = this.showUserProfiles.id)
+              : false
+          "
           persistent
           max-width="500px"
         >
@@ -17,7 +22,8 @@
               <v-container>
                 <v-row>
                   <p>
-                    Perfil admin:{{
+                    Perfil admin:
+                    {{
                       `${
                         adminProfileActive === false ? " No activo " : " Activo"
                       }`
@@ -39,31 +45,32 @@
                   </p>
                 </v-row>
                 <v-row>
-                  <p>
-                    Perfil recurso:
+                  <v-col>
+                    Perfil recurso: <br />
                     {{
                       `${
                         resourceProfileActive === false
-                          ? " No activo "
+                          ? "No activo "
                           : " Activo"
                       }`
                     }}
-
+                  </v-col>
+                  <v-col>
                     <v-btn
                       v-if="resourceProfileActive === false"
                       color="success"
-                      class="ml-7"
+                      class="ml-5"
                       @click="activateResource()"
                       >Activar</v-btn
                     >
                     <v-btn
                       v-if="resourceProfileActive === true"
                       color="primary"
-                      class="ml-12"
+                      class="ml-10"
                       @click="deactivateResource()"
                       >Desactivar</v-btn
                     >
-                  </p>
+                  </v-col>
                   <v-col>
                     <v-autocomplete
                       v-if="resourceProfileActive === false"
@@ -78,31 +85,34 @@
                   </v-col>
                 </v-row>
                 <v-row>
-                  <p>
-                    Perfil supervisor:
-                    {{
-                      `${
-                        supervisorProfileActive === false
-                          ? " No activo "
-                          : " Activo"
-                      }`
-                    }}
-                  </p>
-
-                  <v-btn
-                    v-if="supervisorProfileActive === false"
-                    color="success"
-                    class="ml-2"
-                    @click="activateSupervisor()"
-                    >Activar</v-btn
-                  >
-                  <v-btn
-                    v-if="supervisorProfileActive === true"
-                    color="primary"
-                    class="ml-8"
-                    @click="deactivateSupervisor()"
-                    >Desactivar</v-btn
-                  >
+                  <v-col>
+                    <p>
+                      Perfil supervisor:
+                      {{
+                        `${
+                          supervisorProfileActive === false
+                            ? " No activo "
+                            : " Activo"
+                        }`
+                      }}
+                    </p>
+                  </v-col>
+                  <v-col>
+                    <v-btn
+                      v-if="supervisorProfileActive === false"
+                      color="success"
+                      class="ml-5"
+                      @click="activateSupervisor()"
+                      >Activar</v-btn
+                    >
+                    <v-btn
+                      v-if="supervisorProfileActive === true"
+                      color="primary"
+                      class="ml-10"
+                      @click="deactivateSupervisor()"
+                      >Desactivar</v-btn
+                    >
+                  </v-col>
                   <v-col>
                     <v-autocomplete
                       v-if="supervisorProfileActive === false"
@@ -117,19 +127,11 @@
                   </v-col>
                 </v-row>
               </v-container>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" text @click="onClose()">Cerrar</v-btn>
+              </v-card-actions>
             </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn
-                color="primary"
-                :loading="loadingCreate"
-                text
-                @click="getDataPerson()"
-              >
-                Enviar</v-btn
-              >
-              <v-btn color="primary" text @click="onClose()">Cerrar</v-btn>
-            </v-card-actions>
           </v-card>
         </v-dialog>
       </v-row>
@@ -144,9 +146,9 @@ export default {
   name: "SeeUserProfile",
   data: function() {
     return {
-      loadingCreate: false,
       name: "",
       lastName: "",
+      reactiveVariable: null,
       adminProfile: null,
       resourceProfile: null,
       supervisorProfile: null,
@@ -177,9 +179,13 @@ export default {
           this.domainAccessCode = response.data.domain_code;
         });
     }
+    this.reactiveVariable = this.showUserProfiles.id;
+    if (this.showUserProfiles.id !== null) {
+      this.getDataPerson();
+    }
   },
   watch: {
-    showUserProfiles() {
+    reactiveVariable() {
       if (this.showUserProfiles.id !== null) {
         this.getDataPerson();
       }
@@ -188,6 +194,9 @@ export default {
   methods: {
     onClose() {
       this.showUserProfiles.visible = false;
+      this.showUserProfiles.id = null;
+      this.name = null;
+      this.lastName = null;
       this.adminProfile = null;
       this.resourceProfile = null;
       this.supervisorProfile = null;
@@ -201,6 +210,7 @@ export default {
       this.errorSupervisorSelect = null;
       this.autoCompleteTypeResource = null;
       this.errorResourceSelect = null;
+      this.reactiveVariable = null;
 
       this.$store.commit("uiParams/closeProfileState");
     },

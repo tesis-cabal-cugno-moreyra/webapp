@@ -5,9 +5,7 @@
         <v-card>
           <v-card-title :class="['pa-3', 'mt-7', 'black_selected']">
             <v-row align="center" justify="center">
-              <v-span>
-                Administrador de perfiles de los usuarios
-              </v-span>
+              Administrador de perfiles de los usuarios
             </v-row>
           </v-card-title>
           <v-card-title :class="['pa-2', 'black_selected']">
