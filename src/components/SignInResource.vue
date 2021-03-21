@@ -145,8 +145,17 @@ export default {
   async mounted() {
     if (this.typeResourceSelectedList.length === 0) {
       this.$store.dispatch("domainConfig/getDomainConfig").then(response => {
-        this.typeResourceSelectedList =
-          response.data.incidentAbstractions[1].types[0].resourceTypes;
+        let incidentAbstractions = response.data.incidentAbstractions;
+        let resourceTypes = [];
+        incidentAbstractions.forEach(incidentAbstraction => {
+          incidentAbstraction.types.forEach(incidentType => {
+            resourceTypes = resourceTypes.concat(incidentType.resourceTypes);
+          });
+        });
+        // Se convierte en json para poder quitar los tipos de recursos repetidos y se vuelve a crear el objeto
+        this.typeResourceSelectedList = [
+          ...new Set(resourceTypes.map(JSON.stringify))
+        ].map(JSON.parse);
       });
     }
     await this.$store

@@ -53,6 +53,7 @@
                   <v-col cols="12" sm="8" md="8">
                     <v-text-field
                       v-model="password"
+                      autocomplete="off"
                       :rules="[
                         v => !!v || 'La contraseña es obligatoria',
                         v =>
@@ -62,7 +63,6 @@
                       label="Contraseña *"
                       type="password"
                       required
-                      autocomplete="off"
                     ></v-text-field>
                   </v-col>
                   <v-col cols="12" sm="8" md="8">

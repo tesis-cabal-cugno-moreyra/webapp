@@ -77,8 +77,8 @@
                       v-model="autoCompleteTypeResource"
                       :items="typeResourceSelectedList"
                       item-text="name"
-                      label="Cargo a ocupar"
-                      :rules="[v => !!v || 'Debe seleccionar un alias']"
+                      label="Tipo de recurso"
+                      :rules="[v => !!v || 'Debe seleccionar un tipo']"
                       :error-messages="errorResourceSelect"
                       required
                     ></v-autocomplete>
@@ -170,15 +170,26 @@ export default {
   async mounted() {
     if (this.typeResourceSelectedList.length === 0) {
       this.$store.dispatch("domainConfig/getDomainConfig").then(response => {
-        this.typeResourceSelectedList =
-          response.data.incidentAbstractions[1].types[0].resourceTypes;
-      });
-      await this.$store
-        .dispatch("domainConfig/getDomainAccessCode")
-        .then(response => {
-          this.domainAccessCode = response.data.domain_code;
+        let incidentAbstractions = response.data.incidentAbstractions;
+        let resourceTypes = [];
+        incidentAbstractions.forEach(incidentAbstraction => {
+          incidentAbstraction.types.forEach(incidentType => {
+            resourceTypes = resourceTypes.concat(incidentType.resourceTypes);
+          });
         });
+        // Se convierte en json para poder quitar los tipos de recursos repetidos y se vuelve a crear el objeto
+        this.typeResourceSelectedList = [
+          ...new Set(resourceTypes.map(JSON.stringify))
+        ].map(JSON.parse);
+      });
     }
+
+    await this.$store
+      .dispatch("domainConfig/getDomainAccessCode")
+      .then(response => {
+        this.domainAccessCode = response.data.domain_code;
+      });
+
     this.loadDataUserWithId = this.showUserProfiles.id;
     if (this.showUserProfiles.id !== null) {
       this.getDataUser();
@@ -216,6 +227,7 @@ export default {
 
       this.$store.commit("uiParams/closeProfileState");
     },
+
     async getDataUser() {
       let idUser = this.showUserProfiles.id;
       await this.$store

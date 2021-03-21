@@ -190,7 +190,19 @@ export default {
       this.showSelect = false;
       this.searchIncidentResources();
     }
-    this.typeResourceSelectedList = this.domainConfig.incidentAbstractions[1].types[0].resourceTypes;
+    let incidentAbstractions = this.domainConfig.incidentAbstractions;
+    let resourceTypes = [];
+
+    incidentAbstractions.forEach(incidentAbstraction => {
+      incidentAbstraction.types.forEach(incidentType => {
+        resourceTypes = resourceTypes.concat(incidentType.resourceTypes);
+      });
+    });
+
+    // Se convierte en json para poder quitar los tipos de recursos repetidos y se vuelve a crear el objeto
+    this.typeResourceSelectedList = [
+      ...new Set(resourceTypes.map(JSON.stringify))
+    ].map(JSON.parse);
   },
   updated() {
     if (
