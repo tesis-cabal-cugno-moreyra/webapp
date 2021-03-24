@@ -1,5 +1,5 @@
 <template>
-  <div class="small">
+  <div>
     <line-chart :chart-data="datacollection"></line-chart>
     <v-btn @click="fillData()">Randomize</v-btn>
   </div>
