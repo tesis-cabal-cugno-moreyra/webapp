@@ -13,7 +13,7 @@
             <bar-chart></bar-chart>
           </v-card>
           <v-card>
-            <line-chart></line-chart>
+            <doughnut-chart></doughnut-chart>
           </v-card>
           <v-card>
             <line-chart></line-chart>
@@ -37,10 +37,11 @@
 import LineChart from "@/components/charts/LineChart.vue";
 import PieChart from "@/components/charts/PieChart.vue";
 import BarChart from "@/components/charts/BarChart.vue";
+import DoughnutChart from "@/components/charts/DoughnutChart.vue";
 
 export default {
   name: "StatisticsView.vue",
-  components: { BarChart, PieChart, LineChart }
+  components: { DoughnutChart, BarChart, PieChart, LineChart }
 };
 </script>
 
