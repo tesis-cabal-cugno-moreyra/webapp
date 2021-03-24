@@ -10,7 +10,7 @@
             <pie-chart></pie-chart>
           </v-card>
           <v-card>
-            <line-chart></line-chart>
+            <bar-chart></bar-chart>
           </v-card>
           <v-card>
             <line-chart></line-chart>
@@ -36,10 +36,11 @@
 <script>
 import LineChart from "@/components/charts/LineChart.vue";
 import PieChart from "@/components/charts/PieChart.vue";
+import BarChart from "@/components/charts/BarChart.vue";
 
 export default {
   name: "StatisticsView.vue",
-  components: { PieChart, LineChart }
+  components: { BarChart, PieChart, LineChart }
 };
 </script>
 
