@@ -1,6 +1,11 @@
 <template>
   <div class="small">
-    <pie-chart :chart-data="dataCollection"></pie-chart>
+    <pie-chart
+      :chart-data="dataCollection"
+      fill-height
+      fill-width
+      class="small"
+    ></pie-chart>
     <!--    <v-btn @click="fillData()">Randomize</v-btn>-->
   </div>
 </template>
@@ -48,7 +53,7 @@ export default {
 
 <style scoped>
 .small {
-  max-width: 600px;
-  margin: 150px auto;
+  max-width: 550px;
+  min-width: 180px;
 }
 </style>
