@@ -1,7 +1,7 @@
 <template>
   <div class="small" v-if="showHorizontalBarChart">
     <horizontal-bar-chart
-      :chart-data="datacollection"
+      :chart-data="dataCollection"
       class="small"
       fill-height
       fill-width
@@ -9,7 +9,7 @@
   </div>
   <div class="small" v-else>
     <bar-chart
-      :chart-data="datacollection"
+      :chart-data="dataCollection"
       class="small"
       fill-heightw
       fill-width
@@ -25,44 +25,18 @@ export default {
   components: { BarChart, HorizontalBarChart },
   data() {
     return {
-      datacollection: null,
+      // dataCollection: null,
       showHorizontalBarChart: false
     };
   },
-  props: ["orientation"],
+  props: ["orientation", "dataCollection"],
   mounted() {
-    this.fillData();
+    // this.fillData();
     this.showHorizontalBarChart = this.orientation === "horizontal";
   },
   methods: {
     fillData() {
-      this.datacollection = {
-        labels: [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July"
-        ],
-        datasets: [
-          {
-            label: "Cantidad de X",
-            backgroundColor: "red",
-            barThickness: 25,
-            maxBarThickness: 35,
-            data: [40, 39, 10, 40, 39, 80, 40]
-          },
-          {
-            label: "Cantidad de Y",
-            backgroundColor: "blue",
-            barThickness: 25,
-            maxBarThickness: 35,
-            data: [4, 9, 100, 60, 29, 10, 47]
-          }
-        ]
-      };
+      this.dataCollection = this.data;
     }
   }
 };

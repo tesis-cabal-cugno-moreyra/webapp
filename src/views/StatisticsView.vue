@@ -90,42 +90,56 @@
             fill-height
             fill-width
           >
-            <v-card class="pa-1 ma-1" color="deep-orange darken-4">
+            <v-card class="pa-1 ma-1" color="#999999">
               <v-card-title
                 >Porcentaje de incidentes con mayor participación.</v-card-title
               >
               <v-card-subtitle
-                >Acá va la explicación de este gráfico, explicar comom leerlo y
-                qué representa.</v-card-subtitle
+                ><b
+                  >Acá va la explicación de este gráfico, explicar comom leerlo
+                  y qué representa.</b
+                ></v-card-subtitle
               >
               <v-card-text><pie-chart></pie-chart></v-card-text>
               <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
 
-            <v-card class="d-inline" color="orange darken-4">
+            <v-card class="pa-1 ma-1" color="#999999">
               <v-card-title
                 >Porcentaje de incidentes con mayor participación.</v-card-title
               >
               <v-card-subtitle
-                >Acá va la explicación de este gráfico, explicar comom leerlo y
-                qué representa.</v-card-subtitle
+                ><b
+                  >Acá va la explicación de este gráfico, explicar comom leerlo
+                  y qué representa.</b
+                ></v-card-subtitle
               >
               <v-card-text
-                ><bar-chart :orientation="'vertical'"></bar-chart
+                ><bar-chart
+                  :orientation="'vertical'"
+                  :data-collection="barChartData"
+                ></bar-chart
               ></v-card-text>
+              <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
 
-            <v-card class="d-inline" color="orange darken-4" light>
+            <v-card class="pa-1 ma-1" color="#999999">
               <v-card-title
                 >Porcentaje de incidentes con mayor participación.</v-card-title
               >
               <v-card-subtitle
-                >Acá va la explicación de este gráfico, explicar comom leerlo y
-                qué representa.</v-card-subtitle
+                ><b
+                  >Acá va la explicación de este gráfico, explicar comom leerlo
+                  y qué representa.</b
+                ></v-card-subtitle
               >
               <v-card-text color="white"
-                ><bar-chart :orientation="'horizontal'"></bar-chart
+                ><bar-chart
+                  :orientation="'horizontal'"
+                  :data-collection="barChartData"
+                ></bar-chart
               ></v-card-text>
+              <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
           </v-row>
         </v-layout>
@@ -141,7 +155,38 @@ import BarChart from "@/components/charts/BarChart.vue";
 
 export default {
   name: "StatisticsView.vue",
-  components: { BarChart, PieChart, LineChart }
+  components: { BarChart, PieChart, LineChart },
+  data() {
+    return {
+      barChartData: {
+        labels: [
+          "Campos",
+          "Estructurales",
+          "Vehículos",
+          "Pastizales",
+          "Rescates",
+          "Accidentes",
+          "Varios"
+        ],
+        datasets: [
+          {
+            label: "Cantidad de Incidentes",
+            backgroundColor: "red",
+            barThickness: 25,
+            maxBarThickness: 35,
+            data: [40, 39, 10, 40, 39, 80, 40]
+          },
+          {
+            label: "Cantidad de Incidentes Asistidos",
+            backgroundColor: "green",
+            barThickness: 25,
+            maxBarThickness: 35,
+            data: [4, 9, 1, 30, 29, 10, 37]
+          }
+        ]
+      }
+    };
+  }
 };
 </script>
 
