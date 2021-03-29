@@ -100,7 +100,9 @@
                   y qué representa.</b
                 ></v-card-subtitle
               >
-              <v-card-text><pie-chart></pie-chart></v-card-text>
+              <v-card-text
+                ><pie-chart :data-collection="pieChartData"></pie-chart
+              ></v-card-text>
               <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
 
@@ -182,6 +184,31 @@ export default {
             barThickness: 25,
             maxBarThickness: 35,
             data: [4, 9, 1, 30, 29, 10, 37]
+          }
+        ]
+      },
+      pieChartData: {
+        labels: [
+          "Campos",
+          "Estructurales",
+          "Vehículos",
+          "Pastizales",
+          "Rescates",
+          "Accidentes",
+          "Varios"
+        ],
+        datasets: [
+          {
+            data: [40, 39, 10, 40, 39, 80, 40],
+            backgroundColor: [
+              "red",
+              "blue",
+              "yellow",
+              "green",
+              "white",
+              "orange",
+              "purple"
+            ]
           }
         ]
       }

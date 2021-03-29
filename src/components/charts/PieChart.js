@@ -3,8 +3,16 @@ const { reactiveProp } = mixins;
 
 export default {
   extends: Pie,
+  data: () => ({
+    options: {
+      legend: {
+        labels: {
+          fontColor: "white" //set your desired color
+        }
+      }
+    }
+  }),
   mixins: [reactiveProp],
-  props: ["options"],
   mounted() {
     this.renderChart(this.chartData, this.options);
   }
