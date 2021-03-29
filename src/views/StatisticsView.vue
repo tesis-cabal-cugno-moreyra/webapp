@@ -7,15 +7,19 @@
         necesaria.</v-card-subtitle
       >
       <v-card-text>
-        <v-layout row class="pa-2 ma-2" fill-height fill-width>
+        <v-layout row class="pa-auto ma-auto" fill-height fill-width>
           <v-row
             align="center"
             justify="center"
-            class="pa-1 ma-1"
+            class="pa-auto ma-auto"
             fill-height
             fill-width
           >
-            <v-card color="red darken-4">
+            <v-card
+              class="pa-auto ma-auto pb-1 mb-1"
+              color="red darken-4"
+              align="center"
+            >
               <v-card-title
                 >Cantidad total de participaciones en incidentes</v-card-title
               >
@@ -29,11 +33,11 @@
           <v-row
             align="center"
             justify="center"
-            class="pa-1 ma-1"
+            class="pa-auto ma-auto"
             fill-height
             fill-width
           >
-            <v-card color="yellow darken-4">
+            <v-card class="pa-auto ma-auto pb-1 mb-1" color="#999999">
               <v-card-title
                 >Cantidad de incidentes por día (últimos 7 días)</v-card-title
               >
@@ -47,10 +51,10 @@
               <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
             <v-card
-              class="pa-1 ma-1"
+              class="pa-auto ma-auto pb-1 mb-1"
               fill-height
               fill-width
-              color="amber darken-4"
+              color="#999999"
             >
               <v-card-title
                 >Cantidad de incidentes por mes (últimos 12 meses)</v-card-title
@@ -65,10 +69,10 @@
               <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
             <v-card
-              class="pa-1 ma-1"
+              class="pa-auto ma-auto pb-1 mb-1"
               fill-height
               fill-width
-              color="orange darken-4"
+              color="#999999"
             >
               <v-card-title
                 >Cantidad de incidentes por año (últimos 5 años)</v-card-title
@@ -86,11 +90,11 @@
           <v-row
             align="center"
             justify="center"
-            class="pa-1 ma-1"
+            class="pa-auto ma-auto"
             fill-height
             fill-width
           >
-            <v-card class="pa-1 ma-1" color="#999999">
+            <v-card class="pa-auto ma-auto pb-1 mb-1" color="#999999">
               <v-card-title
                 >Porcentaje de incidentes con mayor participación.</v-card-title
               >
@@ -106,7 +110,7 @@
               <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
 
-            <v-card class="pa-1 ma-1" color="#999999">
+            <v-card class="pa-auto ma-auto pb-1 mb-1" color="#999999">
               <v-card-title
                 >Porcentaje de incidentes con mayor participación.</v-card-title
               >
@@ -125,7 +129,7 @@
               <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
 
-            <v-card class="pa-1 ma-1" color="#999999">
+            <v-card class="pa-auto ma-auto pb-1 mb-1" color="#999999">
               <v-card-title
                 >Porcentaje de incidentes con mayor participación.</v-card-title
               >
