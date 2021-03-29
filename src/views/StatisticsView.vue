@@ -15,13 +15,11 @@
             fill-height
             fill-width
           >
-            <v-card fill-height fill-width color="red darken-4">
+            <v-card color="red darken-4">
               <v-card-title
                 >Cantidad total de participaciones en incidentes</v-card-title
               >
-              <v-card-text align="center" justify="center"
-                ><h1>12</h1></v-card-text
-              >
+              <v-card-text justify="center"><h1>12</h1></v-card-text>
               <v-card-subtitle
                 >Acá va la explicación de este número, explicar como leerlo y
                 qué representa.</v-card-subtitle
@@ -35,12 +33,7 @@
             fill-height
             fill-width
           >
-            <v-card
-              class="pa-1 ma-1"
-              fill-height
-              fill-width
-              color="yellow darken-4"
-            >
+            <v-card color="yellow darken-4">
               <v-card-title
                 >Cantidad de incidentes por día (últimos 7 días)</v-card-title
               >
@@ -48,7 +41,7 @@
                 >Acá va la explicación de este gráfico, explicar comom leerlo y
                 qué representa.</v-card-subtitle
               >
-              <v-card-text>
+              <v-card-text fill-height fill-width>
                 <line-chart></line-chart>
               </v-card-text>
               <v-card-subtitle>Notas extras.</v-card-subtitle>
@@ -108,11 +101,31 @@
               <v-card-text><pie-chart></pie-chart></v-card-text>
               <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
-            <v-card class="d-inline">
-              <bar-chart></bar-chart>
+
+            <v-card class="d-inline" color="orange darken-4">
+              <v-card-title
+                >Porcentaje de incidentes con mayor participación.</v-card-title
+              >
+              <v-card-subtitle
+                >Acá va la explicación de este gráfico, explicar comom leerlo y
+                qué representa.</v-card-subtitle
+              >
+              <v-card-text
+                ><bar-chart :orientation="'vertical'"></bar-chart
+              ></v-card-text>
             </v-card>
-            <v-card class="d-inline">
-              <doughnut-chart></doughnut-chart>
+
+            <v-card class="d-inline" color="orange darken-4" light>
+              <v-card-title
+                >Porcentaje de incidentes con mayor participación.</v-card-title
+              >
+              <v-card-subtitle
+                >Acá va la explicación de este gráfico, explicar comom leerlo y
+                qué representa.</v-card-subtitle
+              >
+              <v-card-text color="white"
+                ><bar-chart :orientation="'horizontal'"></bar-chart
+              ></v-card-text>
             </v-card>
           </v-row>
         </v-layout>
@@ -125,11 +138,10 @@
 import LineChart from "@/components/charts/LineChart.vue";
 import PieChart from "@/components/charts/PieChart.vue";
 import BarChart from "@/components/charts/BarChart.vue";
-import DoughnutChart from "@/components/charts/DoughnutChart.vue";
 
 export default {
   name: "StatisticsView.vue",
-  components: { DoughnutChart, BarChart, PieChart, LineChart }
+  components: { BarChart, PieChart, LineChart }
 };
 </script>
 
