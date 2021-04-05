@@ -1,12 +1,16 @@
 <template>
-  <div>
+  <div class="small">
+    <v-overlay absolute v-if="waitingForData">
+      <v-progress-circular indeterminate size="22"></v-progress-circular>
+    </v-overlay>
+
     <line-chart
-      :chart-data="datacollection"
+      :chart-data="dataCollection"
       class="small"
       fill-height
       fill-width
+      v-else
     ></line-chart>
-    <v-btn @click="fillData()">Randomize</v-btn>
   </div>
 </template>
 
@@ -17,43 +21,18 @@ export default {
   components: {
     LineChart
   },
-  data() {
-    return {
-      datacollection: null
-    };
-  },
-  mounted() {
-    this.fillData();
-  },
-  methods: {
-    fillData() {
-      this.datacollection = {
-        labels: [this.getRandomInt(), this.getRandomInt()],
-        datasets: [
-          {
-            label: "Data One",
-            backgroundColor: "#f87979",
-            data: [this.getRandomInt(), this.getRandomInt()]
-          },
-          {
-            label: "Data One",
-            backgroundColor: "#f87979",
-            data: [this.getRandomInt(), this.getRandomInt()]
-          }
-        ]
-      };
-    },
-    getRandomInt() {
-      return Math.floor(Math.random() * (50 - 5 + 1)) + 5;
+  props: ["dataCollection"],
+  computed: {
+    waitingForData() {
+      return this.dataCollection == null;
     }
   }
 };
 </script>
 
-<style>
+<style scoped>
 .small {
-  max-width: 500px;
+  max-width: 750px;
   min-width: 180px;
-  min-height: 100px;
 }
 </style>

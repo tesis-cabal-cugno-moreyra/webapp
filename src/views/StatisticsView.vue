@@ -39,50 +39,44 @@
           >
             <v-card class="pa-auto ma-auto pb-1 mb-1" color="#999999">
               <v-card-title
-                >Cantidad de incidentes por día (últimos 7 días)</v-card-title
+                >Participación en incidentes en la última semana.</v-card-title
               >
               <v-card-subtitle
                 >Acá va la explicación de este gráfico, explicar comom leerlo y
                 qué representa.</v-card-subtitle
               >
               <v-card-text fill-height fill-width>
-                <line-chart></line-chart>
+                <line-chart :data-collection="lineChartDataWeekly"></line-chart>
               </v-card-text>
               <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
-            <v-card
-              class="pa-auto ma-auto pb-1 mb-1"
-              fill-height
-              fill-width
-              color="#999999"
-            >
+            <v-card class="pa-auto ma-auto pb-1 mb-1" color="#999999">
               <v-card-title
-                >Cantidad de incidentes por mes (últimos 12 meses)</v-card-title
+                >Participación en incidentes en los últimos meses.</v-card-title
               >
               <v-card-subtitle
                 >Acá va la explicación de este gráfico, explicar comom leerlo y
                 qué representa.</v-card-subtitle
               >
               <v-card-text>
-                <line-chart></line-chart>
+                <line-chart
+                  :data-collection="lineChartDataMonthly"
+                ></line-chart>
               </v-card-text>
               <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
-            <v-card
-              class="pa-auto ma-auto pb-1 mb-1"
-              fill-height
-              fill-width
-              color="#999999"
-            >
+            <v-card class="pa-auto ma-auto pb-1 mb-1" color="#999999">
               <v-card-title
-                >Cantidad de incidentes por año (últimos 5 años)</v-card-title
+                >Participación en incidentes en los últimos años.</v-card-title
               >
               <v-card-subtitle
                 >Acá va la explicación de este gráfico, explicar comom leerlo y
                 qué representa.</v-card-subtitle
               >
               <v-card-text>
-                <line-chart></line-chart>
+                <line-chart
+                  :data-collection="lineChartDataAnnually"
+                ></line-chart>
               </v-card-text>
               <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
@@ -213,6 +207,66 @@ export default {
               "orange",
               "purple"
             ]
+          }
+        ]
+      },
+      lineChartDataWeekly: {
+        labels: [
+          "Domingo",
+          "Lunes",
+          "Martes",
+          "Miércoles",
+          "Jueves",
+          "Viernes",
+          "Sábado"
+        ],
+        datasets: [
+          {
+            label: "Incidentes asistidos",
+            data: [1, 2, 0, 1, 0, 0, 1],
+            borderColor: "green"
+          },
+          {
+            label: "Total incidentes por día",
+            data: [4, 9, 1, 3, 9, 1, 3],
+            borderColor: "red"
+          }
+        ]
+      },
+      lineChartDataMonthly: {
+        labels: [
+          "Noviembre",
+          "Diciembre",
+          "Enero",
+          "Febrero",
+          "Marzo",
+          "Abril"
+        ],
+        datasets: [
+          {
+            label: "Incidentes asistidos",
+            data: [14, 25, 22, 13, 12, 7, 10],
+            borderColor: "green"
+          },
+          {
+            label: "Total incidentes por mes",
+            data: [34, 45, 102, 30, 32, 67, 12],
+            borderColor: "red"
+          }
+        ]
+      },
+      lineChartDataAnnually: {
+        labels: ["2019", "2020", "2021"],
+        datasets: [
+          {
+            label: "Incidentes asistidos",
+            data: [123, 234, 78],
+            borderColor: "green"
+          },
+          {
+            label: "Total incidentes por mes",
+            data: [354, 420, 92],
+            borderColor: "red"
           }
         ]
       }
