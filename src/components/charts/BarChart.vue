@@ -25,7 +25,6 @@ export default {
   components: { BarChart, HorizontalBarChart },
   data() {
     return {
-      // dataCollection: null,
       showHorizontalBarChart: false
     };
   },
@@ -46,6 +45,6 @@ export default {
 .small {
   max-width: 500px;
   min-width: 180px;
-  min-height: 100px;
+  min-height: 400px;
 }
 </style>
