@@ -169,115 +169,6 @@
                   class="elevation-1"
                 ></v-data-table>
               </template>
-
-              <!--              <v-data-table-->
-              <!--                :loading="this.loadingTable"-->
-              <!--                loading-text="Cargando... Espere por favor"-->
-              <!--                :headers="this.headersIncident"-->
-              <!--                :items="this.userIncidentData"-->
-              <!--                text-center-->
-              <!--                item-key="id"-->
-              <!--                :class="['pb-1']"-->
-              <!--                hide-default-footer-->
-              <!--              >-->
-              <!--                &lt;!&ndash;                <template v-slot:top>&ndash;&gt;-->
-              <!--                &lt;!&ndash;                  <IncidentResourceManager&ndash;&gt;-->
-              <!--                &lt;!&ndash;                      v-if="showIncidentResourceList"&ndash;&gt;-->
-              <!--                &lt;!&ndash;                  ></IncidentResourceManager>&ndash;&gt;-->
-
-              <!--                &lt;!&ndash;                </template>&ndash;&gt;-->
-              <!--                <template v-slot:item.actions="{ item }">-->
-              <!--                  &lt;!&ndash;                  <v-tooltip bottom>&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                    <template v-slot:activator="{ on, attrs }">&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                      <v-icon&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                          v-bind="attrs"&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                          v-on="on"&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                          small&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                          color="grey_selected"&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                          @click="openDialogEditIncidentDetails(item)"&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                          :class="['mr-2']"&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                      >&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                        mdi-content-save-edit&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                      </v-icon>&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                    </template>&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                    <span>Completar datos del incidente</span>&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                  </v-tooltip>&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                  <v-tooltip bottom>&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                    <template v-slot:activator="{ on, attrs }">&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                      <v-icon&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                          v-bind="attrs"&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                          v-on="on"&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                          small&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                          color="success"&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                          @click="openDialogEditResource(item)"&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                          :class="['mr-2']"&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                      >&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                        mdi-account-convert&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                      </v-icon>&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                    </template>&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                    <span>&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                      {{&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                        `${&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                            incidentStatus === "Iniciado"&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                                ? "Editar usuario relacionados"&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                                : "Ver usuarios relacionados"&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                        }`&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                      }}&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                    </span>&ndash;&gt;-->
-              <!--                  &lt;!&ndash;                  </v-tooltip>&ndash;&gt;-->
-
-              <!--                  <v-tooltip bottom>-->
-              <!--                    <template v-slot:activator="{ on, attrs }">-->
-              <!--                      <v-icon-->
-              <!--                        v-bind="attrs"-->
-              <!--                        v-on="on"-->
-              <!--                        small-->
-              <!--                        color="pink"-->
-              <!--                        @click="goToMap(item)"-->
-              <!--                        :class="['mr-2']"-->
-              <!--                      >-->
-              <!--                        mdi-google-maps-->
-              <!--                      </v-icon>-->
-              <!--                    </template>-->
-              <!--                    <span>Ver mapa</span>-->
-              <!--                  </v-tooltip>-->
-
-              <!--                  <v-tooltip bottom>-->
-              <!--                    <template v-slot:activator="{ on, attrs }">-->
-              <!--                      <v-icon-->
-              <!--                        v-bind="attrs"-->
-              <!--                        v-on="on"-->
-              <!--                        small-->
-              <!--                        color="blue"-->
-              <!--                        @click="openDialogChangeVisibility(item)"-->
-              <!--                        :class="['mr-2']"-->
-              <!--                      >-->
-              <!--                        mdi-pencil-circle-outline-->
-              <!--                      </v-icon>-->
-              <!--                    </template>-->
-              <!--                    <span>Cambiar Visibilidad del incidente</span>-->
-              <!--                  </v-tooltip>-->
-
-              <!--                  <v-tooltip bottom>-->
-              <!--                    <template-->
-              <!--                      v-slot:activator="{ on, attrs }"-->
-              <!--                      v-if="incidentStatusSelected === 'Iniciado'"-->
-              <!--                    >-->
-              <!--                      <v-icon-->
-              <!--                        v-bind="attrs"-->
-              <!--                        v-on="on"-->
-              <!--                        small-->
-              <!--                        color="#68D4CE"-->
-              <!--                        @click="openDialogChangeStatus(item)"-->
-              <!--                        :class="['mr-2']"-->
-              <!--                      >-->
-              <!--                        mdi-ballot-recount-->
-              <!--                      </v-icon>-->
-              <!--                    </template>-->
-              <!--                    <span>Cambiar estado del incidente</span>-->
-              <!--                  </v-tooltip>-->
-              <!--                </template>-->
-              <!--              </v-data-table>-->
               <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
           </v-row>
@@ -299,7 +190,6 @@ export default {
   data() {
     return {
       barChartData: {
-        loadingTable: false,
         headersIncidentsTable: [
           { text: "Estado", sortable: false, value: "statusTranslate" },
           {
