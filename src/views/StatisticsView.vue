@@ -207,11 +207,6 @@ export default {
           text: "Referencia de Ubicación",
           sortable: false,
           value: "location_as_string_reference"
-        },
-        {
-          text: "Acciones",
-          value: "actions",
-          sortable: false
         }
       ],
       incidentsByResource: [],
