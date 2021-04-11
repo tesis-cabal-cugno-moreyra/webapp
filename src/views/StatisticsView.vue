@@ -161,14 +161,14 @@
                   y qué representa.</b
                 ></v-card-subtitle
               >
-              <template>
-                <v-data-table
-                  :headers="this.headersIncidentsTable"
-                  :items="this.incidentsByResurce"
-                  :items-per-page="5"
-                  class="elevation-1"
-                ></v-data-table>
-              </template>
+
+              <v-data-table
+                :headers="this.headerIncidentsTable"
+                :items="this.incidentsByResource"
+                :items-per-page="5"
+                class="elevation-1"
+              >
+              </v-data-table>
               <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
           </v-row>
@@ -189,27 +189,27 @@ export default {
   components: { BarChart, PieChart, LineChart },
   data() {
     return {
+      headerIncidentsTable: [
+        { text: "Estado", sortable: false, value: "statusTranslate" },
+        {
+          text: "Completitud de detalles",
+          sortable: false,
+          value: "data_status"
+        },
+        { text: "Visibilidad", sortable: false, value: "visibility" },
+        {
+          text: "Referencia de Ubicación",
+          sortable: false,
+          value: "location_as_string_reference"
+        },
+        {
+          text: "Acciones",
+          value: "actions",
+          sortable: false
+        }
+      ],
+      incidentsByResource: [],
       barChartData: {
-        headersIncidentsTable: [
-          { text: "Estado", sortable: false, value: "statusTranslate" },
-          {
-            text: "Completitud de detalles",
-            sortable: false,
-            value: "data_status"
-          },
-          { text: "Visibilidad", sortable: false, value: "visibility" },
-          {
-            text: "Referencia de Ubicación",
-            sortable: false,
-            value: "location_as_string_reference"
-          },
-          {
-            text: "Acciones",
-            value: "actions",
-            sortable: false
-          }
-        ],
-        incidentsByResurce: [],
         labels: [
           "Campos",
           "Estructurales",
@@ -330,17 +330,16 @@ export default {
     async loadIncidentsDataByUser() {
       this.loadingTable = true;
 
-      let searchInfo = {
-        incident_type__name: "",
-        status: "Finalized",
-        page: 1
-      };
+      // let searchInfo = {
+      //   incident_type__name: "",
+      //   status: "Finalized",
+      //   page: 1
+      // };
 
       await this.$store
-        .dispatch("incident/getIncident", searchInfo)
+        .dispatch("incident/getIncident")
         .then(response => {
           this.incidentsByResurce = response.data.results;
-          this.referenceSearch = searchInfo;
         })
         .catch(async () => {
           console.log("Error al buscar datos para llenar la tabla.");
