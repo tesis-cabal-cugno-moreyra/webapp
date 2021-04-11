@@ -153,7 +153,8 @@
           >
             <v-card class="pa-auto ma-auto pb-1 mb-1" color="#999999">
               <v-card-title
-                >Listado de incidentes en los que participó.</v-card-title
+                >Listado de últimos incidentes en los que
+                participó.</v-card-title
               >
               <v-card-subtitle
                 ><b
@@ -161,14 +162,15 @@
                   y qué representa.</b
                 ></v-card-subtitle
               >
-
-              <v-data-table
-                :headers="this.headerIncidentsTable"
-                :items="this.incidentsByResource"
-                :items-per-page="5"
-                class="elevation-1"
-              >
-              </v-data-table>
+              <v-card-text color="white">
+                <v-data-table
+                  :headers="this.headerIncidentsTable"
+                  :items="this.incidentsByResource"
+                  :items-per-page="5"
+                  class="elevation-1"
+                >
+                </v-data-table>
+              </v-card-text>
               <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
           </v-row>
@@ -190,13 +192,17 @@ export default {
   data() {
     return {
       headerIncidentsTable: [
-        { text: "Estado", sortable: false, value: "statusTranslate" },
+        { text: "Estado", sortable: false, value: "status" },
         {
           text: "Completitud de detalles",
           sortable: false,
           value: "data_status"
         },
-        { text: "Visibilidad", sortable: false, value: "visibility" },
+        {
+          text: "Participación de recursos externos",
+          sortable: false,
+          value: "external_assistance"
+        },
         {
           text: "Referencia de Ubicación",
           sortable: false,
@@ -336,10 +342,12 @@ export default {
       //   page: 1
       // };
 
-      await this.$store
+      let context = this;
+      await context.$store
         .dispatch("incident/getIncident")
         .then(response => {
-          this.incidentsByResurce = response.data.results;
+          console.log(response);
+          this.incidentsByResource = response.data.results;
         })
         .catch(async () => {
           console.log("Error al buscar datos para llenar la tabla.");
