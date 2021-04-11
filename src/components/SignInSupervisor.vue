@@ -136,7 +136,7 @@ export default {
       confirmPassword: "",
       confirmPasswordRules: [
         v => !!v || "Debe repetir la contraseña",
-        v => v == this.password || "Las contreñas no son iguales"
+        v => v === this.password || "Las contreñas no son iguales"
       ],
       errorEmailField: null,
       errorUserNameField: null,
