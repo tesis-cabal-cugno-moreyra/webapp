@@ -210,121 +210,15 @@ export default {
         }
       ],
       incidentsByResource: [],
-      barChartData: {
-        labels: [
-          "Campos",
-          "Estructurales",
-          "Vehículos",
-          "Pastizales",
-          "Rescates",
-          "Accidentes",
-          "Varios"
-        ],
-        datasets: [
-          {
-            label: "Cantidad de Incidentes",
-            backgroundColor: "red",
-            barThickness: 25,
-            maxBarThickness: 35,
-            data: [40, 39, 10, 40, 39, 80, 40]
-          },
-          {
-            label: "Cantidad de Incidentes Asistidos",
-            backgroundColor: "green",
-            barThickness: 25,
-            maxBarThickness: 35,
-            data: [4, 9, 1, 30, 29, 10, 37]
-          }
-        ]
-      },
-      pieChartData: {
-        labels: [
-          "Campos",
-          "Estructurales",
-          "Vehículos",
-          "Pastizales",
-          "Rescates",
-          "Accidentes",
-          "Varios"
-        ],
-        datasets: [
-          {
-            data: [40, 39, 10, 40, 39, 80, 40],
-            backgroundColor: [
-              "red",
-              "blue",
-              "yellow",
-              "green",
-              "white",
-              "orange",
-              "purple"
-            ]
-          }
-        ]
-      },
-      lineChartDataWeekly: {
-        labels: [
-          "Domingo",
-          "Lunes",
-          "Martes",
-          "Miércoles",
-          "Jueves",
-          "Viernes",
-          "Sábado"
-        ],
-        datasets: [
-          {
-            label: "Incidentes asistidos",
-            data: [1, 2, 0, 1, 0, 0, 1],
-            borderColor: "green"
-          },
-          {
-            label: "Total incidentes por día",
-            data: [4, 9, 1, 3, 9, 1, 3],
-            borderColor: "red"
-          }
-        ]
-      },
-      lineChartDataMonthly: {
-        labels: [
-          "Noviembre",
-          "Diciembre",
-          "Enero",
-          "Febrero",
-          "Marzo",
-          "Abril"
-        ],
-        datasets: [
-          {
-            label: "Incidentes asistidos",
-            data: [14, 25, 22, 13, 12, 7, 10],
-            borderColor: "green"
-          },
-          {
-            label: "Total incidentes por mes",
-            data: [34, 45, 102, 30, 32, 67, 12],
-            borderColor: "red"
-          }
-        ]
-      },
-      lineChartDataAnnually: {
-        labels: ["2019", "2020", "2021"],
-        datasets: [
-          {
-            label: "Incidentes asistidos",
-            data: [123, 234, 78],
-            borderColor: "green"
-          },
-          {
-            label: "Total incidentes por mes",
-            data: [354, 420, 92],
-            borderColor: "red"
-          }
-        ]
-      }
+      barChartData: {},
+      pieChartData: {},
+      lineChartDataWeekly: {},
+      lineChartDataMonthly: {},
+      lineChartDataAnnually: {}
     };
   },
   async created() {
+    await this.getStatisticsByResource();
     await this.loadIncidentsDataByUser();
   },
   methods: {
@@ -341,16 +235,35 @@ export default {
       await context.$store
         .dispatch("incident/getIncident")
         .then(response => {
-          console.log(response);
           this.incidentsByResource = response.data.results;
         })
         .catch(async () => {
-          console.log("Error al buscar datos para llenar la tabla.");
+          console.error("Error al buscar datos para llenar la tabla.");
         })
         .finally(async () => {
           console.log(
             "Búsqueda de datos para llenar la tabla finalizada con éxito."
           );
+        });
+    },
+    async getStatisticsByResource() {
+      let context = this;
+      await context.$store
+        .dispatch("domainConfig/getStatisticsByResourceId")
+        .then(response => {
+          context.barChartData = response.data.barChartData;
+          context.lineChartDataAnnually = response.data.lineChartDataAnnually;
+          context.lineChartDataMonthly = response.data.lineChartDataMonthly;
+          context.lineChartDataWeekly = response.data.lineChartDataWeekly;
+          context.pieChartData = response.data.pieChartData;
+        })
+        .catch(async () => {
+          console.error(
+            "Error al intentar obtener las estadísticas por recurso."
+          );
+        })
+        .finally(async () => {
+          console.log("Estadística por recurso obtenida con éxito.");
         });
     },
     goToMap(incident) {
