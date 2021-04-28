@@ -135,14 +135,17 @@ const routes = [
     }
   },
   {
-    path: "/stats",
+    path: "/stats/:id",
     name: "StatisticsView",
     component: StatisticsView,
     meta: {
       requires_auth: true,
       is_admin: true,
       is_supervisor: true
-    }
+    },
+    props: route => ({
+      ...route.params
+    })
   }
 ];
 

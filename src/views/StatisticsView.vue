@@ -191,6 +191,7 @@ export default {
   components: { BarChart, PieChart, LineChart },
   data() {
     return {
+      resourceId: null,
       headerIncidentsTable: [
         { text: "Estado", sortable: false, value: "status" },
         {
@@ -218,6 +219,11 @@ export default {
     };
   },
   async created() {
+    if (!this.$route.params.id) {
+      console.error("not defined id for incident");
+    } else {
+      this.resourceId = this.$route.params.id;
+    }
     await this.getStatisticsByResource();
     await this.loadIncidentsDataByUser();
   },
@@ -232,6 +238,7 @@ export default {
       // };
 
       let context = this;
+      // TODO: obtener todos los incidentes en los que participó un recurso en particular, pasandole la id del recurso en la request.
       await context.$store
         .dispatch("incident/getIncident")
         .then(response => {
@@ -249,7 +256,7 @@ export default {
     async getStatisticsByResource() {
       let context = this;
       await context.$store
-        .dispatch("domainConfig/getStatisticsByResourceId")
+        .dispatch("domainConfig/getStatisticsByResourceId", context.resourceId)
         .then(response => {
           context.barChartData = response.data.barChartData;
           context.lineChartDataAnnually = response.data.lineChartDataAnnually;

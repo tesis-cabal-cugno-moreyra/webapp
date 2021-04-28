@@ -223,7 +223,9 @@ export default {
       // eslint-disable-next-line no-async-promise-executor
       return new Promise(async (resolve, reject) => {
         try {
-          let urlSearch = `/api/v1/statistics/${resourceId}/`;
+          // TODO: Descomentar la línea de abajo, y borrar la hardcodeada cuando se calculen las estadísticas por id.
+          // let urlSearch = `/api/v1/statistics/${resourceId}/`;
+          let urlSearch = `/api/v1/statistics/`;
           return resolve(await api.get(urlSearch));
         } catch (e) {
           return reject(e);
