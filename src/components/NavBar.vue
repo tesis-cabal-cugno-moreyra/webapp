@@ -74,6 +74,14 @@
           >
         </v-list-item>
       </v-list-group>
+      <v-list-item link v-on:click="goUserManager">
+        <v-list-item-icon>
+          <v-icon color="grey darken-1">mdi-account-card-details</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title class="grey--text text--darken-1"
+          >Usuarios</v-list-item-title
+        >
+      </v-list-item>
       <v-switch
         class="ml-4"
         v-model="$vuetify.theme.dark"
@@ -136,6 +144,9 @@ export default {
     },
     goSupervisorManager() {
       this.$router.push({ name: "SupervisorManager" });
+    },
+    goUserManager() {
+      this.$router.push({ name: "UserManager" });
     },
     goResourceManager() {
       this.$router.push({ name: "ResourceManager" });
