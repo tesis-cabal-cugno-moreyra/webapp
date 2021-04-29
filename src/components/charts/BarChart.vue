@@ -10,7 +10,7 @@
     <bar-chart
       :chart-data="dataCollection"
       class="xs12 sm12 md12 lg12 xl12"
-      fill-heightw
+      fill-height
       fill-width
       v-else
     ></bar-chart>
