@@ -9,7 +9,8 @@ export default {
         labels: {
           fontColor: "white" //set your desired color
         }
-      }
+      },
+      responsive: true
     }
   }),
   mixins: [reactiveProp],

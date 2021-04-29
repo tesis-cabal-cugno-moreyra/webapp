@@ -1,12 +1,12 @@
 <template>
-  <div class="small">
+  <v-flex class="xs11 sm12 md12 lg12 xl12">
     <pie-chart
       :chart-data="dataCollection"
       fill-height
       fill-width
-      class="small"
+      class="xs12 sm12 md12 lg12 xl12"
     ></pie-chart>
-  </div>
+  </v-flex>
 </template>
 
 <script>
@@ -22,7 +22,7 @@ export default {
 
 <style scoped>
 .small {
-  max-width: 550px;
-  min-width: 180px;
+  /*max-width: 550px;*/
+  /*min-width: 180px;*/
 }
 </style>

@@ -1,20 +1,20 @@
 <template>
-  <div class="small" v-if="showHorizontalBarChart">
+  <v-flex class="xs11 sm12 md12 lg12 xl12">
     <horizontal-bar-chart
       :chart-data="dataCollection"
-      class="small"
+      class="xs12 sm12 md12 lg12 xl12"
       fill-height
       fill-width
+      v-if="showHorizontalBarChart"
     ></horizontal-bar-chart>
-  </div>
-  <div class="small" v-else>
     <bar-chart
       :chart-data="dataCollection"
-      class="small"
+      class="xs12 sm12 md12 lg12 xl12"
       fill-heightw
       fill-width
+      v-else
     ></bar-chart>
-  </div>
+  </v-flex>
 </template>
 
 <script>
@@ -43,8 +43,8 @@ export default {
 
 <style scoped>
 .small {
-  max-width: 500px;
-  min-width: 180px;
-  min-height: 400px;
+  /*max-width: 500px;*/
+  /*min-width: 180px;*/
+  /*min-height: 400px;*/
 }
 </style>

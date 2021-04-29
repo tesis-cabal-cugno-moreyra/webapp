@@ -1,7 +1,7 @@
 <template>
-  <div class="small">
-    <doughnut-chart></doughnut-chart>
-  </div>
+  <v-flex class="xs11 sm12 md12 lg12 xl12">
+    <doughnut-chart class="xs12 sm12 md12 lg12 xl12"></doughnut-chart>
+  </v-flex>
 </template>
 
 <script>
@@ -14,7 +14,7 @@ export default {
 
 <style scoped>
 .small {
-  max-width: 600px;
-  margin: 150px auto;
+  /*max-width: 600px;*/
+  /*margin: 150px auto;*/
 }
 </style>
