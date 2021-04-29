@@ -58,7 +58,7 @@
                 >Acá va la explicación de este gráfico, explicar comom leerlo y
                 qué representa.</v-card-subtitle
               >
-              <v-card-text>
+              <v-card-text fill-height fill-width>
                 <line-chart
                   :data-collection="lineChartDataMonthly"
                 ></line-chart>
@@ -73,7 +73,7 @@
                 >Acá va la explicación de este gráfico, explicar comom leerlo y
                 qué representa.</v-card-subtitle
               >
-              <v-card-text>
+              <v-card-text fill-height fill-width>
                 <line-chart
                   :data-collection="lineChartDataAnnually"
                 ></line-chart>
@@ -99,7 +99,7 @@
                   y qué representa.</b
                 ></v-card-subtitle
               >
-              <v-card-text
+              <v-card-text fill-height fill-width
                 ><bar-chart
                   :orientation="'vertical'"
                   :data-collection="barChartData"
@@ -119,7 +119,7 @@
                   y qué representa.</b
                 ></v-card-subtitle
               >
-              <v-card-text
+              <v-card-text fill-height fill-width
                 ><pie-chart :data-collection="pieChartData"></pie-chart
               ></v-card-text>
               <v-card-subtitle>Notas extras.</v-card-subtitle>
@@ -135,7 +135,7 @@
                   y qué representa.</b
                 ></v-card-subtitle
               >
-              <v-card-text color="white"
+              <v-card-text color="white" fill-height fill-width
                 ><bar-chart
                   :orientation="'horizontal'"
                   :data-collection="barChartData"
@@ -162,7 +162,7 @@
                   y qué representa.</b
                 ></v-card-subtitle
               >
-              <v-card-text color="white">
+              <v-card-text color="white" fill-height fill-width>
                 <v-data-table
                   :headers="this.headerIncidentsTable"
                   :items="this.incidentsByResource"
