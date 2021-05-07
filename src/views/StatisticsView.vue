@@ -21,7 +21,7 @@
               align="center"
             >
               <v-card-title
-                >Cantidad total de participaciones en incidentes</v-card-title
+                >Cantidad total de participaciones en incidentes.</v-card-title
               >
               <v-card-text justify="center"><h1>12</h1></v-card-text>
               <v-card-subtitle
@@ -42,43 +42,40 @@
                 >Participación en incidentes en la última semana.</v-card-title
               >
               <v-card-subtitle
-                >Acá va la explicación de este gráfico, explicar comom leerlo y
-                qué representa.</v-card-subtitle
+                >Distribución de número de incidentes asistidos por cada recurso
+                por día.</v-card-subtitle
               >
               <v-card-text fill-height fill-width>
                 <line-chart :data-collection="lineChartDataWeekly"></line-chart>
               </v-card-text>
-              <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
             <v-card class="pa-auto ma-auto pb-1 mb-1" color="#999999">
               <v-card-title
                 >Participación en incidentes en los últimos meses.</v-card-title
               >
               <v-card-subtitle
-                >Acá va la explicación de este gráfico, explicar comom leerlo y
-                qué representa.</v-card-subtitle
+                >Distribución de número de incidentes asistidos por cada recurso
+                por mes.</v-card-subtitle
               >
               <v-card-text fill-height fill-width>
                 <line-chart
                   :data-collection="lineChartDataMonthly"
                 ></line-chart>
               </v-card-text>
-              <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
             <v-card class="pa-auto ma-auto pb-1 mb-1" color="#999999">
               <v-card-title
                 >Participación en incidentes en los últimos años.</v-card-title
               >
               <v-card-subtitle
-                >Acá va la explicación de este gráfico, explicar comom leerlo y
-                qué representa.</v-card-subtitle
+                >Distribución de número de incidentes asistidos por cada recurso
+                por año.</v-card-subtitle
               >
               <v-card-text fill-height fill-width>
                 <line-chart
                   :data-collection="lineChartDataAnnually"
                 ></line-chart>
               </v-card-text>
-              <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
           </v-row>
           <v-row
@@ -95,8 +92,8 @@
               >
               <v-card-subtitle
                 ><b
-                  >Acá va la explicación de este gráfico, explicar comom leerlo
-                  y qué representa.</b
+                  >Distribución de horas promedio pertenecientes a cada tipo de
+                  incidente por recurso.</b
                 ></v-card-subtitle
               >
               <v-card-text fill-height fill-width
@@ -105,24 +102,22 @@
                   :data-collection="barChartData"
                 ></bar-chart
               ></v-card-text>
-              <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
 
             <v-card class="pa-auto ma-auto pb-1 mb-1" color="#999999">
               <v-card-title
-                >3 tipos de incidente más frecuente a los que
-                asistió.</v-card-title
+                >Proporción de incidentes asistidos por tipo de
+                incidente.</v-card-title
               >
               <v-card-subtitle
                 ><b
-                  >Acá va la explicación de este gráfico, explicar comom leerlo
-                  y qué representa.</b
+                  >Distribución en proporción de los incidentes asistidos por
+                  tipo de incidente.</b
                 ></v-card-subtitle
               >
               <v-card-text fill-height fill-width
                 ><pie-chart :data-collection="pieChartData"></pie-chart
               ></v-card-text>
-              <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
 
             <v-card class="pa-auto ma-auto pb-1 mb-1" color="#999999">
@@ -131,8 +126,8 @@
               >
               <v-card-subtitle
                 ><b
-                  >Acá va la explicación de este gráfico, explicar comom leerlo
-                  y qué representa.</b
+                  >Distribución de horas de trabajo llevadas a cabo por recurso
+                  en cada tipo de incidente.</b
                 ></v-card-subtitle
               >
               <v-card-text color="white" fill-height fill-width
@@ -158,8 +153,8 @@
               >
               <v-card-subtitle
                 ><b
-                  >Acá va la explicación de este gráfico, explicar comom leerlo
-                  y qué representa.</b
+                  >Tabla con el listado de los últimos incidentes en los que
+                  participó el recurso.</b
                 ></v-card-subtitle
               >
               <v-card-text color="white" fill-height fill-width>
@@ -230,12 +225,6 @@ export default {
   methods: {
     async loadIncidentsDataByUser() {
       this.loadingTable = true;
-
-      // let searchInfo = {
-      //   incident_type__name: "",
-      //   status: "Finalized",
-      //   page: 1
-      // };
 
       let context = this;
       // TODO: obtener todos los incidentes en los que participó un recurso en particular, pasandole la id del recurso en la request.
