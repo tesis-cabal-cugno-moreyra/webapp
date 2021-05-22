@@ -14,6 +14,7 @@ import IncidentDetails from "@/components/IncidentDetails";
 import IncidentMap from "@/views/IncidentMap";
 import UserManager from "@/views/UserManager";
 import StatisticsView from "@/views/StatisticsView";
+import IncidentMetrics from "@/views/IncidentMetrics";
 
 Vue.use(VueRouter);
 
@@ -146,6 +147,16 @@ const routes = [
     props: route => ({
       ...route.params
     })
+  },
+  {
+    path: "/incident-metrics",
+    name: "StatisticsView",
+    component: IncidentMetrics,
+    meta: {
+      requires_auth: true,
+      is_admin: true,
+      is_supervisor: true
+    }
   }
 ];
 
