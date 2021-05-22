@@ -284,7 +284,11 @@ export default {
           sortable: false,
           value: "data_status"
         },
-        { text: "Visibilidad", sortable: false, value: "visibility" },
+        {
+          text: "Asistencia externa",
+          sortable: false,
+          value: "external_assistance"
+        },
         {
           text: "Referencia de Ubicación",
           sortable: false,
@@ -325,9 +329,9 @@ export default {
         }
         incident.statusTranslate = this.incidentStatusSelected;
         if (this.incidentVisibilitySelected === "Con asistencia externa") {
-          incident.visibility = "Con asistencia externa";
+          incident.external_assistance = "Con asistencia externa";
         } else {
-          incident.visibility = "Sin asistencia externa";
+          incident.external_assistance = "Sin asistencia externa";
         }
       });
       this.userIncidentData = incidentEnglish;
