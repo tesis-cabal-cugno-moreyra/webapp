@@ -62,7 +62,23 @@
             </v-card>
             <v-card
               class="pa-auto ma-auto pb-1 mb-1 xs12 sm12 md12 lg12 xl12"
-              color="red darken-4"
+              color="#999999"
+              align="center"
+            >
+              <v-card-title>Geolocalización del Incidente</v-card-title>
+              <v-card-text class="justify-center">
+                <map-modal
+                  v-bind:show-autocomplete="false"
+                  v-bind:point="this.incidentMetrics.point"
+                  v-on:place="placeChanged"
+                ></map-modal>
+                // TODO: cambiar este componente por un redirect a la vista del
+                mapa del incidente.
+              </v-card-text>
+            </v-card>
+            <v-card
+              class="pa-auto ma-auto pb-1 mb-1 xs12 sm12 md12 lg12 xl12"
+              color="#999999"
               align="center"
             >
               <v-card-title
@@ -102,7 +118,6 @@
                 </v-data-table>
               </v-card-text>
             </v-card>
-            <!--            </v-row>-->
           </v-col>
         </v-layout>
       </v-card-text>
@@ -111,8 +126,11 @@
 </template>
 
 <script>
+import MapModal from "@/components/MapModal";
+
 export default {
   name: "IncidentMetrics",
+  components: { MapModal },
   data() {
     return {
       incidentMetrics: {
@@ -124,7 +142,7 @@ export default {
 
         startDatetime: "", // Estos campos, si podés mandamelos como texto ya que no voy a hacer ningún calculo.
         endDatetime: "",
-        workTime: "2h 16m",
+        workTime: "",
         resourcesList: [
           // Esta lista la vamos a usar para armar la tabla de recursos vinculados al incidente.
           {}
@@ -148,20 +166,32 @@ export default {
             value: "location_as_string_reference"
           }
         ],
-        averageWorkTime: "1h 50m" // Este dato, lo vamos a usar para armar un grafico de barra comparando con el "workTime".
-      }
+        averageWorkTime: "" // Este dato, lo vamos a usar para armar un grafico de barra comparando con el "workTime".
+      },
+      place: "",
+      placeError: ""
     };
   },
   created() {
+    this.incidentMetrics.id = 67;
     this.incidentMetrics.incidentAbstraction = "Rescate";
     this.incidentMetrics.incidentType = "Rescate de Animales";
     this.incidentMetrics.externalAssistance = "Sí";
-    this.incidentMetrics.point = "Somewhere";
+    this.incidentMetrics.point = {
+      type: "Point",
+      coordinates: [-31.425139046472044, -62.082796570757566]
+    };
     this.incidentMetrics.reference = "Cerca de la Plaza Cívica";
-    this.incidentMetrics.startDatetime = "20/Mayo/2021 a las 17:34";
+    this.incidentMetrics.startDatetime = "20/Mayo/2021 a las 17:34"; // '2021-05-22 23:03:16.887971+00:00' TODO: convertir este formato a texto.
     this.incidentMetrics.endDatetime = "20/Mayo/2021 a las 19:54";
-    this.incidentMetrics.workTime = "2h 20m";
+    this.incidentMetrics.workTime = "2h 20m"; // TODO: calcularlo con las fechas de inicio y fin.
     this.incidentMetrics.averageWorkTime = "2h 5m";
+  },
+  methods: {
+    placeChanged(place) {
+      this.placeError = false;
+      this.place = place;
+    }
   }
 };
 </script>
