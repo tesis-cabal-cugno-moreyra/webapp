@@ -38,6 +38,16 @@ export default {
       }
     });
   },
+  getIncidentById(context, incidentId) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        return resolve(await api.get(`/api/v1/incidents/${incidentId}/`));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
   postIncidentChangeExternalSupport(context, payload) {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
