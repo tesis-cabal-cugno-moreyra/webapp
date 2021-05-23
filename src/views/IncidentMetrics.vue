@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-card class="pt-5 pr-1 pl-1 pb-1 mt-5 mr-1 ml-1 mb-1" color="">
-      <v-card-title> <h1>Métricas del Incidente.</h1></v-card-title>
+      <v-card-title> <h1>Métricas del Incidente</h1></v-card-title>
       <v-card-subtitle
         >En este reporte se podrán observar las métricas obtenidas
         correspondientes al incidente.</v-card-subtitle
@@ -17,10 +17,8 @@
               <v-card-title>Incidente</v-card-title>
               <v-card-text justify="center"
                 ><h1>
-                  {{ this.incidentMetrics.incidentAbstraction }} -
-                  {{ this.incidentMetrics.incidentType }} ({{
-                    this.incidentMetrics.reference
-                  }})
+                  {{ this.incidentMetrics.incidentType }} -
+                  {{ this.incidentMetrics.reference }}
                 </h1>
               </v-card-text>
             </v-card>
@@ -67,13 +65,7 @@
             >
               <v-card-title>Geolocalización del Incidente</v-card-title>
               <v-card-text class="justify-center">
-                <map-modal
-                  v-bind:show-autocomplete="false"
-                  v-bind:point="this.incidentMetrics.point"
-                  v-on:place="placeChanged"
-                ></map-modal>
-                // TODO: cambiar este componente por un redirect a la vista del
-                mapa del incidente.
+                <v-btn v-on:click="goToMap">Ir al mapa</v-btn>
               </v-card-text>
             </v-card>
             <v-card
@@ -126,27 +118,20 @@
 </template>
 
 <script>
-import MapModal from "@/components/MapModal";
-
 export default {
   name: "IncidentMetrics",
-  components: { MapModal },
   data() {
     return {
       incidentMetrics: {
-        incidentAbstraction: "",
+        id: null,
         incidentType: "",
         externalAssistance: "",
-        point: "Somewhere", // Acá devolvé lo que puedas, tengo que ver como pasarle las coordenadas al mapa.
+        point: "",
         reference: "",
-
-        startDatetime: "", // Estos campos, si podés mandamelos como texto ya que no voy a hacer ningún calculo.
-        endDatetime: "",
-        workTime: "",
-        resourcesList: [
-          // Esta lista la vamos a usar para armar la tabla de recursos vinculados al incidente.
-          {}
-        ],
+        startDatetime: "", // '2021-05-22 23:03:16.887971+00:00' TODO: convertir este formato a texto.
+        endDatetime: "Aún no finalizó.",
+        workTime: "0h", // TODO: calcularlo con las fechas de inicio y fin.
+        resourcesList: [{}],
         headerResourcesTable: [
           // TODO: Definir el encabezado de la tabla en base a lo que envíe backend.
           { text: "Estado", sortable: false, value: "status" },
@@ -166,31 +151,49 @@ export default {
             value: "location_as_string_reference"
           }
         ],
-        averageWorkTime: "" // Este dato, lo vamos a usar para armar un grafico de barra comparando con el "workTime".
-      },
-      place: "",
-      placeError: ""
+        averageWorkTime: "0h" // Este dato, lo vamos a usar para armar un grafico de barra comparando con el "workTime".
+      }
     };
   },
-  created() {
-    this.incidentMetrics.id = 67;
-    this.incidentMetrics.incidentAbstraction = "Rescate";
-    this.incidentMetrics.incidentType = "Rescate de Animales";
-    this.incidentMetrics.externalAssistance = "Sí";
-    this.incidentMetrics.point = {
-      type: "Point",
-      coordinates: [-31.425139046472044, -62.082796570757566]
-    };
-    this.incidentMetrics.reference = "Cerca de la Plaza Cívica";
-    this.incidentMetrics.startDatetime = "20/Mayo/2021 a las 17:34"; // '2021-05-22 23:03:16.887971+00:00' TODO: convertir este formato a texto.
-    this.incidentMetrics.endDatetime = "20/Mayo/2021 a las 19:54";
-    this.incidentMetrics.workTime = "2h 20m"; // TODO: calcularlo con las fechas de inicio y fin.
-    this.incidentMetrics.averageWorkTime = "2h 5m";
+  async created() {
+    if (!this.$route.params.id) {
+      console.error("not defined id for incident");
+      this.$route.push({ name: "Error" });
+    } else {
+      this.incidentMetrics.id = this.$route.params.id;
+    }
+    await this.$store
+      .dispatch("incident/getIncidentById", this.incidentMetrics.id)
+      .then(response => {
+        console.log(response);
+        this.incidentMetrics.incidentType = response.data.incident_type_name;
+        this.incidentMetrics.externalAssistance =
+          response.data.external_assistance;
+        this.incidentMetrics.point = response.data.location_point;
+        this.incidentMetrics.reference = response.data.reference;
+        this.incidentMetrics.startDatetime = response.data.created_at;
+        this.incidentMetrics.endDatetime = response.data.finalized_at;
+      })
+      .catch(async () => {
+        this.$store.commit("uiParams/dispatchAlert", {
+          text: "Hubo problemas en la busqueda del incidente.",
+          color: "primary",
+          timeout: 4000
+        });
+      });
   },
   methods: {
-    placeChanged(place) {
-      this.placeError = false;
-      this.place = place;
+    goToMap() {
+      let incidentData = {
+        location_point: {
+          coordinates: []
+        }
+      };
+      incidentData.location_point.coordinates = this.incidentMetrics.point.coordinates;
+      this.$router.push({
+        name: "IncidentMap",
+        params: { id: this.incidentMetrics.id, incident: incidentData }
+      });
     }
   }
 };

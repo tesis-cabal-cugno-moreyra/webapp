@@ -149,14 +149,17 @@ const routes = [
     })
   },
   {
-    path: "/incident-metrics",
+    path: "/incident-metrics/:id",
     name: "StatisticsView",
     component: IncidentMetrics,
     meta: {
       requires_auth: true,
       is_admin: true,
       is_supervisor: true
-    }
+    },
+    props: route => ({
+      ...route.params
+    })
   }
 ];
 
