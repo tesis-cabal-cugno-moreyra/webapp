@@ -157,7 +157,7 @@ export default {
   },
   async created() {
     if (!this.$route.params.id) {
-      console.error("not defined id for incident");
+      console.error("Not defined id for incident.");
       this.$route.push({ name: "Error" });
     } else {
       this.incidentMetrics.id = this.$route.params.id;
@@ -165,14 +165,32 @@ export default {
     await this.$store
       .dispatch("incident/getIncidentById", this.incidentMetrics.id)
       .then(response => {
-        console.log(response);
         this.incidentMetrics.incidentType = response.data.incident_type_name;
         this.incidentMetrics.externalAssistance =
           response.data.external_assistance;
         this.incidentMetrics.point = response.data.location_point;
         this.incidentMetrics.reference = response.data.reference;
-        this.incidentMetrics.startDatetime = response.data.created_at;
-        this.incidentMetrics.endDatetime = response.data.finalized_at;
+
+        const options = {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        };
+        if (response.data.created_at) {
+          let startDate = new Date(response.data.created_at);
+          this.incidentMetrics.startDatetime = startDate.toLocaleTimeString(
+            "es-AR",
+            options
+          );
+        }
+        if (response.data.finalized_at) {
+          let endDate = new Date(response.data.finalized_at);
+          this.incidentMetrics.endDatetime = endDate.toLocaleTimeString(
+            "es-AR",
+            options
+          );
+        }
       })
       .catch(async () => {
         this.$store.commit("uiParams/dispatchAlert", {
