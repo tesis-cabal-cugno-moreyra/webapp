@@ -179,17 +179,20 @@ export default {
         };
         if (response.data.created_at) {
           let startDate = new Date(response.data.created_at);
-          this.incidentMetrics.startDatetime = startDate.toLocaleTimeString(
-            "es-AR",
-            options
-          );
+          startDate = startDate.toLocaleTimeString("es-AR", options) + ".";
+          startDate = startDate.charAt(0).toUpperCase() + startDate.slice(1);
+          this.incidentMetrics.startDatetime = startDate;
         }
         if (response.data.finalized_at) {
           let endDate = new Date(response.data.finalized_at);
-          this.incidentMetrics.endDatetime = endDate.toLocaleTimeString(
-            "es-AR",
-            options
-          );
+          endDate = endDate.toLocaleTimeString("es-AR", options) + ".";
+          endDate = endDate.charAt(0).toUpperCase() + endDate.slice(1);
+          this.incidentMetrics.endDatetime = endDate;
+        } else if (response.date.cancelled_at) {
+          let endDate = new Date(response.data.cancelled_at);
+          endDate = endDate.toLocaleTimeString("es-AR", options) + ".";
+          this.incidentMetrics.endDatetime =
+            "Incidente cancelado el día " + endDate;
         }
       })
       .catch(async () => {
