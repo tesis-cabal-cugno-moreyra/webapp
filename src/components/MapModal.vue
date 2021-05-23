@@ -2,7 +2,6 @@
   <div>
     <v-row justify="center">
       <div
-        v-if="this.showAutocomplete"
         class="v-input theme--dark v-text-field v-text-field--is-booted ma-1 pa-2"
       >
         <div class="v-input__control">
@@ -291,8 +290,7 @@ export default {
             }
           ]
         }
-      ],
-      readOnly: false
+      ]
     };
   },
   created() {
@@ -318,75 +316,60 @@ export default {
   },
   methods: {
     addMarkerOnClick(event) {
-      if (!this.readOnly) {
-        this.clickedPlace = event.latLng;
-        // SearchedPlace is no useful here
-        this.searchedPlace = null;
+      this.clickedPlace = event.latLng;
+      // SearchedPlace is no useful here
+      this.searchedPlace = null;
 
-        let input1 = document.getElementById("place1");
-        input1.value = "Punto seleccionado en el mapa.";
+      let input1 = document.getElementById("place1");
+      input1.value = "Punto seleccionado en el mapa.";
 
-        let eventStrigified = JSON.stringify(event);
-        let place = JSON.parse(eventStrigified);
+      let eventStrigified = JSON.stringify(event);
+      let place = JSON.parse(eventStrigified);
 
-        let myPlace = {
-          text: "",
-          lat: place.latLng.lat,
-          lng: place.latLng.lng
-        };
-        this.$emit("place", myPlace);
-      }
+      let myPlace = {
+        text: "",
+        lat: place.latLng.lat,
+        lng: place.latLng.lng
+      };
+      this.$emit("place", myPlace);
     },
     setDescription(description) {
       this.description = description;
     },
     addMarkerOnSearch(place) {
-      if (!this.readOnly) {
-        this.searchedPlace = place;
-        this.centerLatitude = place.geometry.location.lat();
-        console.log(this.centerLatitude);
-        this.centerLongitude = place.geometry.location.lng();
-        // ClickedPlace is no useful here
-        this.clickedPlace = null;
-        let myPlace = {
-          text: document.getElementById("place1").value,
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng()
-        };
-        this.$emit("place", myPlace);
-      }
+      this.searchedPlace = place;
+      this.centerLatitude = place.geometry.location.lat();
+      console.log(this.centerLatitude);
+      this.centerLongitude = place.geometry.location.lng();
+      // ClickedPlace is no useful here
+      this.clickedPlace = null;
+      let myPlace = {
+        text: document.getElementById("place1").value,
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng()
+      };
+      this.$emit("place", myPlace);
     },
     addMarkerWithExternalPoint(externalPoint) {
-      if (this.readOnly) {
-        this.searchedPlace = null;
-        this.centerLatitude = externalPoint.coordinates[0];
-        this.centerLongitude = externalPoint.coordinates[1];
-        this.clickedPlace = null;
+      this.searchedPlace = null;
+      this.centerLatitude = externalPoint.coordinates[0];
+      this.centerLongitude = externalPoint.coordinates[1];
+      this.clickedPlace = null;
 
-        console.log(externalPoint);
+      console.log(externalPoint);
 
-        let myPlace = {
-          text: "",
-          lat: externalPoint.coordinates[0],
-          lng: externalPoint.coordinates[1]
-        };
+      let myPlace = {
+        text: "",
+        lat: externalPoint.coordinates[0],
+        lng: externalPoint.coordinates[1]
+      };
 
-        this.$emit("place", myPlace);
-      }
+      this.$emit("place", myPlace);
     },
     saveMarker() {
       console.log(this.searchedPlace);
     }
   }
-  // mounted() {
-  //   if (this.point) {
-  //     this.readOnly = true;
-  //     let externalPoint = {
-  //       coordinates: [this.point.coordinates[0], this.point.coordinates[1]]
-  //     };
-  //     this.addMarkerWithExternalPoint(externalPoint);
-  //   }
-  // }
 };
 </script>
 
