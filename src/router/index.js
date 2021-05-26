@@ -150,7 +150,7 @@ const routes = [
   },
   {
     path: "/incident-metrics/:id",
-    name: "StatisticsView",
+    name: "IncidentMetricsView",
     component: IncidentMetrics,
     meta: {
       requires_auth: true,

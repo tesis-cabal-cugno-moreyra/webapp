@@ -128,9 +128,9 @@ export default {
         externalAssistance: "",
         point: "",
         reference: "",
-        startDatetime: "", // '2021-05-22 23:03:16.887971+00:00' TODO: convertir este formato a texto.
+        startDatetime: "",
         endDatetime: "Aún no finalizó.",
-        workTime: "0h", // TODO: calcularlo con las fechas de inicio y fin.
+        workTime: "0h",
         resourcesList: [{}],
         headerResourcesTable: [
           // TODO: Definir el encabezado de la tabla en base a lo que envíe backend.
@@ -165,6 +165,7 @@ export default {
     await this.$store
       .dispatch("incident/getIncidentById", this.incidentMetrics.id)
       .then(response => {
+        console.log(response);
         this.incidentMetrics.incidentType = response.data.incident_type_name;
         this.incidentMetrics.externalAssistance =
           response.data.external_assistance;
@@ -177,6 +178,9 @@ export default {
           month: "long",
           day: "numeric"
         };
+
+        let timeDifference;
+
         if (response.data.created_at) {
           let startDate = new Date(response.data.created_at);
           startDate = startDate.toLocaleTimeString("es-AR", options) + ".";
@@ -188,14 +192,58 @@ export default {
           endDate = endDate.toLocaleTimeString("es-AR", options) + ".";
           endDate = endDate.charAt(0).toUpperCase() + endDate.slice(1);
           this.incidentMetrics.endDatetime = endDate;
-        } else if (response.date.cancelled_at) {
+          timeDifference = this.dateDifference(
+            new Date(response.data.finalized_at),
+            new Date(response.data.created_at)
+          );
+        } else if (response.data.cancelled_at) {
           let endDate = new Date(response.data.cancelled_at);
           endDate = endDate.toLocaleTimeString("es-AR", options) + ".";
           this.incidentMetrics.endDatetime =
             "Incidente cancelado el día " + endDate;
+          timeDifference = this.dateDifference(
+            new Date(response.data.finalized_at),
+            new Date(response.data.created_at)
+          );
+        }
+        this.incidentMetrics.workTime = "";
+        if (timeDifference.days > 0) {
+          this.incidentMetrics.workTime = timeDifference.days.toString() + "d ";
+        }
+        if (timeDifference.hours > 0) {
+          this.incidentMetrics.workTime =
+            this.incidentMetrics.workTime +
+            timeDifference.hours.toString() +
+            "h ";
+        }
+        if (timeDifference.minutes > 0) {
+          this.incidentMetrics.workTime =
+            this.incidentMetrics.workTime +
+            timeDifference.minutes.toString() +
+            "m ";
+        }
+        if (timeDifference.seconds > 0) {
+          this.incidentMetrics.workTime =
+            this.incidentMetrics.workTime +
+            timeDifference.seconds.toString() +
+            "s ";
         }
       })
-      .catch(async () => {
+      .catch(async e => {
+        console.error(e);
+        this.$store.commit("uiParams/dispatchAlert", {
+          text: "Hubo problemas en la busqueda del incidente.",
+          color: "primary",
+          timeout: 4000
+        });
+      });
+    await this.$store
+      .dispatch("incident/getIncidentById", this.incidentMetrics.id)
+      .then(response => {
+        console.log(response);
+      })
+      .catch(async e => {
+        console.error(e);
         this.$store.commit("uiParams/dispatchAlert", {
           text: "Hubo problemas en la busqueda del incidente.",
           color: "primary",
@@ -215,6 +263,27 @@ export default {
         name: "IncidentMap",
         params: { id: this.incidentMetrics.id, incident: incidentData }
       });
+    },
+    dateDifference(date1, date2) {
+      let difference;
+      if (date1 > date2) {
+        difference = date1 - date2;
+      } else if (date1 < date2) {
+        difference = date2 - date1;
+      } else {
+        return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+      }
+      console.log(difference.toString());
+      let days, hours, minutes, seconds;
+      seconds = Math.floor(difference / 1000);
+      minutes = Math.floor(seconds / 60);
+      seconds = seconds % 60;
+      hours = Math.floor(minutes / 60);
+      minutes = minutes % 60;
+      days = Math.floor(hours / 24);
+      hours = hours % 24;
+
+      return { days: days, hours: hours, minutes: minutes, seconds: seconds };
     }
   }
 };
