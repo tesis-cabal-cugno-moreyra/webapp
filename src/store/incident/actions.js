@@ -74,10 +74,33 @@ export default {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
-        let urlSearch = `/api/v1/incidents/${payload.incident_id}/resources/?resource__user__first_name=${payload.resource__user__first_name}&resource__user__last_name=${payload.resource__user__last_name}&resource__type__name=${payload.resource__type}&page=${payload.page}`;
-        if (payload.page_size) {
-          urlSearch = `${urlSearch}&page_size=${payload.page_size}`;
+        let urlSearch = `/api/v1/incidents/${payload.incident_id}/resources/`;
+        if (
+          payload.resource__user__first_name ||
+          payload.resource__user__last_name ||
+          payload.resource__type ||
+          payload.page
+        ) {
+          urlSearch = urlSearch + "?";
         }
+        if (payload.resource__user__first_name) {
+          urlSearch =
+            urlSearch +
+            `resource__user__first_name=${payload.resource__user__first_name}&`;
+        }
+        if (payload.resource__user__last_name) {
+          urlSearch = `${urlSearch}resource__user__last_name=${payload.resource__user__last_name}&`;
+        }
+        if (payload.resource__type) {
+          urlSearch = `${urlSearch}resource__type__name=${payload.resource__type}&`;
+        }
+        if (payload.page) {
+          urlSearch = `${urlSearch}page=${payload.page}&`;
+        }
+        if (payload.page_size) {
+          urlSearch = `${urlSearch}&page_size=${payload.page_size}&`;
+        }
+        // If something happens with this endpoint, check the "&" at the end of searched url.
         return resolve(await api.get(urlSearch));
       } catch (e) {
         return reject(e);

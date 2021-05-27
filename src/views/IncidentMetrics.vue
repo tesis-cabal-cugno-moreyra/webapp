@@ -165,7 +165,6 @@ export default {
     await this.$store
       .dispatch("incident/getIncidentById", this.incidentMetrics.id)
       .then(response => {
-        console.log(response);
         this.incidentMetrics.incidentType = response.data.incident_type_name;
         this.incidentMetrics.externalAssistance =
           response.data.external_assistance;
@@ -179,7 +178,7 @@ export default {
           day: "numeric"
         };
 
-        let timeDifference;
+        let timeDifference = null;
 
         if (response.data.created_at) {
           let startDate = new Date(response.data.created_at);
@@ -206,27 +205,30 @@ export default {
             new Date(response.data.created_at)
           );
         }
-        this.incidentMetrics.workTime = "";
-        if (timeDifference.days > 0) {
-          this.incidentMetrics.workTime = timeDifference.days.toString() + "d ";
-        }
-        if (timeDifference.hours > 0) {
-          this.incidentMetrics.workTime =
-            this.incidentMetrics.workTime +
-            timeDifference.hours.toString() +
-            "h ";
-        }
-        if (timeDifference.minutes > 0) {
-          this.incidentMetrics.workTime =
-            this.incidentMetrics.workTime +
-            timeDifference.minutes.toString() +
-            "m ";
-        }
-        if (timeDifference.seconds > 0) {
-          this.incidentMetrics.workTime =
-            this.incidentMetrics.workTime +
-            timeDifference.seconds.toString() +
-            "s ";
+        if (timeDifference) {
+          this.incidentMetrics.workTime = "";
+          if (timeDifference.days > 0) {
+            this.incidentMetrics.workTime =
+              timeDifference.days.toString() + "d ";
+          }
+          if (timeDifference.hours > 0) {
+            this.incidentMetrics.workTime =
+              this.incidentMetrics.workTime +
+              timeDifference.hours.toString() +
+              "h ";
+          }
+          if (timeDifference.minutes > 0) {
+            this.incidentMetrics.workTime =
+              this.incidentMetrics.workTime +
+              timeDifference.minutes.toString() +
+              "m ";
+          }
+          if (timeDifference.seconds > 0) {
+            this.incidentMetrics.workTime =
+              this.incidentMetrics.workTime +
+              timeDifference.seconds.toString() +
+              "s ";
+          }
         }
       })
       .catch(async e => {
@@ -238,7 +240,10 @@ export default {
         });
       });
     await this.$store
-      .dispatch("incident/getIncidentById", this.incidentMetrics.id)
+      .dispatch("incident/getIncidentResources", {
+        incident_id: this.incidentMetrics.id,
+        page: 1
+      })
       .then(response => {
         console.log(response);
       })
@@ -266,6 +271,7 @@ export default {
     },
     dateDifference(date1, date2) {
       let difference;
+
       if (date1 > date2) {
         difference = date1 - date2;
       } else if (date1 < date2) {
@@ -273,7 +279,7 @@ export default {
       } else {
         return { days: 0, hours: 0, minutes: 0, seconds: 0 };
       }
-      console.log(difference.toString());
+
       let days, hours, minutes, seconds;
       seconds = Math.floor(difference / 1000);
       minutes = Math.floor(seconds / 60);
