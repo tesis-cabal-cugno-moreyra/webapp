@@ -242,9 +242,16 @@ export default {
     await this.$store
       .dispatch("incident/getIncidentResources", {
         incident_id: this.incidentMetrics.id,
+        page_size: 100,
         page: 1
       })
       .then(response => {
+        const options = {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        };
         this.incidentMetrics.resourcesList = [];
         response.data.results.forEach(item => {
           let resource = {
@@ -253,13 +260,38 @@ export default {
             full_name: null,
             type_name: null
           };
-          resource.created_at = new Date(item.created_at);
-          resource.exited_from_incident_at = new Date(
-            item.exited_from_incident_at
-          );
-          resource.full_name =
-            item.resource.user.first_name + " " + item.resource.user.last_name;
-          resource.type_name = item.resource.type.name;
+          if (item.created_at) {
+            let createdAt = new Date(item.created_at);
+            createdAt = createdAt.toLocaleTimeString("es-AR", options) + ".";
+            createdAt = createdAt.charAt(0).toUpperCase() + createdAt.slice(1);
+            resource.created_at = createdAt;
+          } else {
+            resource.created_at = "-";
+          }
+          if (item.exited_from_incident_at) {
+            let exitedFromIncidentAt = new Date(item.exited_from_incident_at);
+            exitedFromIncidentAt =
+              exitedFromIncidentAt.toLocaleTimeString("es-AR", options) + ".";
+            exitedFromIncidentAt =
+              exitedFromIncidentAt.charAt(0).toUpperCase() +
+              exitedFromIncidentAt.slice(1);
+            resource.exited_from_incident_at = exitedFromIncidentAt;
+          } else {
+            resource.exited_from_incident_at = "-";
+          }
+          if (item.resource.user.last_name) {
+            resource.full_name =
+              item.resource.user.first_name +
+              " " +
+              item.resource.user.last_name;
+          } else {
+            resource.full_name = "-";
+          }
+          if (item.resource.type.name) {
+            resource.type_name = item.resource.type.name;
+          } else {
+            resource.type_name = "-";
+          }
           this.incidentMetrics.resourcesList.push(resource);
         });
       })
