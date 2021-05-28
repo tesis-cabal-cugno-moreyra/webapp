@@ -130,25 +130,25 @@ export default {
         reference: "",
         startDatetime: "",
         endDatetime: "Aún no finalizó.",
-        workTime: "0h",
+        workTime: "Aún no finalizó.",
         resourcesList: [{}],
         headerResourcesTable: [
           // TODO: Definir el encabezado de la tabla en base a lo que envíe backend.
-          { text: "Estado", sortable: false, value: "status" },
+          { text: "Tipo de recurso", sortable: false, value: "type_name" },
           {
-            text: "Completitud de detalles",
+            text: "Nombre",
             sortable: false,
-            value: "data_status"
+            value: "full_name"
           },
           {
-            text: "Participación de recursos externos",
+            text: "Horario de vinculación al incidente",
             sortable: false,
-            value: "external_assistance"
+            value: "created_at"
           },
           {
-            text: "Referencia de Ubicación",
+            text: "Horario de desvinculación del incidente",
             sortable: false,
-            value: "location_as_string_reference"
+            value: "exited_from_incident_at"
           }
         ],
         averageWorkTime: "0h" // Este dato, lo vamos a usar para armar un grafico de barra comparando con el "workTime".
@@ -245,12 +245,29 @@ export default {
         page: 1
       })
       .then(response => {
-        console.log(response);
+        this.incidentMetrics.resourcesList = [];
+        response.data.results.forEach(item => {
+          let resource = {
+            created_at: null,
+            exited_from_incident_at: null,
+            full_name: null,
+            type_name: null
+          };
+          resource.created_at = new Date(item.created_at);
+          resource.exited_from_incident_at = new Date(
+            item.exited_from_incident_at
+          );
+          resource.full_name =
+            item.resource.user.first_name + " " + item.resource.user.last_name;
+          resource.type_name = item.resource.type.name;
+          this.incidentMetrics.resourcesList.push(resource);
+        });
       })
       .catch(async e => {
         console.error(e);
         this.$store.commit("uiParams/dispatchAlert", {
-          text: "Hubo problemas en la busqueda del incidente.",
+          text:
+            "Hubo problemas en la busqueda de los recursos pertenecientes al incidente.",
           color: "primary",
           timeout: 4000
         });
