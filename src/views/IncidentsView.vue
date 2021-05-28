@@ -502,7 +502,6 @@ export default {
     },
 
     closeModal() {
-      // this.showIncidentResourceList = false;
       this.$router.push({ name: "IncidentsView" });
     },
     openDialogChangeVisibility(incidentSelected) {
@@ -530,7 +529,6 @@ export default {
       this.dialogChangeStatus = true;
     },
     goToMetrics(incidentSelected) {
-      // console.log(incidentSelected);
       this.$router.push({
         name: "IncidentMetricsView",
         params: { id: incidentSelected.id }

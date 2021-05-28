@@ -133,7 +133,6 @@ export default {
         workTime: "Aún no finalizó.",
         resourcesList: [{}],
         headerResourcesTable: [
-          // TODO: Definir el encabezado de la tabla en base a lo que envíe backend.
           { text: "Tipo de recurso", sortable: false, value: "type_name" },
           {
             text: "Nombre",
@@ -151,7 +150,7 @@ export default {
             value: "exited_from_incident_at"
           }
         ],
-        averageWorkTime: "0h" // Este dato, lo vamos a usar para armar un grafico de barra comparando con el "workTime".
+        averageWorkTime: "0h"
       }
     };
   },
@@ -170,16 +169,13 @@ export default {
           response.data.external_assistance;
         this.incidentMetrics.point = response.data.location_point;
         this.incidentMetrics.reference = response.data.reference;
-
         const options = {
           weekday: "long",
           year: "numeric",
           month: "long",
           day: "numeric"
         };
-
         let timeDifference = null;
-
         if (response.data.created_at) {
           let startDate = new Date(response.data.created_at);
           startDate = startDate.toLocaleTimeString("es-AR", options) + ".";
@@ -320,7 +316,6 @@ export default {
     },
     dateDifference(date1, date2) {
       let difference;
-
       if (date1 > date2) {
         difference = date1 - date2;
       } else if (date1 < date2) {
@@ -328,7 +323,6 @@ export default {
       } else {
         return { days: 0, hours: 0, minutes: 0, seconds: 0 };
       }
-
       let days, hours, minutes, seconds;
       seconds = Math.floor(difference / 1000);
       minutes = Math.floor(seconds / 60);
@@ -337,7 +331,6 @@ export default {
       minutes = minutes % 60;
       days = Math.floor(hours / 24);
       hours = hours % 24;
-
       return { days: days, hours: hours, minutes: minutes, seconds: seconds };
     }
   }

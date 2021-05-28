@@ -339,7 +339,6 @@ export default {
     addMarkerOnSearch(place) {
       this.searchedPlace = place;
       this.centerLatitude = place.geometry.location.lat();
-      console.log(this.centerLatitude);
       this.centerLongitude = place.geometry.location.lng();
       // ClickedPlace is no useful here
       this.clickedPlace = null;
@@ -356,8 +355,6 @@ export default {
       this.centerLongitude = externalPoint.coordinates[1];
       this.clickedPlace = null;
 
-      console.log(externalPoint);
-
       let myPlace = {
         text: "",
         lat: externalPoint.coordinates[0],
@@ -367,7 +364,7 @@ export default {
       this.$emit("place", myPlace);
     },
     saveMarker() {
-      console.log(this.searchedPlace);
+      console.info(this.searchedPlace);
     }
   }
 };
