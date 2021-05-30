@@ -4,8 +4,8 @@
       <v-card>
         <v-card-title class="headline primary">
           Cierre de sesión
-          <v-divider></v-divider>
         </v-card-title>
+        <v-divider></v-divider>
         <v-card-text fill-height>
           La sesión se cerrará. ¿Desea continuar?
         </v-card-text>
