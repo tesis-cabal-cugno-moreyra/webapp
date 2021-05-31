@@ -55,6 +55,7 @@
                 </h3>
                 <h1>
                   {{ this.incidentMetrics.averageWorkTime }}
+                  {{ this.incidentMetrics.standardWorkTime }}
                 </h1></v-card-text
               >
             </v-card>
@@ -150,7 +151,8 @@ export default {
             value: "exited_from_incident_at"
           }
         ],
-        averageWorkTime: "0h"
+        averageWorkTime: "No hay datos suficientes.",
+        standardWorkTime: ""
       }
     };
   },
@@ -164,6 +166,7 @@ export default {
     await this.$store
       .dispatch("incident/getIncidentById", this.incidentMetrics.id)
       .then(response => {
+        console.log(response);
         this.incidentMetrics.incidentType = response.data.incident_type_name;
         this.incidentMetrics.externalAssistance =
           response.data.external_assistance;
@@ -300,6 +303,55 @@ export default {
           timeout: 4000
         });
       });
+    await this.$store
+      .dispatch("incident/getIncidentTypeStatistics", {
+        incident_type_name: this.incidentMetrics.incidentType
+      })
+      .then(response => {
+        console.log(response);
+        let averageWorkTime, standardWorkTime;
+        if (response.data.averageWorkTimeFinalized > 0) {
+          averageWorkTime = this.humanizeHours(
+            response.data.averageWorkTimeFinalized
+          );
+        } else if (response.data.averageWorkTimeCancelled > 0) {
+          averageWorkTime = this.humanizeHours(
+            response.data.averageWorkTimeCancelled
+          );
+        }
+        if (response.data.stdWorkTimeFinalized > 0) {
+          standardWorkTime = this.humanizeHours(
+            response.data.stdWorkTimeFinalized
+          );
+        } else if (response.data.stdWorkTimeCancelled > 0) {
+          standardWorkTime = this.humanizeHours(
+            response.data.stdWorkTimeCancelled
+          );
+        }
+        if (averageWorkTime) {
+          this.incidentMetrics.averageWorkTime = this.stringifyDateTime(
+            averageWorkTime,
+            "En promedio, en este tipo de incidente se trabajan ",
+            " "
+          );
+        }
+        if (averageWorkTime && standardWorkTime) {
+          this.incidentMetrics.standardWorkTime = this.stringifyDateTime(
+            standardWorkTime,
+            "con un desvío de ",
+            "."
+          );
+        }
+      })
+      .catch(async e => {
+        console.error(e);
+        this.$store.commit("uiParams/dispatchAlert", {
+          text:
+            "Hubo problemas en la busqueda del tiempo promedio del incidente.",
+          color: "primary",
+          timeout: 4000
+        });
+      });
   },
   methods: {
     goToMap() {
@@ -332,6 +384,37 @@ export default {
       days = Math.floor(hours / 24);
       hours = hours % 24;
       return { days: days, hours: hours, minutes: minutes, seconds: seconds };
+    },
+    humanizeHours(seconds) {
+      let minutes, hours, days;
+
+      seconds = Math.floor(seconds / 1000);
+      minutes = Math.floor(seconds / 60);
+      seconds = seconds % 60;
+      hours = Math.floor(minutes / 60);
+      minutes = minutes % 60;
+      days = Math.floor(hours / 24);
+      hours = hours % 24;
+      return { days: days, hours: hours, minutes: minutes, seconds: seconds };
+    },
+    stringifyDateTime(time, beforeText, afterText) {
+      let timeInText = beforeText;
+      if (time) {
+        if (time.days > 0) {
+          timeInText = timeInText + time.days.toString() + "d ";
+        }
+        if (time.hours > 0) {
+          timeInText = timeInText + time.hours.toString() + "h ";
+        }
+        if (time.minutes > 0) {
+          timeInText = timeInText + time.minutes.toString() + "m ";
+        }
+        if (time.seconds > 0) {
+          timeInText = timeInText + time.seconds.toString() + "s ";
+        }
+      }
+      timeInText = timeInText + afterText;
+      return timeInText;
     }
   }
 };

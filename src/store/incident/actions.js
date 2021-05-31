@@ -107,6 +107,17 @@ export default {
       }
     });
   },
+  getIncidentTypeStatistics(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlSearch = `/api/v1/incident-types/${payload.incident_type_name}/statistics/`;
+        return resolve(await api.get(urlSearch));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
   postResourceIncident(context, payload) {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
