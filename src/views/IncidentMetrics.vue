@@ -166,7 +166,6 @@ export default {
     await this.$store
       .dispatch("incident/getIncidentById", this.incidentMetrics.id)
       .then(response => {
-        console.log(response);
         this.incidentMetrics.incidentType = response.data.incident_type_name;
         this.incidentMetrics.externalAssistance =
           response.data.external_assistance;
@@ -308,7 +307,6 @@ export default {
         incident_type_name: this.incidentMetrics.incidentType
       })
       .then(response => {
-        console.log(response);
         let averageWorkTime, standardWorkTime;
         if (response.data.averageWorkTimeFinalized > 0) {
           averageWorkTime = this.humanizeHours(
