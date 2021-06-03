@@ -203,22 +203,19 @@
                 </v-tooltip>
 
                 <v-tooltip bottom>
-                  <template
-                    v-slot:activator="{ on, attrs }"
-                    v-if="incidentStatusSelected === 'Iniciado'"
-                  >
+                  <template v-slot:activator="{ on, attrs }">
                     <v-icon
                       v-bind="attrs"
                       v-on="on"
                       small
-                      color="#68D4CE"
-                      @click="openDialogChangeStatus(item)"
-                      :class="['mr-2']"
+                      color="light-blue"
+                      class="pr-1 mr-1"
+                      @click="goToMetrics(item)"
                     >
-                      mdi-ballot-recount
+                      mdi-chart-areaspline
                     </v-icon>
                   </template>
-                  <span>Cambiar estado del incidente</span>
+                  <span>Ver métricas</span>
                 </v-tooltip>
               </template>
             </v-data-table>
@@ -284,7 +281,11 @@ export default {
           sortable: false,
           value: "data_status"
         },
-        { text: "Visibilidad", sortable: false, value: "visibility" },
+        {
+          text: "Asistencia externa",
+          sortable: false,
+          value: "external_assistance"
+        },
         {
           text: "Referencia de Ubicación",
           sortable: false,
@@ -325,9 +326,9 @@ export default {
         }
         incident.statusTranslate = this.incidentStatusSelected;
         if (this.incidentVisibilitySelected === "Con asistencia externa") {
-          incident.visibility = "Con asistencia externa";
+          incident.external_assistance = "Con asistencia externa";
         } else {
-          incident.visibility = "Sin asistencia externa";
+          incident.external_assistance = "Sin asistencia externa";
         }
       });
       this.userIncidentData = incidentEnglish;
@@ -411,7 +412,6 @@ export default {
           this.loadingTable = false;
         });
     },
-
     loadIncidentData(completeData) {
       this.translate(completeData.data.results);
       let itemsPerPage = process.env.VUE_APP_ITEMS_PER_PAGE;
@@ -502,7 +502,6 @@ export default {
     },
 
     closeModal() {
-      // this.showIncidentResourceList = false;
       this.$router.push({ name: "IncidentsView" });
     },
     openDialogChangeVisibility(incidentSelected) {
@@ -528,6 +527,12 @@ export default {
     openDialogChangeStatus(incidentSelected) {
       this.incidentSelected = incidentSelected;
       this.dialogChangeStatus = true;
+    },
+    goToMetrics(incidentSelected) {
+      this.$router.push({
+        name: "IncidentMetricsView",
+        params: { id: incidentSelected.id }
+      });
     }
   },
   computed: {

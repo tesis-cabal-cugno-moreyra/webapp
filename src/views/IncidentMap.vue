@@ -383,7 +383,7 @@ export default {
           console.error("id not present here! We should register this user");
           return;
         }
-        if (wsEventData.type === "map_point") {
+        if (wsEventData.incident_type === "map_point") {
           incidentResource.addMapPoint(
             new MapPoint(
               wsEventData.data.location.coordinates[0],
@@ -391,7 +391,7 @@ export default {
               wsEventData.data.comment
             )
           );
-        } else if (wsEventData.type === "track_point") {
+        } else if (wsEventData.incident_type === "track_point") {
           incidentResource.addTrackPoint(
             new TrackPoint(
               wsEventData.data.location.coordinates[0],
