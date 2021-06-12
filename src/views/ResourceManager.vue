@@ -306,7 +306,7 @@ export default {
     },
     goToStatistics(resourceSelected) {
       this.$router.push({
-        name: "StatisticsView",
+        name: "ResourceStatisticsView",
         params: { id: resourceSelected.id }
       });
     },

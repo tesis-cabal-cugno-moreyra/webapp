@@ -181,7 +181,7 @@ import BarChart from "@/components/charts/BarChart.vue";
 import { mapGetters } from "vuex";
 
 export default {
-  name: "StatisticsView.vue",
+  name: "ResourceStatistics",
   components: { BarChart, PieChart, LineChart },
   data() {
     return {
