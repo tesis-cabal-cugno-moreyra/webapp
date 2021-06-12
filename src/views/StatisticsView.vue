@@ -274,7 +274,6 @@ export default {
           let incidents = [];
           if (response.data.results !== []) {
             response.data.results.forEach(item => {
-              console.log(item);
               item = {
                 status: this.translateStatus(item.incident.status),
                 data_status: this.translateDataStatus(
@@ -287,10 +286,8 @@ export default {
                   item.incident.location_as_string_reference
                 )
               };
-              console.log(item);
               incidents.push(item);
             });
-            console.log(incidents);
             this.incidentsByResource = incidents;
           }
         })
