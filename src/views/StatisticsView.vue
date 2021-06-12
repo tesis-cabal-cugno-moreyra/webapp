@@ -222,15 +222,77 @@ export default {
     await this.loadIncidentsDataByUser();
   },
   methods: {
+    translateStatus(status) {
+      switch (status) {
+        case "Started":
+          status = "Inicializado";
+          break;
+        case "Finalized":
+          status = "Finalizado";
+          break;
+        case "Canceled":
+          status = "Cancelado";
+          break;
+      }
+      return status;
+    },
+    translateDataStatus(dataStatus) {
+      switch (dataStatus) {
+        case "Incomplete":
+          dataStatus = "Incompleto";
+          break;
+        case "Complete":
+          dataStatus = "Completo";
+      }
+      return dataStatus;
+    },
+    translateExternalAssistance(externalAssistance) {
+      switch (externalAssistance) {
+        case "With external support":
+          externalAssistance = "Con asistencia externa.";
+          break;
+        case "Without external support":
+          externalAssistance = "Sin asistencia externa.";
+          break;
+      }
+      return externalAssistance;
+    },
+    translateLocationString(locationAsStringReference) {
+      if (locationAsStringReference === "") {
+        return "-";
+      } else {
+        return locationAsStringReference;
+      }
+    },
     async loadIncidentsDataByUser() {
       this.loadingTable = true;
 
       let context = this;
-      // TODO: obtener todos los incidentes en los que participó un recurso en particular, pasandole la id del recurso en la request.
       await context.$store
-        .dispatch("incident/getIncidentsByResourceId", context.resourceId)
+        .dispatch("domainConfig/getIncidentsByResourceId", context.resourceId)
         .then(response => {
-          this.incidentsByResource = response.data.results;
+          let incidents = [];
+          if (response.data.results !== []) {
+            response.data.results.forEach(item => {
+              console.log(item);
+              item = {
+                status: this.translateStatus(item.incident.status),
+                data_status: this.translateDataStatus(
+                  item.incident.data_status
+                ),
+                external_assistance: this.translateExternalAssistance(
+                  item.incident.external_assistance
+                ),
+                location_as_string_reference: this.translateLocationString(
+                  item.incident.location_as_string_reference
+                )
+              };
+              console.log(item);
+              incidents.push(item);
+            });
+            console.log(incidents);
+            this.incidentsByResource = incidents;
+          }
         })
         .catch(async () => {
           console.error("Error al buscar datos para llenar la tabla.");
