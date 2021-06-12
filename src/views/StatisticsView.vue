@@ -228,7 +228,7 @@ export default {
       let context = this;
       // TODO: obtener todos los incidentes en los que participó un recurso en particular, pasandole la id del recurso en la request.
       await context.$store
-        .dispatch("incident/getIncident")
+        .dispatch("incident/getIncidentsByResourceId", context.resourceId)
         .then(response => {
           this.incidentsByResource = response.data.results;
         })
