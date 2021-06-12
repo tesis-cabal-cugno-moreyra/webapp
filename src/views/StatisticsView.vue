@@ -234,20 +234,13 @@ export default {
         })
         .catch(async () => {
           console.error("Error al buscar datos para llenar la tabla.");
-        })
-        .finally(async () => {
-          console.log(
-            "Búsqueda de datos para llenar la tabla finalizada con éxito."
-          );
         });
     },
     async getStatisticsByResource() {
       let context = this;
-      console.log(context.resourceId);
       await context.$store
         .dispatch("domainConfig/getStatisticsByResourceId", context.resourceId)
         .then(response => {
-          console.log(response);
           context.barChartData = response.data.barChartData;
           context.lineChartDataAnnually = response.data.lineChartDataAnnually;
           context.lineChartDataMonthly = response.data.lineChartDataMonthly;

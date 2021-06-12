@@ -307,7 +307,7 @@ export default {
     goToStatistics(resourceSelected) {
       this.$router.push({
         name: "StatisticsView",
-        params: { id: resourceSelected.user.id }
+        params: { id: resourceSelected.id }
       });
     },
     async changeStateResource() {
