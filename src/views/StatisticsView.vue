@@ -3,8 +3,9 @@
     <v-card class="pt-5 pr-1 pl-1 pb-1 mt-5 mr-1 ml-1 mb-1" color="">
       <v-card-title> <h1>Estadísticas por recurso.</h1></v-card-title>
       <v-card-subtitle
-        >Toda la expliación de las estadísticas y reportes
-        necesaria.</v-card-subtitle
+        >A continuación se detallarán las métricas obtenidas por la aplicación
+        por cada recurso. Además, se podrá visualizar el listado de incidentes
+        en los que el recurso participó.</v-card-subtitle
       >
       <v-card-text>
         <v-layout row class="pa-auto ma-auto" fill-height fill-width>
@@ -25,8 +26,8 @@
               >
               <v-card-text justify="center"><h1>12</h1></v-card-text>
               <v-card-subtitle
-                >Acá va la explicación de este número, explicar como leerlo y
-                qué representa.</v-card-subtitle
+                >Todas las participaciones en incidentes en las que el recurso
+                estuvo presente.</v-card-subtitle
               >
             </v-card>
           </v-row>
@@ -136,7 +137,6 @@
                   :data-collection="barChartData"
                 ></bar-chart
               ></v-card-text>
-              <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
           </v-row>
           <v-row
@@ -166,7 +166,6 @@
                 >
                 </v-data-table>
               </v-card-text>
-              <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
           </v-row>
         </v-layout>
@@ -244,9 +243,11 @@ export default {
     },
     async getStatisticsByResource() {
       let context = this;
+      console.log(context.resourceId);
       await context.$store
         .dispatch("domainConfig/getStatisticsByResourceId", context.resourceId)
         .then(response => {
+          console.log(response);
           context.barChartData = response.data.barChartData;
           context.lineChartDataAnnually = response.data.lineChartDataAnnually;
           context.lineChartDataMonthly = response.data.lineChartDataMonthly;
@@ -257,9 +258,6 @@ export default {
           console.error(
             "Error al intentar obtener las estadísticas por recurso."
           );
-        })
-        .finally(async () => {
-          console.log("Estadística por recurso obtenida con éxito.");
         });
     },
     goToMap(incident) {
