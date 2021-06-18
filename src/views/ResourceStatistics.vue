@@ -24,7 +24,9 @@
               <v-card-title
                 >Cantidad total de participaciones en incidentes.</v-card-title
               >
-              <v-card-text justify="center"><h1>12</h1></v-card-text>
+              <v-card-text justify="center"
+                ><h1>{{ this.incidentsAttended }}</h1></v-card-text
+              >
               <v-card-subtitle
                 >Todas las participaciones en incidentes en las que el recurso
                 estuvo presente.</v-card-subtitle
@@ -186,6 +188,7 @@ export default {
   data() {
     return {
       resourceId: null,
+      incidentsAttended: 0,
       headerIncidentsTable: [
         { text: "Estado", sortable: false, value: "status" },
         {
@@ -272,6 +275,7 @@ export default {
         .dispatch("domainConfig/getIncidentsByResourceId", context.resourceId)
         .then(response => {
           let incidents = [];
+          this.incidentsAttended = response.data.results.length;
           if (response.data.results !== []) {
             response.data.results.forEach(item => {
               item = {
