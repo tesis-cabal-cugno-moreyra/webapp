@@ -167,8 +167,9 @@ export default {
       .dispatch("incident/getIncidentById", this.incidentMetrics.id)
       .then(response => {
         this.incidentMetrics.incidentType = response.data.incident_type_name;
-        this.incidentMetrics.externalAssistance =
-          response.data.external_assistance;
+        this.incidentMetrics.externalAssistance = this.translateExternalAssistance(
+          response.data.external_assistance
+        );
         this.incidentMetrics.point = response.data.location_point;
         this.incidentMetrics.reference = response.data.reference;
         const options = {
@@ -413,6 +414,17 @@ export default {
       }
       timeInText = timeInText + afterText;
       return timeInText;
+    },
+    translateExternalAssistance(externalAssistance) {
+      switch (externalAssistance) {
+        case "With external support":
+          externalAssistance = "Con asistencia externa.";
+          break;
+        case "Without external support":
+          externalAssistance = "Sin asistencia externa.";
+          break;
+      }
+      return externalAssistance;
     }
   }
 };
