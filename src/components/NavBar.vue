@@ -8,7 +8,9 @@
           </v-avatar>
         </v-flex>
         <v-flex>
-          <p class="gray--text mt-3 headline">{{ this.user.username }}</p>
+          <p class="gray--text mt-3 headline">
+            {{ this.user.lastName }} {{ this.user.firstName }}
+          </p>
         </v-flex>
       </v-layout>
       <v-divider></v-divider>
