@@ -2,13 +2,14 @@
   <div class="text-center">
     <v-dialog v-model="dialog" width="300" persistent>
       <v-card>
-        <v-card-title class="headline primary">
+        <v-card-title class="justify-center primary">
           Cierre de sesión
         </v-card-title>
-        <v-divider></v-divider>
-        <v-card-text fill-height>
-          La sesión se cerrará. ¿Desea continuar?
-        </v-card-text>
+        <v-list-item-subtitle>
+          <v-card-text class="justify-center">
+            La sesión se cerrará. ¿Desea continuar?
+          </v-card-text>
+        </v-list-item-subtitle>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="grey" text @click="$emit('close-modal')">
@@ -20,8 +21,8 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </div></template
->
+  </div>
+</template>
 <script>
 import router from "@/router";
 

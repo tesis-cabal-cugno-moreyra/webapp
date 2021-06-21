@@ -24,7 +24,11 @@
         >
       </v-list-item>
 
-      <v-list-item link v-on:click="goDomainAccessCode">
+      <v-list-item
+        link
+        v-on:click="goDomainAccessCode"
+        v-show="isAdminPermission"
+      >
         <v-list-item-icon>
           <v-icon color="grey darken-1">mdi-settings</v-icon>
         </v-list-item-icon>
@@ -42,7 +46,7 @@
         >
       </v-list-item>
 
-      <v-list-group no-action sub-group>
+      <v-list-group no-action sub-group v-show="isAdminPermission">
         <template v-slot:activator>
           <v-list-item-content>
             <v-list-item-title>Administrar cuentas</v-list-item-title>
@@ -76,7 +80,7 @@
           >
         </v-list-item>
       </v-list-group>
-      <v-list-item link v-on:click="goUserManager">
+      <v-list-item link v-on:click="goUserManager" v-show="isAdminPermission">
         <v-list-item-icon>
           <v-icon color="grey darken-1">mdi-account-card-details</v-icon>
         </v-list-item-icon>
@@ -127,14 +131,25 @@ export default {
     return {
       drawer: false,
       user: null,
-      logoutModal: false
+      logoutModal: false,
+      isAdminPermission: false
     };
   },
 
   created() {
     this.user = authServices.getUser();
+
+    this.administrationPermissionToSee();
   },
   methods: {
+    administrationPermissionToSee() {
+      const userRoles = this.user.roles;
+      userRoles.forEach(role => {
+        if (role === "Administrator") {
+          this.isAdminPermission = true;
+        }
+      });
+    },
     openLogoutModal: function() {
       this.$emit("open-logout-modal");
     },
