@@ -13,6 +13,8 @@ import IncidentsView from "@/views/IncidentsView";
 import IncidentDetails from "@/components/IncidentDetails";
 import IncidentMap from "@/views/IncidentMap";
 import UserManager from "@/views/UserManager";
+import ResourceStatistics from "@/views/ResourceStatistics";
+import IncidentMetrics from "@/views/IncidentMetrics";
 
 Vue.use(VueRouter);
 
@@ -132,6 +134,32 @@ const routes = [
       is_admin: true,
       is_supervisor: true
     }
+  },
+  {
+    path: "/resource_statistics/:id",
+    name: "ResourceStatisticsView",
+    component: ResourceStatistics,
+    meta: {
+      requires_auth: true,
+      is_admin: true,
+      is_supervisor: true
+    },
+    props: route => ({
+      ...route.params
+    })
+  },
+  {
+    path: "/incident-metrics/:id",
+    name: "IncidentMetricsView",
+    component: IncidentMetrics,
+    meta: {
+      requires_auth: true,
+      is_admin: true,
+      is_supervisor: true
+    },
+    props: route => ({
+      ...route.params
+    })
   }
 ];
 

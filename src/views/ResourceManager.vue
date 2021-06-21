@@ -117,6 +117,7 @@
                       v-on="on"
                       small
                       color="success"
+                      class="pr-1 mr-1"
                       @click="openDialog(item)"
                     >
                       mdi-account-plus
@@ -128,11 +129,28 @@
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-icon
+                      v-bind="attrs"
+                      v-on="on"
+                      small
+                      color="blue"
+                      class="pr-1 mr-1"
+                      @click="goToStatistics(item)"
+                    >
+                      mdi-chart-areaspline
+                    </v-icon>
+                  </template>
+                  <span>Ver estadísticas</span>
+                </v-tooltip>
+
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-icon
                       v-if="isUserActiveFilter"
                       v-bind="attrs"
                       v-on="on"
                       small
                       color="primary"
+                      class="pr-1 mr-1"
                       @click="openDialog(item)"
                     >
                       mdi-account-off
@@ -298,6 +316,12 @@ export default {
     openDialog(resourceSelected) {
       this.idResource = resourceSelected.user.id;
       this.dialogChangeStatus = true;
+    },
+    goToStatistics(resourceSelected) {
+      this.$router.push({
+        name: "ResourceStatisticsView",
+        params: { id: resourceSelected.id }
+      });
     },
     async changeStateResource() {
       this.dialogChangeStatus = false;

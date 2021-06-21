@@ -80,6 +80,15 @@
 <script>
 export default {
   name: "MapModal",
+  props: {
+    showAutocomplete: {
+      type: Boolean,
+      default: true
+    },
+    point: {
+      default: null
+    }
+  },
   data() {
     return {
       place: "",
@@ -340,8 +349,22 @@ export default {
       };
       this.$emit("place", myPlace);
     },
+    addMarkerWithExternalPoint(externalPoint) {
+      this.searchedPlace = null;
+      this.centerLatitude = externalPoint.coordinates[0];
+      this.centerLongitude = externalPoint.coordinates[1];
+      this.clickedPlace = null;
+
+      let myPlace = {
+        text: "",
+        lat: externalPoint.coordinates[0],
+        lng: externalPoint.coordinates[1]
+      };
+
+      this.$emit("place", myPlace);
+    },
     saveMarker() {
-      console.log(this.searchedPlace);
+      console.info(this.searchedPlace);
     }
   }
 };

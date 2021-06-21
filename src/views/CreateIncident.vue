@@ -29,7 +29,10 @@
                 v-on:change="resetVisibilityError"
                 label="Visibilidad"
               ></v-select>
-              <map-modal v-on:place="placeChanged"></map-modal>
+              <map-modal
+                v-on:place="placeChanged"
+                v-bind:show-autocomplete="true"
+              ></map-modal>
               <v-text-field
                 id="reference"
                 v-model="reference"
