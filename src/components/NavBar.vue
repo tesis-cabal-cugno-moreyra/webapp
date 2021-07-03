@@ -88,6 +88,14 @@
           >Usuarios</v-list-item-title
         >
       </v-list-item>
+      <v-list-item link v-on:click="goTrackPointLoader">
+        <v-list-item-icon>
+          <v-icon color="grey darken-1">mdi-account-card-details</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title class="grey--text text--darken-1">
+          Cargar Trackpoints de Recursos Offline
+        </v-list-item-title>
+      </v-list-item>
       <v-switch
         class="ml-4"
         v-model="$vuetify.theme.dark"
@@ -170,6 +178,9 @@ export default {
     },
     goAdminManager() {
       this.$router.push({ name: "AdminManager" });
+    },
+    goTrackPointLoader() {
+      this.$router.push({ name: "UploadTrackpointsOfflineData" });
     }
   }
 };

@@ -15,6 +15,7 @@ import IncidentMap from "@/views/IncidentMap";
 import UserManager from "@/views/UserManager";
 import ResourceStatistics from "@/views/ResourceStatistics";
 import IncidentMetrics from "@/views/IncidentMetrics";
+import UploadTrackpointsOfflineData from "@/views/UploadTrackpointsOfflineData";
 
 Vue.use(VueRouter);
 
@@ -27,6 +28,16 @@ const routes = [
     path: "/",
     name: "IncidentsView",
     component: IncidentsView,
+    meta: {
+      requires_auth: true,
+      is_admin: true,
+      is_supervisor: true
+    }
+  },
+  {
+    path: "/trackpoints-offline-data",
+    name: "UploadTrackpointsOfflineData",
+    component: UploadTrackpointsOfflineData,
     meta: {
       requires_auth: true,
       is_admin: true,
