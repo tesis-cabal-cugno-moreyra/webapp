@@ -8,7 +8,9 @@
           </v-avatar>
         </v-flex>
         <v-flex>
-          <p class="gray--text mt-3 headline">{{ this.user.username }}</p>
+          <p class="gray--text mt-3 headline">
+            {{ this.user.lastName }} {{ this.user.firstName }}
+          </p>
         </v-flex>
       </v-layout>
       <v-divider></v-divider>
@@ -22,7 +24,11 @@
         >
       </v-list-item>
 
-      <v-list-item link v-on:click="goDomainAccessCode">
+      <v-list-item
+        link
+        v-on:click="goDomainAccessCode"
+        v-show="isAdminPermission"
+      >
         <v-list-item-icon>
           <v-icon color="grey darken-1">mdi-settings</v-icon>
         </v-list-item-icon>
@@ -40,7 +46,7 @@
         >
       </v-list-item>
 
-      <v-list-group no-action sub-group>
+      <v-list-group no-action sub-group v-show="isAdminPermission">
         <template v-slot:activator>
           <v-list-item-content>
             <v-list-item-title>Administrar cuentas</v-list-item-title>
@@ -74,13 +80,21 @@
           >
         </v-list-item>
       </v-list-group>
-      <v-list-item link v-on:click="goUserManager">
+      <v-list-item link v-on:click="goUserManager" v-show="isAdminPermission">
         <v-list-item-icon>
           <v-icon color="grey darken-1">mdi-account-card-details</v-icon>
         </v-list-item-icon>
         <v-list-item-title class="grey--text text--darken-1"
           >Usuarios</v-list-item-title
         >
+      </v-list-item>
+      <v-list-item link v-on:click="goTrackPointLoader">
+        <v-list-item-icon>
+          <v-icon color="grey darken-1">mdi-account-card-details</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title class="grey--text text--darken-1">
+          Cargar Trackpoints de Recursos Offline
+        </v-list-item-title>
       </v-list-item>
       <v-switch
         class="ml-4"
@@ -125,14 +139,25 @@ export default {
     return {
       drawer: false,
       user: null,
-      logoutModal: false
+      logoutModal: false,
+      isAdminPermission: false
     };
   },
 
   created() {
     this.user = authServices.getUser();
+
+    this.administrationPermissionToSee();
   },
   methods: {
+    administrationPermissionToSee() {
+      const userRoles = this.user.roles;
+      userRoles.forEach(role => {
+        if (role === "Administrator") {
+          this.isAdminPermission = true;
+        }
+      });
+    },
     openLogoutModal: function() {
       this.$emit("open-logout-modal");
     },
@@ -153,6 +178,9 @@ export default {
     },
     goAdminManager() {
       this.$router.push({ name: "AdminManager" });
+    },
+    goTrackPointLoader() {
+      this.$router.push({ name: "UploadTrackpointsOfflineData" });
     }
   }
 };

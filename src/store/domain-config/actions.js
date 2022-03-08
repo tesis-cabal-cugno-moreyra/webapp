@@ -136,7 +136,10 @@ export default {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
-        let urlSearch = `/api/v1/resources/?user__first_name=${payload.user__first_name}&user__last_name=${payload.user__last_name}&type__name=${payload.type__name}&user__is_active=${payload.user__is_active}&page=${payload.page}`;
+        let urlSearch = `/api/v1/resources/`;
+        if (payload) {
+          urlSearch = `${urlSearch}?${new URLSearchParams(payload).toString()}`;
+        }
 
         return resolve(await api.get(urlSearch));
       } catch (e) {
@@ -219,28 +222,25 @@ export default {
     return incidentTypeData[0];
   },
   getStatisticsByResourceId(context, resourceId) {
-    if (resourceId) {
-      // eslint-disable-next-line no-async-promise-executor
-      return new Promise(async (resolve, reject) => {
-        try {
-          // TODO: Descomentar la línea de abajo, y borrar la hardcodeada cuando se calculen las estadísticas por id.
-          // let urlSearch = `/api/v1/statistics/${resourceId}/`;
-          let urlSearch = `/api/v1/statistics/`;
-          return resolve(await api.get(urlSearch));
-        } catch (e) {
-          return reject(e);
-        }
-      });
-    } else {
-      // eslint-disable-next-line no-async-promise-executor
-      return new Promise(async (resolve, reject) => {
-        try {
-          let urlSearch = `/api/v1/statistics/`;
-          return resolve(await api.get(urlSearch));
-        } catch (e) {
-          return reject(e);
-        }
-      });
-    }
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlSearch = `/api/v1/resources/${resourceId}/statistics/`;
+        return resolve(await api.get(urlSearch));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  getIncidentsByResourceId(context, resourceId) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlSearch = `/api/v1/resources/${resourceId}/incidents/`;
+        return resolve(await api.get(urlSearch));
+      } catch (e) {
+        return reject(e);
+      }
+    });
   }
 };

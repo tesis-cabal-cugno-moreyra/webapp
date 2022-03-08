@@ -26,11 +26,9 @@ export default {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
-        let urlSearch;
+        let urlSearch = `/api/v1/incidents/`;
         if (payload) {
-          urlSearch = `/api/v1/incidents/?incident_type__name=${payload.incident_type__name}&external_assistance=${payload.visibility}&status=${payload.status}&data_status=${payload.data_status}&page=${payload.page}`;
-        } else {
-          urlSearch = `/api/v1/incidents/`;
+          urlSearch = `${urlSearch}?${new URLSearchParams(payload).toString()}`;
         }
         return resolve(await api.get(urlSearch));
       } catch (e) {
@@ -146,6 +144,17 @@ export default {
       try {
         let urlSearch = `/api/v1/incidents/${payload.incident_id}/track-points/`;
         return resolve(await api.get(urlSearch));
+      } catch (e) {
+        return reject(e);
+      }
+    });
+  },
+  postIncidentTrackPoints(context, payload) {
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        let urlSearch = `/api/v1/incidents/${payload.incident_id}/resources/${payload.resource_id}/track-points/`;
+        return resolve(await api.post(urlSearch, payload));
       } catch (e) {
         return reject(e);
       }

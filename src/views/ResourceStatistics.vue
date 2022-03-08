@@ -3,8 +3,9 @@
     <v-card class="pt-5 pr-1 pl-1 pb-1 mt-5 mr-1 ml-1 mb-1" color="">
       <v-card-title> <h1>Estadísticas por recurso.</h1></v-card-title>
       <v-card-subtitle
-        >Toda la expliación de las estadísticas y reportes
-        necesaria.</v-card-subtitle
+        >A continuación se detallarán las métricas obtenidas por la aplicación
+        por cada recurso. Además, se podrá visualizar el listado de incidentes
+        en los que el recurso participó.</v-card-subtitle
       >
       <v-card-text>
         <v-layout row class="pa-auto ma-auto" fill-height fill-width>
@@ -23,10 +24,12 @@
               <v-card-title
                 >Cantidad total de participaciones en incidentes.</v-card-title
               >
-              <v-card-text justify="center"><h1>12</h1></v-card-text>
+              <v-card-text justify="center"
+                ><h1>{{ this.incidentsAttended }}</h1></v-card-text
+              >
               <v-card-subtitle
-                >Acá va la explicación de este número, explicar como leerlo y
-                qué representa.</v-card-subtitle
+                >Todas las participaciones en incidentes en las que el recurso
+                estuvo presente.</v-card-subtitle
               >
             </v-card>
           </v-row>
@@ -136,7 +139,6 @@
                   :data-collection="barChartData"
                 ></bar-chart
               ></v-card-text>
-              <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
           </v-row>
           <v-row
@@ -166,7 +168,6 @@
                 >
                 </v-data-table>
               </v-card-text>
-              <v-card-subtitle>Notas extras.</v-card-subtitle>
             </v-card>
           </v-row>
         </v-layout>
@@ -182,11 +183,12 @@ import BarChart from "@/components/charts/BarChart.vue";
 import { mapGetters } from "vuex";
 
 export default {
-  name: "StatisticsView.vue",
+  name: "ResourceStatistics",
   components: { BarChart, PieChart, LineChart },
   data() {
     return {
       resourceId: null,
+      incidentsAttended: 0,
       headerIncidentsTable: [
         { text: "Estado", sortable: false, value: "status" },
         {
@@ -223,23 +225,78 @@ export default {
     await this.loadIncidentsDataByUser();
   },
   methods: {
+    translateStatus(status) {
+      switch (status) {
+        case "Started":
+          status = "Inicializado";
+          break;
+        case "Finalized":
+          status = "Finalizado";
+          break;
+        case "Canceled":
+          status = "Cancelado";
+          break;
+      }
+      return status;
+    },
+    translateDataStatus(dataStatus) {
+      switch (dataStatus) {
+        case "Incomplete":
+          dataStatus = "Incompleto";
+          break;
+        case "Complete":
+          dataStatus = "Completo";
+      }
+      return dataStatus;
+    },
+    translateExternalAssistance(externalAssistance) {
+      switch (externalAssistance) {
+        case "With external support":
+          externalAssistance = "Con asistencia externa.";
+          break;
+        case "Without external support":
+          externalAssistance = "Sin asistencia externa.";
+          break;
+      }
+      return externalAssistance;
+    },
+    translateLocationString(locationAsStringReference) {
+      if (locationAsStringReference === "") {
+        return "-";
+      } else {
+        return locationAsStringReference;
+      }
+    },
     async loadIncidentsDataByUser() {
       this.loadingTable = true;
 
       let context = this;
-      // TODO: obtener todos los incidentes en los que participó un recurso en particular, pasandole la id del recurso en la request.
       await context.$store
-        .dispatch("incident/getIncident")
+        .dispatch("domainConfig/getIncidentsByResourceId", context.resourceId)
         .then(response => {
-          this.incidentsByResource = response.data.results;
+          let incidents = [];
+          this.incidentsAttended = response.data.results.length;
+          if (response.data.results !== []) {
+            response.data.results.forEach(item => {
+              item = {
+                status: this.translateStatus(item.incident.status),
+                data_status: this.translateDataStatus(
+                  item.incident.data_status
+                ),
+                external_assistance: this.translateExternalAssistance(
+                  item.incident.external_assistance
+                ),
+                location_as_string_reference: this.translateLocationString(
+                  item.incident.location_as_string_reference
+                )
+              };
+              incidents.push(item);
+            });
+            this.incidentsByResource = incidents;
+          }
         })
         .catch(async () => {
           console.error("Error al buscar datos para llenar la tabla.");
-        })
-        .finally(async () => {
-          console.log(
-            "Búsqueda de datos para llenar la tabla finalizada con éxito."
-          );
         });
     },
     async getStatisticsByResource() {
@@ -257,9 +314,6 @@ export default {
           console.error(
             "Error al intentar obtener las estadísticas por recurso."
           );
-        })
-        .finally(async () => {
-          console.log("Estadística por recurso obtenida con éxito.");
         });
     },
     goToMap(incident) {

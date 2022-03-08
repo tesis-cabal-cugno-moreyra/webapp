@@ -201,7 +201,24 @@
                   </template>
                   <span>Cambiar Visibilidad del incidente</span>
                 </v-tooltip>
-
+                <v-tooltip bottom>
+                  <template
+                    v-slot:activator="{ on, attrs }"
+                    v-if="incidentStatusSelected === 'Iniciado'"
+                  >
+                    <v-icon
+                      v-bind="attrs"
+                      v-on="on"
+                      small
+                      color="#68D4CE"
+                      @click="openDialogChangeStatus(item)"
+                      :class="['mr-2']"
+                    >
+                      mdi-ballot-recount
+                    </v-icon>
+                  </template>
+                  <span>Cambiar estado del incidente</span>
+                </v-tooltip>
                 <v-tooltip bottom>
                   <template v-slot:activator="{ on, attrs }">
                     <v-icon
