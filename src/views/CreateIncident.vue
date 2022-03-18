@@ -122,6 +122,7 @@ export default {
   },
   methods: {
     async createIncident() {
+      this.showIncidentResourceList = true;
       if (this.inputsFilled()) {
         this.tryToCreateIncident = true;
         await this.$store.dispatch("uiParams/turnOnSpinnerOverlay");
