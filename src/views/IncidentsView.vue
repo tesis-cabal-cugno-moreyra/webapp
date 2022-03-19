@@ -321,13 +321,19 @@ export default {
       dialogIncidentDetails: false
     };
   },
-  async created() {
+  async mounted() {
     await this.searchIncident();
-    await this.createTypeIncidentTypeList();
+    this.createTypeIncidentTypeList();
   },
   watch: {
     page() {
       this.searchIncident();
+    },
+    domainConfig(newDomainConfig) {
+      if (!newDomainConfig) {
+        return;
+      }
+      this.createTypeIncidentTypeList(newDomainConfig);
     }
   },
   methods: {
