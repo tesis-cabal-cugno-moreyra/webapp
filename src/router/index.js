@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import store from "@/store";
 import DomainInformation from "../components/DomainInformation.vue";
 import Login from "../views/Login.vue";
 import Error from "../views/Error.vue";
@@ -137,16 +138,6 @@ const routes = [
     })
   },
   {
-    path: "/incidents-view",
-    name: "IncidentsView",
-    component: IncidentsView,
-    meta: {
-      requires_auth: true,
-      is_admin: true,
-      is_supervisor: true
-    }
-  },
-  {
     path: "/resource_statistics/:id",
     name: "ResourceStatisticsView",
     component: ResourceStatistics,
@@ -192,39 +183,39 @@ const router = new VueRouter({
   routes
 });
 
-const tokenCheck = (
-  to,
-  next,
-  isAdmin,
-  isResource,
-  isSupervisor,
-  accessToken
-) => {
+const tokenCheck = (to, next, accessToken) => {
   if (accessToken === null) {
     next({
       name: "Login",
       params: { nextUrl: to.fullPath }
     });
   } else if (!authServices.tokenIsExpired(accessToken)) {
-    rolesCheck(to, next, isAdmin, isSupervisor, isResource);
+    rolesCheck(to, next);
   } else {
     //TODO: Renovar token, si no se puede mandar a vista de error! En la vista de error, decir que el token es invalido, y brindar boton a login. Vista de error toma título, texto del boton  y nombre de ruta a redireccionar ()
-    this.$store.dispatch("uiParams/hideNavBar");
+    store.dispatch("uiParams/hideNavBar");
+    authServices.removeTokens();
     next({
       name: "Login"
     });
   }
 };
 
-const rolesCheck = (to, next, isAdmin, isResource, isSupervisor) => {
-  if (to.matched.some(record => record.meta.is_admin) && isAdmin) {
+const rolesCheck = (to, next) => {
+  if (
+    to.matched.some(record => record.meta.is_admin) &&
+    authServices.isAdmin()
+  ) {
     next();
   } else if (
     to.matched.some(record => record.meta.is_supervisor) &&
-    isSupervisor
+    authServices.isSupervisor()
   ) {
     next();
-  } else if (to.matched.some(record => record.meta.is_resource) && isResource) {
+  } else if (
+    to.matched.some(record => record.meta.is_resource) &&
+    authServices.isResource()
+  ) {
     next();
   } else {
     next({
@@ -235,21 +226,15 @@ const rolesCheck = (to, next, isAdmin, isResource, isSupervisor) => {
 
 router.beforeEach((to, from, next) => {
   let accessToken = null;
-  let isAdmin = false;
-  let isSupervisor = false;
-  let isResource = false;
   try {
     accessToken = authServices.getToken();
-    isAdmin = authServices.isAdmin();
-    isSupervisor = authServices.isSupervisor();
-    isResource = authServices.isResource();
   } catch (e) {
     console.log(e);
     //TODO: Add error view.
   }
 
   if (to.matched.some(record => record.meta.requires_auth)) {
-    tokenCheck(to, next, isAdmin, isSupervisor, isResource, accessToken);
+    tokenCheck(to, next, accessToken);
   } else if (to.matched.some(record => record.meta.guest)) {
     if (accessToken === null) {
       next();
