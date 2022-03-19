@@ -64,7 +64,20 @@ export default {
       } else if (!this.incidentData.incident_type.details_schema) {
         return {};
       } else {
-        return this.incidentData.incident_type.details_schema;
+        if (
+          typeof this.incidentData.incident_type.details_schema === "string"
+        ) {
+          return JSON.parse(this.incidentData.incident_type.details_schema);
+        } else if (
+          typeof this.incidentData.incident_type.details_schema === "object"
+        ) {
+          return this.incidentData.incident_type.details_schema;
+        } else {
+          console.error(
+            "incidentData.incident_type.details_schema is not a string!"
+          );
+          return {};
+        }
       }
     }
   },
@@ -122,15 +135,20 @@ export default {
               color: "primary",
               timeout: 5000
             });
-          }
-          if (error.data.incident_id) {
+          } else if (error.data.incident_id) {
             this.$store.commit("uiParams/dispatchAlert", {
               text: "Incidente relacionado no existe!",
               color: "primary",
               timeout: 5000
             });
-          }
-          if (error.data.details) {
+          } else if (error.data.details) {
+            this.$store.commit("uiParams/dispatchAlert", {
+              text:
+                "Validación de detalles falló, corrija los datos ingresados e intente nuevamente",
+              color: "primary",
+              timeout: 5000
+            });
+          } else {
             this.$store.commit("uiParams/dispatchAlert", {
               text:
                 "Validación de detalles falló, corrija los datos ingresados e intente nuevamente",
