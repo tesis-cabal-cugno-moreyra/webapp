@@ -9,6 +9,10 @@ export default {
   },
   tokenIsExpired() {
     const token = this.getToken();
+    if (!this.parseJwt(token).exp) {
+      this.removeTokens();
+      return console.error("exp is not defined on token!");
+    }
     return Date.now() / 1000 >= this.parseJwt(token).exp;
   },
   tokenTimeToExpiration() {
@@ -24,10 +28,14 @@ export default {
   getToken() {
     return localStorage.getItem("access-token");
   },
+  removeTokens() {
+    localStorage.removeItem("access-token");
+    localStorage.removeItem("refresh-token");
+  },
   getRoles() {
     let roles = [];
     const parsedJWT = this.parseJwt();
-    if (parsedJWT.roles !== null && parsedJWT.roles !== []) {
+    if (parsedJWT.roles) {
       parsedJWT.roles.forEach(function(role) {
         let unwrappedRole = Object.keys(role);
         switch (unwrappedRole[0]) {
