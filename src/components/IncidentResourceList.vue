@@ -2,7 +2,7 @@
   <v-form>
     <v-card>
       <v-dialog v-model="show" width="600" persistent dark>
-        <v-card-title :class="['pa-4', 'mb-2']">
+        <v-card-title :class="['pa-4', 'mb-2', 'black_selected']">
           Recursos para relacionar
           <v-spacer></v-spacer>
           <v-row>
@@ -36,7 +36,7 @@
           </v-row>
         </v-card-title>
 
-        <v-card-text :class="['pa-3']">
+        <v-card-text :class="[' black_selected', 'pa-3']">
           <v-data-table
             :loading="loadingTable"
             loading-text="Cargando... Espere por favor"
