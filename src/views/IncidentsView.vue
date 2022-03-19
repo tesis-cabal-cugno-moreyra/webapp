@@ -386,7 +386,7 @@ export default {
       }
       let searchInfo = {
         incident_type__name: incidentType,
-        visibility:
+        external_assistance:
           this.incidentVisibilitySelected === "Con asistencia externa"
             ? "With external support"
             : "Without external support",
@@ -401,7 +401,7 @@ export default {
       if (
         searchInfo.incident_type__name !==
           this.referenceSearch.incident_type__name ||
-        searchInfo.visibility !== this.referenceSearch.visibility ||
+        searchInfo.external_assistance !== this.referenceSearch.visibility ||
         searchInfo.status !== this.referenceSearch.status ||
         searchInfo.data_status !== this.referenceSearch.data_status ||
         searchInfo.alias__alias !== this.referenceSearch.alias__alias
