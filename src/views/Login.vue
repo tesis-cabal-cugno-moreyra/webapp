@@ -102,6 +102,7 @@
 import { mapGetters } from "vuex";
 import authServices from "@/services/authServices";
 import SignInSupervisor from "../components/SignInSupervisor.vue";
+import { domainConfigRoutes } from "@/router";
 
 export default {
   name: "Login",
@@ -130,12 +131,18 @@ export default {
         let payload = { username: this.username, password: this.password };
         await this.$store
           .dispatch("restAuth/login", payload)
-          .then(response => {
+          .then(async response => {
             let accessToken = response.data.access_token;
             let refreshToken = response.data.refresh_token;
 
-            this.$store.dispatch("restAuth/updateAccessToken", accessToken);
-            this.$store.dispatch("restAuth/updateRefreshToken", refreshToken);
+            await this.$store.dispatch(
+              "restAuth/updateAccessToken",
+              accessToken
+            );
+            await this.$store.dispatch(
+              "restAuth/updateRefreshToken",
+              refreshToken
+            );
 
             let roles = authServices.getRoles();
             let user = {
@@ -145,8 +152,14 @@ export default {
               lastName: response.data.user.last_name,
               roles: roles
             };
-            this.$store.dispatch("restAuth/updateUser", user);
-            this.$router.push({ name: "IncidentsView" });
+            await this.$store.dispatch("restAuth/updateUser", user);
+            await this.$store
+              .dispatch("domainConfig/getDomainConfig")
+              .catch(async () => {
+                this.$router.addRoutes(domainConfigRoutes);
+                await this.$router.push({ name: "DomainConfig" });
+              });
+            await this.$router.push({ name: "IncidentsView" });
           })
           .catch(e => {
             if (e.status === 400 && e.statusText === "Bad Request") {
