@@ -37,7 +37,7 @@
         >
       </v-list-item>
 
-      <v-list-item link>
+      <!--  <v-list-item link>
         <v-list-item-icon>
           <v-icon color="grey darken-1">mdi-settings</v-icon>
         </v-list-item-icon>
@@ -45,7 +45,7 @@
           >Configuración</v-list-item-title
         >
       </v-list-item>
-
+-->
       <v-list-group no-action sub-group v-show="isAdminPermission">
         <template v-slot:activator>
           <v-list-item-content>

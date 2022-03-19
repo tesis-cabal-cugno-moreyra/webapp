@@ -299,9 +299,9 @@ export default {
           value: "data_status"
         },
         {
-          text: "Asistencia externa",
+          text: "Referencia",
           sortable: false,
-          value: "external_assistance"
+          value: "reference"
         },
         {
           text: "Referencia de Ubicación",

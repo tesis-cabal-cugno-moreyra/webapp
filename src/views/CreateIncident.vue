@@ -70,11 +70,7 @@
                 >
               </v-row>
             </v-container>
-            <v-btn
-              color="black_selected"
-              class="ma-5 pa-3"
-              x-large
-              v-on:click="goIncidentView"
+            <v-btn class="ma-5 pa-3" x-large v-on:click="goIncidentView"
               >Cancelar</v-btn
             >
           </v-container>

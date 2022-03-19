@@ -3,12 +3,12 @@
     <v-container fill-height fill-width text-center>
       <v-layout justify="center">
         <v-card>
-          <v-card-title :class="['pa-3', 'mt-7', 'black_selected']">
+          <v-card-title :class="['pa-3', 'mt-7']">
             <v-row align="center" justify="center">
               Administrador de perfiles de los usuarios
             </v-row>
           </v-card-title>
-          <v-card-title :class="['pa-2', 'black_selected']">
+          <v-card-title :class="['pa-2']">
             <v-row align="center" justify="center">
               <v-col cols="6">
                 <v-text-field
@@ -29,7 +29,7 @@
             </v-row>
           </v-card-title>
 
-          <v-card-text :class="[' black_selected', 'pa-1']">
+          <v-card-text :class="['pa-1']">
             <v-data-table
               :loading="loadingTable"
               loading-text="Cargando... Espere por favor"

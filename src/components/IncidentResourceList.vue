@@ -2,7 +2,7 @@
   <v-form>
     <v-card>
       <v-dialog v-model="show" width="600" persistent dark>
-        <v-card-title :class="['pa-4', 'mb-2', 'black_selected']">
+        <v-card-title :class="['pa-4', 'mb-2']">
           Recursos para relacionar
           <v-spacer></v-spacer>
           <v-row>
@@ -36,7 +36,7 @@
           </v-row>
         </v-card-title>
 
-        <v-card-text :class="[' black_selected', 'pa-3']">
+        <v-card-text :class="['pa-3']">
           <v-data-table
             :loading="loadingTable"
             loading-text="Cargando... Espere por favor"
@@ -134,6 +134,7 @@ export default {
       let searchInfo = {
         user__first_name: this.searchName,
         user__last_name: this.searchLastName,
+        is_free_to_take_incident: true,
         type__name:
           this.autoCompleteTypeResource === undefined
             ? ""
@@ -213,7 +214,7 @@ export default {
           .dispatch("incident/postResourceIncident", resourceIncidentData)
           .then(async () => {
             this.$store.commit("uiParams/dispatchAlert", {
-              text: "Se cargó correctamente: ",
+              text: "Se cargó correctamente",
               color: "success",
               timeout: 5000
             });
