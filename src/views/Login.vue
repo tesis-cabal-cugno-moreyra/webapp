@@ -153,13 +153,15 @@ export default {
               roles: roles
             };
             await this.$store.dispatch("restAuth/updateUser", user);
-            await this.$store
+            const domainConfig = await this.$store
               .dispatch("domainConfig/getDomainConfig")
               .catch(async () => {
                 this.$router.addRoutes(domainConfigRoutes);
                 await this.$router.push({ name: "DomainConfig" });
               });
-            await this.$router.push({ name: "IncidentsView" });
+            if (domainConfig) {
+              await this.$router.push({ name: "IncidentsView" });
+            }
           })
           .catch(e => {
             if (e.status === 400 && e.statusText === "Bad Request") {
