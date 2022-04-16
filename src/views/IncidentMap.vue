@@ -56,6 +56,11 @@
         :options="{ styles: style }"
         :center="{ lat: centerLatitude, lng: centerLongitude }"
       >
+        <gmap-marker
+          :position="{ lat: centerLatitude, lng: centerLongitude }"
+          :icon="{ url: require('@/assets/pins/incident-location.png') }"
+        >
+        </gmap-marker>
         <div v-if="switchMapPoints">
           <div
             v-for="(incidentResource, index) in incidentResources"
