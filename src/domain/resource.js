@@ -21,7 +21,8 @@ class IncidentResource {
     firstName,
     lastName,
     resourceTypeName,
-    incident
+    incident,
+    isAbleToContainResources
   ) {
     this._id = id;
     this._userId = userId;
@@ -31,6 +32,7 @@ class IncidentResource {
     this._lastName = lastName;
     this._resourceTypeName = "person"; // TODO: Personalizar los iconos para personas y vehículos.
     this._incident = incident;
+    this._isAbleToContainResources = isAbleToContainResources;
     this._trackPoints = [];
     this._mapPoints = [];
     this._showOnMap = true;
@@ -94,6 +96,10 @@ class IncidentResource {
 
   get incident() {
     return this._incident;
+  }
+
+  get isAbleToContainResources() {
+    return this._isAbleToContainResources;
   }
 
   set incident(value) {

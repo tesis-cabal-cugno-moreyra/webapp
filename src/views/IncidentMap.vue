@@ -123,7 +123,7 @@
               </gmap-info-window>
 
               <gmap-marker
-                v-if="incidentResource.resourceTypeName === 'person'"
+                v-if="!incidentResource.isAbleToContainResources"
                 :position="incidentResource.currentPosition()"
                 :key="index"
                 :clickable="true"
@@ -135,7 +135,7 @@
               >
               </gmap-marker>
               <gmap-marker
-                v-if="incidentResource.resourceTypeName === 'vehicle'"
+                v-if="incidentResource.isAbleToContainResources"
                 :position="incidentResource.currentPosition()"
                 :key="index"
                 :clickable="true"

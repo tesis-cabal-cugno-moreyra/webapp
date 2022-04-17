@@ -15,7 +15,8 @@ export default {
           incidentResourceResponse.resource.user.first_name,
           incidentResourceResponse.resource.user.last_name,
           incidentResourceResponse.resource.type.name,
-          this.incident
+          this.incident,
+          incidentResourceResponse.resource.type.is_able_to_contain_resources
         )
       );
     }
