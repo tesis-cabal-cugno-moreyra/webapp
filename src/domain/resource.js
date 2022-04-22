@@ -130,11 +130,20 @@ class IncidentResource {
   }
 
   getTrackPointsRouteColor() {
-    let colors = ["blue", "red", "yellow", "green", "orange"];
-    let colorSelected = colors[0];
-    colors.shift();
-    colors.push(colorSelected);
-    return colorSelected.toString();
+    let colors = [
+      "#0E185F",
+      "#FDFFA9",
+      "#f00",
+      "#6A9E07EF",
+      "#fff",
+      "#f3cb94",
+      "#95D1CC",
+      "#078fbb",
+      "#243D25",
+      "#874356"
+    ];
+
+    return colors[this._id % colors.length];
   }
 
   get mapPoints() {
